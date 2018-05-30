@@ -1,0 +1,15 @@
+
+后台
+1、登陆logo
+	模板目录admin/templates/login.html	
+	替换logo
+	<img src="images/login.png" width="178" height="256" border="0" alt="图片" />
+
+2、后台logo
+	模板目录admin/templates/top.html
+	替换logo
+	<img src="images/ecshop_logo.gif" alt="ECSHOP - power for e-commerce" />
+	width:130px  height:50px
+	
+3、语言包
+	languages/zh_cn/admin/common.php

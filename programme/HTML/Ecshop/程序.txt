@@ -1,0 +1,56 @@
+一、关闭缓存
+	1、打开includes/cls_template.php  199行
+		/**
+		if (file_put_contents($hash_dir . '/' . $cachename . '.php', '<?php exit;?>' . $data . $out, LOCK_EX) === false)
+		     {
+		          trigger_error('can\'t write:' . $hash_dir . '/' . $cachename . '.php');
+		 }
+		 */
+
+	2、includes/cls_mysql.php   31行
+		关闭SQL缓存：  $max_cache_time=3600;修改为0；
+
+
+二、二次开发添加功能
+		
+	1、导航语言包
+		/* 新增导航 */			languages/zh_cn/admin/common.php				
+		$_LANG['17_extend_function'] = '扩展管理';
+		$_LANG['extend_one'] = '扩展功能1';
+		$_LANG['extend_two'] = '扩展功能2';
+		
+	2、/* 在管理中心菜单数组中添加 */ 		admin/includes/inc_menu.php
+        $modules['17_extend_function']['extend_one'] = '.php?act=list';					//功能一
+		$modules['17_extend_function']['extend_two'] = 'demo.php?act=list';			//功能二
+		完成以上，导航栏就有了
+
+	3、权限显示、以及数据库显示
+		1) /* 数据库添加 */			ecs_admin_action 表
+			a)	parent_id	 //父ID	
+			b)	action_code 权限名(权限名)
+			
+		2) /* 权限-语言包 */			languages/zh_cn/admin/priv_action.php			
+			$_LANG['extend_function'] = '扩展管理';			//添加一个扩展管理
+			
+		3) privilege.php		//语言包
+		
+		
+三、模板类库
+	/admin/includes/lib_template.php。	//前台模板，库配置文件(我们给它设置的默认显示数量为4)
+	a)	在根目录/themes/default/library 中添加一个”test.lbi” 空文件。
+		然后开打 根目录/languages/zh_cn/admin/template.php(注意大宇用的语言包是简体中文，所以是zh_cn)，
+		找到 $_LANG['template_libs']，在此上面添加一行“$_LANG['template_libs']['test'] = ‘test测试’;”。		
+			
+			
+四、数据库驱动			
+	ECShop的数据操作类文件是includes/cls_mysql.php，类名是cls_mysql。该类主要提供了下面 一些比较有用的方法：
+	
+	select_database();	//选择数据库
+	getAll($sql)和getAllCached($sql, $cached = 'FILEFIRST')：获取所有记录。
+	getRow($sql, $limited = false)和getRowCached($sql, $cached = 'FILEFIRST')：获取单行记录。
+	getCol($sqlse)和getColCached($sql, $cached = 'FILEFIRST')：获取某栏位的所有值。
+	getOne($sql, $limited = false)和getOneCached($sql, $cached = 'FILEFIRST')：获取单个数值。
+	query($sql)：执行数据库查询。
+	autoExecute($table, $field_values, $mode = 'INSERT', $where = '')：数据库表操作。
+			
+		

@@ -1,0 +1,5 @@
+[ 2013-03-01T17:18:11+08:00 ] ERR: (ThinkException) 缓存文件写入失败！:Cache/Html/Index/index/ThinkCache/?s=/Index/index/4/512312.shtml
+[ 2013-03-01T17:18:23+08:00 ] ERR: (ThinkException) 缓存文件写入失败！:Cache/Html/Index//ThinkCache/?s=/Index/index/4/512312.shtml
+[ 2013-03-01T17:27:22+08:00 ] ERR: (ThinkException) 非法操作:userzzzz
+[ 2013-03-01T17:30:11+08:00 ] ERR: (ThinkException) 模板不存在[Cache/Tpl/Index/user.html]
+[ 2013-03-01T17:31:20+08:00 ] ERR: (ThinkException) 模板不存在[Cache/Tpl/Index/user.html]

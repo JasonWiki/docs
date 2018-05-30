@@ -1,0 +1,104 @@
+一、header
+PHP 中 header()函数->设置响应时的标头：在客户端Request请求服务器后，服务器response响应给浏览器的标头 (header)
+标头 (header) 是服务器以 HTTP 协义传 HTML 资料到浏览器前所送出的字串， 与 HTML 文件之间尚需空一行分隔。
+1、跳转：当浏览器接受到头信息中的 Location: xxxx 后，就会自动跳转到 xxxx 指向的URL地址，这点有点类似用 js 写跳转。但是这个跳转只有浏览器知道，不管体内容里有没有东西，用户都看不到。
+2、指定网页的内容：同样一个XML文件，如果头信息中指定：Content-type: application/xml 的话，浏览器会将其按照XML文件格式解析。但是，如果头信息中是：Content-type: text/xml 的话，浏览器就会将其看作存文本解析。（浏览器不是按照扩展名解析文件的）
+3、附件：不知道大家有没有注意，有些时候在一些网站下载东西，点下载连接以后，结果浏览器将这个附件当成网页打开了，里面显示的都是乱码，这个问题也和头信息有关。有时候浏览器根据Content-type 来判断是打开还是保存，这样有时就会判断错误（主要是网站设计者忘记写Content-type）。其实，还有一个可以来指定该内容为附件、需要保存，这个就是：Content-Disposition: attachment; filename="xxxxx"
+在PHP中如何写？
+1、跳转：
+header("Location: http://www.example.com/");
+2、指定内容：
+header('Content-type: application/pdf');
+3、附件：
+header('Content-type: application/pdf'); // 指定内容格式
+header('Content-Disposition: attachment; filename="downloaded.pdf"'); // 指定内容为附件
+readfile('original.pdf'); // 打开文件，并输出
+所有头信息都必须在体内容之前，如果一旦有任何输出了的话，
+header函数写的头信息就没用了。比如，在文件最开头的<?php 处，如果前面有空格或者有空行，那header函数就没用了（其实可以通过设置：output_buffer来解决，anyway），为什么这样，可以看看HTTP协议，很简单。
+
+
+
+二、HTTP协议-----超文本传送协议--http://baike.baidu.com/view/1628025.htm?fromId=70545
+HTTP使用80端口
+注：HTTP工作在TCP/IP协议体系中的TCP协议上。
+
+-------详细说明-------http://www.cnblogs.com/lexus/archive/2012/02/21/2360944.html
+URL
+scheme:http             							  指定低层使用的协议(例如：http, https, ftp)
+host :www.mywebsite.com                HTTP服务器的IP地址或者域名
+port#               										 HTTP服务器的默认端口是80，这种情况下端口号可以省略。如果使用了别的端口，必须指明，例如 http://www.cnblogs.com:8080/
+path:/sj/test/test.aspx                 		 访问资源的路径
+query-string:name=sviergn&x=true    送给http服务器的数据
+anchor:stuff											          锚
+
+------Response响应状态--------
+Response 消息中的第一行叫做状态行，由HTTP协议版本号， 状态码， 状态消息 三部分组成。
+状态码用来告诉HTTP客户端,HTTP服务器是否产生了预期的Response.
+HTTP/1.1中定义了5类状态码， 状态码由三位数字组成，第一个数字定义了响应的类别
+1XX  提示信息 - 表示请求已被成功接收，继续处理
+2XX  成功 - 表示请求已被成功接收，理解，接受
+3XX  重定向 - 要完成请求必须进行更进一步的处理
+4XX  客户端错误 -  请求有语法错误或请求无法实现
+5XX  服务器端错误 -   服务器未能实现合法的请求
+
+-------工作流程-------
+Request请求-> response响应
+3、通信
+------->>>http请求由三部分组成，分别是：请求行、消息报头、请求正文。。http://blog.csdn.net/yethyeth/article/details/1438544
+客户向服务器请求服务时，只需传送请求方法和路径。请求方法常用的有GET、HEAD、POST。
+HTTP允许传输任意类型的数据对象。正在传输的类型由Content-Type加以标记。
+1、头信息(header) 和
+2、主 体内容，
+
+<<<<get方式提交放在报文头url，post方式提交放在报文体中>>>>
+-------请求
+Accept:						text/html, */*; q=0.01
+Accept-Encoding:		gzip, deflate
+Accept-Language:		zh-cn,zh;q=0.8,en-us;q=0.5,en;q=0.3
+Connection:				keep-alive
+Cookie:						PHPSESSID=mng6lj1raga1s3f13opgf61pv2
+Host	:							127.0.0.1
+Referer:						http://127.0.0.1/bundhotel/?s=/Enter/information
+User-Agent	:				Mozilla/5.0 (Windows NT 5.1; rv:20.0) Gecko/20100101 Firefox/20.0
+X-Requested-With	:	XMLHttpRequest
+
+-------响应
+Cache-Control :			no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Connection	:				Keep-Alive
+Content-Encoding	:	gzip
+Content-Length:			237
+Content-Type	:			text/html;charset=utf-8
+Date	:						Sat, 11 May 2013 02:53:36 GMT
+Expires:						Thu, 19 Nov 1981 08:52:00 GMT
+Keep-Alive:					timeout=5, max=99
+Pragma	: 					no-cache
+Server	:						Apache/2.2.8 (Win32) PHP/5.2.6
+Vary	:							Accept-Encoding
+X-Powered-By:			PHP/5.2.6
+
+
+
+
+三、HTTPS---HTTP的安全版。即HTTP下加入SSL层，HTTPS的安全基础是SSL---http://baike.baidu.com/view/14121.htm
+HTTPS使用端口443
+
+主要作用可以分为两种：一种是建立一个信息安全通道，来保证数据传输的安全；另一种就是确认网站的真实性。
+
+HTTPS和HTTP的区别
+一、https协议需要到ca申请证书，一般免费证书很少，需要交费。
+二、http是超文本传输协议，信息是明文传输，https 则是具有安全性的ssl加密传输协议。
+三、http和https使用的是完全不同的连接方式，用的端口也不一样，前者是80，后者是443。
+四、http的连接很简单，是无状态的；HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，比http协议安全。
+
+
+
+
+
+
+
+
+
+
+
+
+

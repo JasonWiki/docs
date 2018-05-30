@@ -1,0 +1,283 @@
+一、Linux、apache、mysql、php   （总结：708）
+
+	1、用到的模块
+		1)	httpd					//apache主程序
+		2)	mysql					//MySQL客户端
+		3)	mysql_server		//MySQL服务器程序
+		4)	php						//php主程序，给apache使用的模块
+		5)	php-devel			//php发展的工具，与php外挂加速软件有关
+		6)	php-mysql			//php读取mysql的数据库模块
+
+	2、安装
+		关闭防火墙和selinux
+		yum install httpd mysql mysql-server php php-mysql php-gd php-mbstring php-devel
+
+
+
+二、模块说明
+	1、Apache配置文件说明
+		1) /etc/httpd/conf/httpd.conf			//主要配置文件
+
+		2) /etc/httpd/conf.d/*.conf				//不修改主配置文件的情况下，加入自己的配置文件，必须以 .conf 后缀结尾
+
+		3) /etc/httpd/modules/ 					//apache支持的外挂模块，如：php、SSL都是apache外挂的一种
+			/usr/lib/httpd/modules/
+
+		4) /var/www/html/							//CentOS默认的网络目录
+
+		5) /var/www/error/							//服务器出错时的显示的网页目录
+
+		6) /var/www/icons/							//apache提供的小图标目录，http://127.0.0.1/icons/
+
+		7) /var/www/cgi-bin/						//默认可执行的网页程序防止目录
+
+		8) /var/log/httpd/								//日志文件所在目录，访问量大的时候，注意修改logrotate，让日志文件可以被压缩
+
+		9) /usr/sbin/apachectl						//Apache主要执行程序
+			/usr/sbin/httpd								//Apache主要二进制执行文件
+
+		10) /usr/bin/htpasswd						//当浏览某个网页时，提供密码保护功能
+
+	2、MySQL配置文件、目录
+		1)	 /etc/my.cnf										//数据库的配置文件
+
+		2) /var/lib/mysql/									//mysql默认数据库文件存放目录
+
+	3、PHP配置文件、目录
+		1) /etc/httpd/conf.d/php.conf					//php被apache挂载的模块，配置文件
+
+		2) /etc/	php.ini											//php的主配置文件
+
+		3) /usr/lib/httpd/modules/libphp5.so		//php被apache挂载的模块文件
+
+		4) /etc/php.d/mysql.ini							//php支持mysql的接口(由php-mysql软件提供)
+			/usr/lib/php/modules/mysql.so
+
+		5)	/usr/lib/php/modules/							//php扩展模块目录
+
+		6) /usr/bin/phpize									//php加速程序的模块(由php-devel软件提供)
+			/usr/include/php/
+
+
+三、设定
+	1、Apache设定	(661)
+		1) vim /etc/hosts			//配置IP与域名绑定
+			本地可以	127.0.0.1   localhost.localdomain			Linux_server1
+
+		2) 配置文件格式
+			<设置项>
+				设置内容
+			</设置项>
+
+		3)	/etc/httpd/conf/httpd.conf			//配置内容说明
+			/etc/httpd/conf.d/*.conf				//写入自己配置文件，方便维护
+
+				ServerRoot "/etc/httpd"						//Apache软件路径
+			a)	Timeout 300										//最长连接时间
+				KeepAlive On										//持续性连接，一次Tcp连接传输所有数据。不用每次都建立连接（为Off与On）。
+				MaxKeepAliveRequests 500			//KeepAlive开启时：最大传输数量。0表示不限制
+				KeepAliveTimeout 15						//KeepAlive开启时：每次的延迟秒数，如果超过这个值则中断
+
+			b) <IfModule prefork.c>							//内存管理prefork
+				StartServers       8								//启动httpd时，用几个pid
+				MinSpareServers    5							//最小使用pid
+				MaxSpareServers   20						//最大使用pid
+				ServerLimit      256								//服务器限制
+				MaxClients       256							//最多容纳多少个客户端连接
+				MaxRequestsPerChild  4000			//每个程序允许容纳的最多请求
+				</IfModule>
+
+				<IfModule worker.c>							//内存管理worker
+				StartServers         4							//Apache启动时就启动进程数量，表示不会只有一个进程
+				MaxClients         300							//最多容纳多少个客户端连接
+				MinSpareThreads     25
+				MaxSpareThreads     75
+				ThreadsPerChild     25
+				MaxRequestsPerChild  0
+				</IfModule>
+
+				worker														//占用内存小，对流量大的网站来说比较好。
+				prefork													//占用内存大，不过内存设计比较优秀，默认使用这个
+				cat /etc/sysconfig/httpd  						//改变使用的模块，(必须先停止服务再改变)
+					#HTTPD=/usr/sbin/httpd.worker		//取消前面的注释，切换到worker模式
+
+			c)	Listen 80													//服务开发的端口
+
+			d)	LoadModule auth_basic_module modules/mod_auth_basic.so		//Apache提供给我们的扩展功能模块
+				......
+
+			e)Include conf.d/*.conf								//引入配置文件
+
+			f)	User apache											//apache身份
+				Group apache
+
+			g) ServerAdmin ucdchinalin@gmail.com		//管理员邮箱
+
+			h) ServerName localhost:80							//主机名
+
+			i)	UseCanonicalName Off
+
+			j)	DocumentRoot  与 Directory
+
+				DocumentRoot "/var/www/html"			//设置网站目录
+
+				<Directory />											//网站根目录限制，DocumentRoot设置的目录
+				    Options FollowSymLinks
+				    AllowOverride None
+				</Directory>
+
+				<Directory "/var/www/html">							//指定目录限制（666）
+				    Options Indexes FollowSymLinks			//Options(目录参数)、Indexes FollowSymLinks(Options的参数)
+			   		 AllowOverride None									//AllowOverride(允许覆盖参数功能->.htaccess文件)，None(不允许)，Indexex(允许index方面的覆盖)，ALL(全部权限覆盖)
+    				Order allow,deny
+    				Allow from all
+				</Directory>
+
+			k)	DirectoryIndex index.html index.html.var				//首页文件的文件名
+
+				#可有可无
+				NameVirtualHost *:80
+			l)	<VirtualHost *:80>													//二级域名指向目录
+					ServerAdmin linus.php@gmail.com
+					DocumentRoot /www/docs/dummy-host.example.com
+					ServerName jiezoudashi.eicp.net
+					##如果多个域名，不要设置别名，否则冲突
+					ServerAlias jiezoudashi.eicp.net
+					ErrorLog logs/dummy-host.example.com-error_log
+					CustomLog logs/dummy-host.example.com-access_log common
+				</VirtualHost>
+
+
+
+		4) 设置ip的限制规则（684）
+			<Directory "/var/www/html">							//指定目录限制（666）
+				    Options Indexes FollowSymLinks			//Options(目录参数)、Indexes FollowSymLinks(Options的参数)
+			   		 AllowOverride None									//AllowOverride(允许覆盖参数功能->.htaccess文件)，None(不允许)，Indexex(允许index方面的覆盖)，ALL(全部权限覆盖)
+    				Order allow,deny
+    				Allow from all
+				</Directory>
+
+	2、PHP设定 (668)
+		1) /etc/httpd/conf.d/php.conf			//在apache中加入php的配置文件，必须以 .conf 后缀结尾
+			a)	#模块
+				<IfModule prefork.c>
+	   				 LoadModule php5_module modules/libphp5.so
+	    		</IfModule>
+	    		<IfModule worker.c>
+		  			LoadModule php5_module modules/libphp5-zts.so
+	   			</IfModule>
+
+			b)	AddHandler php5-script .php
+    			AddType text/html .php
+    			DirectoryIndex index.php		//默认主页
+
+    	2) /etc/php.ini
+			a)	register_globals = Off
+
+			b)程序发生错误是否在页面显示，部署环境的时候，设置为Off。开发环境设置为On
+				display_errors = Off
+				display_startup_errors = Off
+
+			c) 文件上传
+				file_uploads = On		//上传文件
+				post_max_size = 30M
+				upload_max_filesize = 30M
+				max_execution_time = 30			//最大运行时间
+				memory_limit = 20M					//最大运行内存
+
+
+四、启动设置
+	1、/etc/init.d/httpd start						//启动
+		/etc/init.d/httpd	configtest			//测试配置文件
+		chkconfig	httpd	on					//开机启动
+		用phpinfo();		函数测试
+
+	2、错误处理
+		1) 配置文件语法错误
+			/etc/init.d/httpd	configtest			//测试配置文件
+			/var/log/httpd/error_log					//查看错误日志
+		2) 权限问题
+			文件权限问题.chmod	 775
+		3) 防火墙以及SELinux问题
+
+
+
+五、MySQL(674)
+	1、配置文件(vi /etc/my.cnf)
+		#端口、编码设置
+		port=3306
+		default-character-set=utf8
+		--character-set-server=utf8		//高版本用这个
+
+		#目录设置
+		datadir=/web/data			//数据库文件目录
+		socket=/var/lib/mysql/mysql.sock
+		user=mysql
+		# Disabling symbolic-links is recommended to prevent assorted security risks
+		symbolic-links=0
+
+		#内存设置
+		#公式为:key_buffer + (sort_buffer_size + read_buffer_size) * max_connections 	128+(2*2)+150	=728M ，最后加上apache相关内存容量，计算总需要性能
+		key_buffer	= 128M
+		sort_buffer_size = 2M
+		read_buffer_size = 2M
+		join_buffer_size = 2M
+
+		max_connections = 150
+		max_connect_errors = 10
+		read_rnd_buffer_size = 4M
+		max_allowed_packet = 4M
+		table_cache = 1024
+		myisam_sort_buffer_size = 32M
+		thread_cache = 16
+		query_cache_size = 16M
+		tmp_table_size = 64M
+
+		#连接时间改为20分钟
+		wait_timeout = 1200
+		thread_concurrency = 8
+		innodb_data_file_path = ibdata1:10M:autoextend
+		innodb_additional_mem_pool_size = 32M
+		innodb_thread_concurrency = 16
+
+	2、启动连接Mysql
+		1) /etc/init.d/mysqld start
+			无法启动查看日志文件：/var/log/mysqld.log
+
+		2) 测试数据库
+			mysql -u root			//进入MySql
+			show databases;		//查看数据库
+			use mysql;				//使用mysql数据库
+			SHOW TABLES;		//查看表
+
+		3) 设置MySql密码(无需进入Mysql)
+			//需要启动Mysql服务
+			mysqladmin -u root password '514591'
+
+			mysql -u root -p				//输入密码后登陆
+
+
+
+六、PHP编译
+	1、phpize
+		phpize是用来扩展php扩展模块的，通过phpize可以建立php的外挂模块
+		当php编译完成后，php的bin目录下会有phpize这个脚本文件。在编译你要添加的扩展模块之前，执行以下phpize就可以了；
+		yum install php-devel			//如果没有安装则安装这个
+
+
+	2、编译一个模块
+		*进入编译包文件目录，运行phpize
+		phpize
+		#/usr/local/php/bin/phpize
+		./configure --with-php-config=/usr/bin/php-config		//设置编译模块的配置文件路径
+		make
+		make install
+
+		最后的最后，会提示你如下，说明你大功告成了
+		Installing shared extensions:     /usr/lib64/php/modules/
+
+		ls /usr/lib64/php/modules/ 	顺便检查下,扩展是否已经创建成功
+
+		给你php.ini添加一条
+		cd /etc/php.d
+		echo 'extension=mcrypt.so' > mcrypt.ini		//这里指的是模块名

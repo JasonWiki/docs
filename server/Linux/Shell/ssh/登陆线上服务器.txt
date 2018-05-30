@@ -1,0 +1,18 @@
+一、流程
+	1、在本地服务器生成key
+	ssh-keygen -t rsa -P ''
+	#注 ： ssh-keygen -t rsa -C "weilinzhang@anjuke.com"		//表示邮箱
+	
+	id_rsa     私钥 -P 是私钥的密码
+	id_rsa.pub 公钥
+	
+	2、登陆目标的服务器的账号下，把生成的公钥放在authorized_keys文件中，即可
+	cd ~/.ssh/
+	vi authorized_keys	//把公钥匙放到上面去，一行一行保存即可，再次登录就不用输入密码了
+
+
+二、登陆跳板机
+ssh-agent bash
+ssh-add ~/.ssh/id_rsa	//把id_rsa这个可以加入到本机的ssh通讯中
+ssh -A weilinzhang@login-pd.corp.anjuke.com
+ssh evans@app10-023

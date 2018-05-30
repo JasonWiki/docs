@@ -1,0 +1,286 @@
+一、vsftpd服务器(719)（总结：747）
+	http://www.cnblogs.com/hhuai/archive/2011/02/12/1952647.html
+
+	注：用户身份
+		user						//实体用户，比较完成文件权限，Linux已有的用户。
+		guest					//访客，建立临时的用户账号，并且限制在一个文件内
+		anonymous			//匿名用户，只能下载文件
+
+	1、yum install vsftpd 		//安装
+	
+	2、/etc/init.d/vsftpd start		//启动
+		1) vsftpd 可以使用 stand alone 或 super daemon 的方式来启动，我们 CentOS 预设是以 stand alone 来启动的。
+			ftp 服务器是提供给整个因特网来进行大量下载的任务，例如各大专院校的 FTP 服务器，使用 stand alone 的方式， 服务的速度上会比较好。
+			如果仅是提供给内部人员使用的 FTP 服务器，那使用 super daemon 来管理即可啊。
+		
+		2)	FTP 是很少被使用的，那么利用 super daemon 。(详细见727)
+			vim /etc/vsftpd/vsftpd.conf 		//找到 listen=YES 这一行：大约在 109 行左右啦，并将它改成： listen=NO
+			
+			
+	3、常见问题，书本739（常见问题域解决之道）。
+		当实体账号不能连接是，设置SELINUX为宽容模式，或者：见书本731(实体账号的SELinux议题)
+		
+		
+	4、用户认证模块PAM  http://wenku.baidu.com/link?url=0uvGoAVNuv4V0H6sFFloFt9rqfeAw8Hb5pX6Qtd74lzqL8Rqyw0-Xcuet-KPAKSI_NtsixNS0q7ziK1amVBwLGJaqAGKKiDqlXS8Sbh4Tpq
+		1)	一台Linux服务器会开许多不同的服务，这些服务中很多服务本身并没有认证功能，只是把认证交给用户名及密码。
+			如果这样的话，那么所有服务都用Linux系统的用户名及密码来认证，对于服务器来说是很危险的。
+			比如一台服务器开着FTP、SMTP、SSH等服务，那么新建一个用户默认就享有对以上的服务的操作权限，那么如果一个用户的帐号密码泄露会涉及到多个服务。
+			因此，不管是PC还是服务器在类Linux系统中部署PAM认证是非常必要的。
+			通过新型的认证模块——PAM就能解决认证方面的不足，加强Linux系统安全。	
+		
+		2) AM认证一般遵循这样的顺序：
+			Service(服务)→PAM(配置文件)→pam_*.so。
+			PAM认证首先要确定那一项服务，然后加载相应的PAM的配置文件(位于/etc/pam.d下)，最后调用认证文件(位于/lib/security下)进行安全认证。
+			通常情况下，在Linux系统安装完成后会在/etc/pam.d路径下为我们提供了一些默认的配置文件。
+			/lib/security目录是认证文件的默认存放位置。
+			/etc/pam.d路径下的默认配置文件是我们进行PAM配置的模板，通常情况下我们根据安全需要对于进行修改或者添加相应的项即可。
+			
+		3) PAM认证的构成
+			四种常见认证类型(module type)：
+			即auth认证管理、account用户管理、password密码认证管理、session会话管理。
+			以/etc/pam.d/login为例，我们可以看到它的配置文件，区域1中的auth、account、password、session等都是认证类型。
+			区域2中的required、 requisite 、sufficient 、optional是认证的流程控制。
+			最后面的区域3就是认证的PAM文件了。
+	
+	2、目录
+		1) /etc/vsftpd/vsftpd.conf			//配置文件
+			/etc/pam.d/vsftpd					//这个是 vsftpd 使用 PAM 模块时的相关配置文件。主要用来作为身份认证之用，还有一些用户身份的抵挡功能， 也是透过这个档案来达成的。你可以察看一下该档案：
+	
+		2) /etc/vsftpd/ftpusers				//与上一个档案有关系,限制不能登录ftp的账号,一行一个账号
+		3) /etc/vsftpd/user_list				//限制不能登录ftp的账号，要生效在vsftpd.conf中userlist_deny={yes/no}决定
+		4) /etc/vsftpd/chroot_list			//需要自己创建，限制用户的主目录
+		5) /usr/sbin/vsftpd						//执行文件
+		6) /var/ftp/									//匿名用户登录的根目录
+	
+	3、/etc/vsftpd/vsftpd.conf		//配置详细设置
+		1) 服务器环境配置
+			connect_from_port_20=YES			/ftp-data的端口号
+			
+			dirmessage_enable=YES				//用户进入目录显示该目录注意的内容
+			message_file=.message				//默认的文件
+			
+			listen=YES									//stand alone启动，NO则是sup...启动
+			
+			pasv_enable=YES						//支持被动连接模式
+			
+			use_localtime=YES						//使用本地时间	
+			
+			write_enable=YES						//允许用户上传
+			
+			connect_timeout=60						//主动连接模式下，服务器发给客户端的信号60秒得不到回复，则断开
+			
+			data_connection_timeout=120		//连接后，120秒无法正常传输数据，强制断开
+			
+			idle_session_timeout=300			//300秒没有动作，强制断开
+			
+			max_clients=0			//设置同时间最多有多少客户端可以连接
+			
+			max_per_ip=0			//同一个IP可以有多少连接
+			
+			pasv_min_port=0			//被动模式端口，默认为0，表示随机生成端口
+			pasv_max_port=0			//
+			
+
+		2) 与实体用户较相关的设定值
+			guest_enable=NO						//若这个值设定为 YES 时，那么任何实体账号，均会被假设成为 guest 喔 (所以预设是不开放的)！ 至于访客在 vsftpd 当中，预设会取得 ftp 这个使用者的相关权限。但可以透过 guest_username 来修改。
+			guest_username=ftp					// 在 guest_enable=YES 时才会生效，指定访客的身份而已。
+			
+			local_enable=YES		 					//这个设定值必须要为 YES 时，在 /etc/passwd 内的账号才能以实体用户的方式登入我们的 vsftpd 服务器喔！
+																		本质上是为了能够让虚拟用户登录
+			local_max_rate=0 								//实体用户的传输速度限制，单位为 bytes/second， 0 为不限制。
+			
+			chroot_local_user=YES						//让用户限制在自己的主目录内.在预设的情况下，是否要将使用者限制在自己的家目录之内(chroot)？如果是 YES 代表用户默认就会被 chroot，如果是 NO， 则预设是没有 chroot。不过，实际还是需要底下的两个参数互相参考才行。为了安全性，这里应该要设定成 YES 才好。
+			
+			chroot_list_enable=YES								//是否启用 chroot 写入列表的功能？与底下的 chroot_list_flie 有关！这个项目得要开启，否则底下的列表档案会无效。
+			chroot_list_file=/etc/vsftpd/chroot_list 			//虚拟账号同样适用
+																				如果 chroot_list_enable=YES 那么就可以设定这个项目了！这个项目与 chroot_local_user 有关，详细的设定状态请参考 21.2.6 chroot 的说明。
+			
+			userlist_enable=YES (NO) 					//是否藉助 vsftpd 的抵挡机制来处理某些不受欢迎的账号，与底下的参数设定有关；
+			userlist_deny=YES (NO) 						//当 userlist_enable=YES 时才会生效的设定，若此设定值为 YES 时，则当使用者账号被列入到某个档案时， 在该档案内的使用者将无法登入 vsftpd 服务器！该档案文件名与下列设定项目有关。
+ 		userlist_file=/etc/vsftpd/user_list 			//若上面 userlist_deny=YES 时，则这个档案就有用处了！在这个档案内的账号都无法使用 vsftpd 喔！
+
+
+		3) 匿名者登入的设定值，anonymous
+			anonymous_enable=YES			//允许匿名用户登录
+			
+			anon_world_readable_only=YES		//仅允许下载可读文件。
+
+			anon_other_write_enable=NO			//是否允许修改、删除文件
+			
+			anon_mkdir_write_enable=NO		//是否允许创建文件
+			
+			anon_upload_write_enable=NO		//是否允许上传文件.如果要设定为 YES ，则 anon_other_write_enable=YES 必须设定。
+
+			deny_email_enable=YES (NO) 							//将某些特殊的 email address 抵挡住，不让那些 anonymous 登入！如果以 anonymous 登入服务器时，不是会要求输入密码吗？密码不是要你输入你的 email address 吗？如果你很讨厌某些 email address， 就可以使用这个设定来将他取消登入的权限！需与下个设定项目配合：
+			banned_email_file=/etc/vsftpd/banned_emails 		//如果 deny_email_enable=YES 时，可以利用这个设定项目来规定哪个 email address 不可登入我们的 vsftpd 喔！在上面设定的档案内，一行输入一个 email address 即可！
+			no_anon_password=YES (NO) 							//当设定为 YES 时，表示 anonymous 将会略过密码检验步骤，而直接进入 vsftpd 服务器内喔！所以一般预设都是 NO 的！(登入时会检查输入的 emai)
+			anon_max_rate=0													//这个设定值后面接的数值单位为 bytes/秒 ，限制 anonymous 的传输速度，如net.qiang@hotmail.com.果是 0 则不限制(由最大带宽所限制)，如果你想让 anonymous 仅有 30 KB/s 的速度，可以设定『anon_max_rate=30000』
+			anon_umask=077 												//限制 anonymous 上传档案的权限！如果是 077 则 anonymous 传送过来的档案权限会是 -rw------- 喔
+				
+				
+		4)	关于系统安全方面的一些设定值
+			nopriv_user=nobody 								//我们的 vsftpd 预设以 nobody ,作为此一服务执行者的权限。因为 nobody 的权限相当的低，因此即使被入侵，入侵者仅能取得 nobody 的权限喔！
+			
+			pam_service_name=vsftpd 						//这个是 pam 模块的名称，我们放置在 /etc/pam.d/vsftpd 即是这个咚咚！
+		
+			ascii_download_enable=NO			 			//如果设定为 YES ，那么 client 就优先 (预设) 使用 ASCII 格式下载文件。
+		
+			ascii_upload_enable=NO			 				//与上一个设定类似的，只是这个设定针对上传而言！预设是 NO
+			
+			one_process_model=NO			 				//这个设定项目比较危险一点～当设定为 YES 时，表示每个建立的联机都会拥有一支 process 在负责，可以增加 vsftpd 的效能。不过， 除非你的系统比较安全，而且硬件配备比较高，否则容易耗尽系统资源喔！一般建议设定为 NO 的啦！
+		
+			tcp_wrappers=YES		 							//当然我们都习惯支持 TCP Wrappers 的啦！所以设定为 YES 吧！
+			
+			xferlog_enable=NO			 						//当设定为 YES 时，使用者上传与下载文件都会被纪录起来。记录的档案与下一个设定项目有关：
+			xferlog_file=/var/log/xferlog 						//如果上一个 xferlog_enable=YES 的话，这里就可以设定了！这个是登录档的档名啦！
+			
+			xferlog_std_format=NO								//是否设定为 wu ftp 相同的登录档格式？预设为 NO ，因为登录档会比较容易读！ 不过，如果你有使用 wu ftp 登录文件的分析软件，这里才需要设定为 YES
+			dual_log_enable=NO, vsftpd_log_file=/var/log/vsftpd.log 		//除了 /var/log/xferlog 的 wu-ftp 格式登录档之外，还可以具有 vsftpd 的独特登录档格式喔！如果你的 FTP 服务器并不是很忙碌， 或许订出两个登录档的撰写 (/var/log/{vsftpd.log,xferlog) 是不错的。
+		
+
+
+-----------------------------------------------------------------------------------------------------------------------------		
+	5、建立Vsftpd虚拟宿主用户，所有的Vsftpd账号寄身在linux一个账户上。用来模拟访客身份
+		
+		1、安装相关服务
+			yum install pam*			//安装PAM服务
+			yum install db4*			//db4的包，用来支持文件数据库。
+			
+		2、创建vsftpd需要的宿主
+			1.建立Vsftpd服务的宿主用户						//系统默认的用户为nobody，不用创建
+			2.useradd overlord -s /sbin/nologin		//监理一个宿主用户，所有的虚拟用户集成此用户的相关属性
+			
+		3、修改 /etc/vsftpd/vsftpd.conf	配置文件
+			anonymous_enable=NO						//设定不允许匿名访问
+			anon_upload_enable=NO						//禁止匿名用户上传。
+			anon_mkdir_write_enable=NO				//禁止匿名用户建立目录。
+			anon_other_write_enable=NO				//禁止匿名用户修改、删除文件
+
+			local_umask=022									//设定上传后文件的权限掩码
+			ls_recurse_enable=NO							//静止使用 ls -R
+			
+			local_enable=YES								//本质上是为了能够让虚拟用户登录
+			chroot_local_user=NO						//让用户限制在自己的主目录内.在预设的情况下
+			chroot_list_enable=YES								//是否启用 chroot 写入列表的功能？与底下的 chroot_list_flie 有关！这个项目得要开启，否则底下的列表档案会无效。
+			chroot_list_file=/etc/vsftpd/chroot_list 			//写入用户账号。虚拟账号同样适用.chroot_list_enable=YES时，让用户的目录，变成根。
+			
+			nopriv_user=nobody								//***设定支撑Vsftpd服务的宿主账号，上一步设定的账号***
+			guest_enable=YES								//设定启用虚拟用户功能。	
+			guest_username=overlord					//***指定虚拟用户的宿主用账号，上一步设定的账号***。
+			virtual_use_local_privs=YES					//设定虚拟用户的权限符合他们的宿主用户。
+			user_config_dir=/etc/vsftpd/vconf			//设定虚拟用户个人Vsftp的配置文件存放路径(配置文件名必须和虚拟用户名相同),如：/etc/vsftpd/vconf/cyndi
+																		<<<用户配置文件中没有的配置项将按照vsftpd.conf配置文件中的内容设置>>>
+			
+		4、创建虚拟用户数据库，PAM服务
+			1) 配置虚拟用户的账号
+				vi /etc/vsftpd/virtusers							//保存虚拟用户数据库，“一行用户名，一行口令”。
+				db_load -T -t hash -f /etc/vsftpd/virtusers /etc/vsftpd/virtusers.db		//生成用户数据库，生成完毕，修改权限数据库文件访问权限为：chmod 600 /etc/vsftpd/virtusers.db
+			2) 添加PAM认证服务。(让虚拟用户可以登录到ftp服务器上)
+				vi /etc/pam.d/vsftpd		//添加以下代码到文件中的首航、
+					//32位
+					auth    sufficient      /lib/security/pam_userdb.so     db=/etc/vsftpd/virtusers
+					account  sufficient      /lib/security/pam_userdb.so     db=/etc/vsftpd/virtusers
+					//64位
+					auth    sufficient  /lib64/security/pam_userdb.so    db=/etc/vsftpd/virtusers
+					account  sufficient  /lib64/security/pam_userdb.so    db=/etc/vsftpd/virtusers
+					
+		
+		5、FTP目录设置
+			1) mkdir -m 775	 /web/www/public 					//ftp主目录
+			2) mkdir -m 775	/web/www/public/cyndi			//建立单独用户文件夹
+				chown -R overlord.overlord	/web/www/public/cyndi	//更改目录的用户与组
+			
+			
+		6、虚拟用户配置
+			1) vi /etc/vsftpd/vconf/cyndi			//设置cyndi账号属性
+				local_root=/var/ftp						//当前账号的主目录，如果需要把主目录限制为根的话。chroot_list_enable=YES	chroot_list_file=/etc/vsftpd.chroot_list //在此文件中写入虚拟账号
+				
+				
+				1.可浏览
+				anon_world_readable_only=no
+				
+				1-1.禁浏览
+				anon_world_readable_only=yes (默认设置)
+				
+				2.可上传
+				write_enable=yes
+				anon_upload_enable=yes
+				
+				3.浏览+下载+上传
+				anon_world_readable_only=no
+				write_enable=yes
+				anon_upload_enable=yes
+				
+				4.浏览+下载+上传+删除
+				anon_world_readable_only=no
+				write_enable=yes
+				anon_upload_enable=yes
+				anon_other_write_enable=yes
+				
+				5.浏览+下载+上传+创建目录+删除
+				anon_world_readable_only=no
+				write_enable=yes
+				anon_upload_enable=yes
+				anon_other_write_enable=yes
+				anon_mkdir_write_enable=yes
+				
+				6.浏览+下载+上传+创建目录+不可删除
+				anon_world_readable_only=no
+				write_enable=yes
+				anon_upload_enable=yes
+				anon_other_write_enable=no (或取消本项参数)
+				anon_mkdir_write_enable=yes
+							
+			
+		7、其他问题的处理
+			1)500 OOPS:错误
+				有可能是你的vsftpd.con配置文件中有不能被实别的命令，还有一种可能是命令的YES 或 NO 后面有空格。			
+				我遇到的是命令后面有空格。因为我是用GEDIT来编辑的配置文件
+				
+				setsebool -P ftp_home_dir=1		//当SELinux冲突时，设置		
+				
+		
+		
+		
+——————————————————————————————————————————————————————————————————————————————————————————————————————————————				
+		8、设置完成后，用户更新
+			1、每添加一个虚拟账号，都要重新更新文件
+				vi /etc/vsftpd/virtusers							//保存虚拟用户数据库，“一行用户名，一行口令”。
+				db_load -T -t hash -f /etc/vsftpd/virtusers /etc/vsftpd/virtusers.db		//生成用户数据库，生成完毕，修改权限数据库文件访问权限为：chmod 600 /etc/vsftpd/virtusers.db				
+			
+			2、每添加一个账号都要配置用户的，独立的配置文件。
+				 vi /etc/vsftpd/vconf/cyndi			//设置cyndi账号属性
+				
+				local_root=/var/ftp	
+				5.浏览+下载+上传+创建目录+删除
+				anon_world_readable_only=no
+				write_enable=yes
+				anon_upload_enable=yes
+				anon_other_write_enable=yes
+				anon_mkdir_write_enable=yes	
+				
+			3、chroot_list_file=/etc/vsftpd/chroot_list 			//写入用户账号。虚拟账号同样适用。当chroot_list_enable=YES时，让用户的目录，变成根。
+				vi /etc/vsftpd/chroot_list 
+				
+						
+	
+
+		
+		
+		
+		
+		
+		
+		
+		
+
+			
+			
+			
+
+
+ 
+			
+			
+			
+		

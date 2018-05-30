@@ -1,0 +1,386 @@
+网络不能连接：
+1、检查网卡，以及网卡驱动，相关网络参数
+2、外网无法访问主机，检查防火墙，SELinux
+3、以及路由器的防火墙
+
+一、网络概念
+	1、网络组成
+		1) 节点
+		2) 服务器主机
+		3) 客户端
+		4) 网卡
+		5) 网络接口：提供网络地址ip，软件模拟出来的
+		6) 拓扑结构
+		7) 网关：具有2个以上的网络接口，可以连接2个以上不同网段的设备。如路由器
+
+
+	3、IOS数据传输7层协议
+
+
+	4、TCP/IP 4层协议
+
+
+	5、以太网---局域网使用的设备
+		1) 介质
+			a) 网线
+			b) 集线器  ： 数据广播类
+			c) 交换机  	：	可以识别传输的源地址 （购买时支持全双工/半双工、Jumbo frame 最好）
+			d) 以太网卡
+
+		2) 速度
+			a) 10Mbps、100Mbps、1000Mbps
+			b) 如果要升级速度，则网线、网卡、集线器等设备都换成对应速度的
+
+		3) 以太网通信协议---CSMA/CD
+			a) MAC数据包传送数据
+			b) 网卡地址 16进制的数字
+
+
+	6、TPC/IP的网络层相关数据包与数据
+		1)	IP 数据包内容 (50)
+			a) IPV4/IPV6
+			b) 数据总长度
+			c) 通信协议等等
+			d) 来源IP、目标IP
+			e) DATA
+
+
+	7、IP组成与分级
+		1) 组成
+			注意：同一个物理网段中，主机的IP具有相同的网络号码，并且具有独特的主机IP，就是在同一个网段
+			a) 网络号码：192.168.0
+			b) 主机号码：0 到 255   		//192.168.0.1~192.168.0.254		是同一个网段的
+			c) 192.168.0.0					// 全0为代表整个网段地址
+			d) 192.168.0.255				// 全1为广播地址
+
+		2) IP分级---为5中(55)
+			a) 0.xxx.xxx.xxx ~ 127.xxx.xxx.xxx			A类		10.0.0.0 ~ 10.255.255.255				私有IP			255.0.0.0				子网掩码
+			b) 128.xxx.xxx.xxx ~ 191.xxx.xxx.xxx		B类		172.16.0.0 ~ 172.31.255.255			私有IP			255.255.0.0			子网掩码
+			c) 192.xxx.xxx.xxx ~ 233.xxx.xxx.xxx		C类		192.168.0.0 ~ 192.168.255.255		私有IP			255.255.255.0		子网掩码
+				i)如过 C类地址子网换分为2个子网。
+					第一个网段为：192.168.0.0 ~ 192.168.0.127  	子网掩码 255.255.255.128
+					第二个网段为：192.168.0.128 ~ 192.168.0.255	子网掩码 255.255.255.128
+			d) 244.xxx.xxx.xxx ~ 239.xxx.xxx.xxx		D类
+			e) 240.xxx.xxx.xxx ~ 255.xxx.xxx.xxx		E类
+
+		3) IP种类：Public IP、Private IP
+
+
+	8、各个网络协议端口号 (71)
+		1)	公认端口（Well Known Ports）：从0到1023，它们紧密绑定（binding）于一些服务。通常这些端口的通讯明确表明了某种服务的协议。例如：80端口实际上总是HTTP通讯。
+
+		2)	注册端口（Registered Ports）：从1024到49151。它们松散地绑定于一些服务。也就是说有许多服务绑定于这些端口，这些端口同样用于许多其它目的。例如：许多系统处理动态端口从1024左右开始。
+
+		3)	动态和/或私有端口（Dynamic and/or Private Ports）：从49152到65535。理论上，不应为服务分配这些端口。实际上，机器通常从1024起分配动态端口。但也有例外：SUN的RPC端口从32768开始。
+
+		4)端口：21		服务：FTP
+			端口：22		服务：Ssh
+			端口：23		服务：Telnet
+				说明：远程登录，入侵者在搜索远程登录UNIX的服务。大多数情况下扫描这一端口是为了找到机器运行的操作系统。还有使用其他技术，入侵者也会找到密码。木马Tiny Telnet Server就开放这个端口。
+			端口：25		服务：SMTP
+				说明：SMTP服务器所开放的端口，用于发送邮件。入侵者寻找SMTP服务器是为了传递他们的SPAM。入侵者的帐户被关闭，他们需要连接到高带宽的E-MAIL服务器上，将简单的信息传递到不同的地址。木马Antigen、Email Password Sender、Haebu Coceda、Shtrilitz Stealth、WinPC、WinSpy都开放这个端口。
+			端口：80		服务：HTTP
+				说明：用于网页浏览。木马Executor开放此端口。
+			端口：102	服务：Message transfer agent(MTA)-X.400 over TCP/IP
+				说明：消息传输代理。
+			端口：109	服务：Post Office Protocol -Version3
+				说明：POP3服务器开放此端口，用于接收邮件，客户端访问服务器端的邮件服务。POP3服务有许多公认的弱点。关于用户名和密码交 换缓冲区溢出的弱点至少有20个，这意味着入侵者可以在真正登陆前进入系统。成功登陆后还有其他缓冲区溢出错误。
+			端口：110	服务：SUN公司的RPC服务所有端口
+				说明：常见RPC服务有rpc.mountd、NFS、rpc.statd、rpc.csmd、rpc.ttybd、amd等
+			端口：119	服务：Network News Transfer Protocol
+				说明：NEWS新闻组传输协议，承载USENET通信。这个端口的连接通常是人们在寻找USENET服务器。多数ISP限制，只有他们的客户才能访问他们的新闻组服务器。打开新闻组服务器将允许发/读任何人的帖子，访问被限制的新闻组服务器，匿名发帖或发送SPAM。
+			端口：135	服务：Location Service
+				说明：Microsoft在这个端口运行DCE RPC end-point mapper为它的DCOM服务。这与UNIX 111端口的功能很相似。使用DCOM和RPC的服务利用计算机上的end-point mapper注册它们的位置。远端客户连接到计算机时，它们查找end-point mapper找到服务的位置。HACKER扫描计算机的这个端口是为了找到这个计算机上运行Exchange Server吗？什么版本？还有些DOS攻击直接针对这个端口。
+			端口：137、138、139	服务：NETBIOS Name Service
+				说明：其中137、138是UDP端口，当通过网上邻居传输文件时用这个端口。而139端口：通过这个端口进入的连接试图获得NetBIOS/SMB服务。这个协议被用于windows文件和打印机共享和SAMBA。还有WINS Regisrtation也用它。
+			端口：161	服务：SNMP
+				说明：SNMP允许远程管理设备。所有配置和运行信息的储存在数据库中，通过SNMP可获得这些信息。许多管理员的错误配置将被暴露在Internet。Cackers将试图使用默认的密码public、private访问系统。他们可能会试验所有可能的组合。SNMP包可能会被错误的指向用户的网络
+
+		5) 端口协议
+			ftp-data           20/tcp              FTP, data
+			ftp             21/tcp          FTP. control
+			telnet       23/tcp
+			smtp           25/tcp              Simple Mail Transfer Protocol
+			time          37/tcp              timserver
+			time          37/udp              timserver
+			domain       53/tcp          Domain Name Server
+			domain       53/udp          Domain Name Server
+			tftp          69/udp          Trivial File Transfer
+			gopher       70/tcp
+			http          80/tcp              www-http World Wide Web
+			pop3       110/tcp          Post Office Protocol-Version 3
+			nntp       119/tcp    Network News Transfer Protocol
+			netbios-ns    137/tcp    NETBIOS Name Service
+			netbios-ns    137/udp    NETBIOS Name Service
+			netbios-dgm 138/udp    NETBIOS Datagram Service
+			netbios-ssn    139/tcp    NETBIOS Session Service
+			imap              143/tcp    Internet Message Access Protocol
+			snmp          161/udp    SNMP
+			snmptrap       162/udp SNMP trap
+			irc                 194/tcp    Internet Relay Chat Protocol
+			ipx             213/udp     IPX over IP
+			ldap             389/tcp     Lightweight Directory Access Protocol
+			https          443/tcp
+			https          443/udp
+			uucp          540/tcp
+			ldaps          636/tcp    LDAP over TLS/SSL
+			doom          666/tcp    Doom Id Software
+			doom          666/udp     Doom Id Software
+			phone       1167/udp     Conference calling
+			ms-sql-s        1433/tcp     Microsoft-SQL-Server
+			ms-sql-s    1433/udp     Microsoft-SQL-Server
+			ms-sql-m    1434/tcp    Microsoft-SQL-Monitor
+			ms-sql-m    1434/udp     Microsoft-SQL-Monitor
+			wins          1512/tcp     Microsoft Windows Internet Name Service
+			wins           1512/udp     Microsoft Windows Internet Name Service
+			l2tp          1701/udp Layer Two Tunneling Protocol
+			               1720/tcp
+			QICQ          4000/udp
+			QICQ          8000/udp
+			QQ              1080/UDP           Socks 代理
+
+
+	9、配置网络需要注意的地方
+		1) DHCP  ：在动态获取ip地址的时候，不能设置GATEWAY-默认网关
+		2) ADSL 拨号上网：不能设置GATEWAY-默认网关，因为拨号上网，会自动分配.(106)
+
+
+
+二、网络命令
+	1、目录
+		注：主机名：Internet中为域名。局域网中为某台计算机的名字
+		1) 网络配置
+			Centos 6:
+			/etc/sysconfig/network-scripts/ifcfg-eth0
+			service network start 启动网络
+			ifcofig 查看网络
+
+			Centos 7:
+			/etc/sysconfig/network-scripts/ifcfg-en xxx 版本
+			systemctl restart network.service  启动网络
+			ip address show  查看网络
+
+			设置 ONBOOT 为 : yes
+
+			DEVICE        设备名，不要自己乱改，和文件ifcfg-ethX里的ethX要一致
+			BROADCAST     广播地址
+			HWADDR        物理地址，不要乱改
+			ONBOOT        启动或者重启网络时，是否启动该设备，yes是启动，no是不启动
+			BOOTPROTO     开机协议，最常见的三个参数如下：
+			              static(静态IP)
+			              none(不指定,设置固定ip的情况，这个也行，但是如果要设定多网口绑定bond的时候，必须设成none）
+			              dhcp(动态获得IP相关信息）
+			IPADDR        IP地址
+			NETMASK       子网掩码
+
+
+		2) /etc/sysconfig/network										//hostname
+			ubuntu /etc/hostname
+
+		3) /etc/resolv.conf												//DNS域名服务器设置
+			a)	说明
+				nameserver     //定义DNS服务器的IP地址
+				domain      		 //定义本地域名
+				search       		 //定义域名的搜索列表
+				sortlist      		  //对返回的域名进行排序
+			b) 实例
+				domain  51osos.com
+				search  www.51osos.com  51osos.com
+				nameserver 202.102.192.68
+				nameserver 202.102.192.69
+
+		4) /etc/hosts									//域名与IP的对应设置，在查找dns域名之前，先读取此配置文件
+			a)	127.0.0.1   localhost.localdomain			Linux_server1
+     			网络IP地址		主机名.域名						主机名别名；
+     		b)	说明
+				第一部份：网络IP地址；
+     　	　		第二部份：主机名.域名，注意主机名和域名之间有个半角的点，比如 localhost.localdomain
+     　	　		第二部份：主机名(主机名别名） ，其实就是主机名；
+
+		5) hostname			//显示当前主机名
+			hostname -i			//显示主机IP
+
+	2、命令
+		1) ifconfig 			//查询、暂时设置网卡与IP,重启与重启http服务后失效(123)
+			a) ifconfig eth0 192.168.1.108								//设置网卡IP
+			b) ifconfig eth0 netmask	255.255.255.0				//设置默认网关
+			c) ifconfig eth0:0	192.168.50.50							//在网卡上设置多个IP
+			d) ifconfig eth0:0	down(up)									//开关网卡接口
+
+		2) ifup、ifdown				//读取配置文件后修改网络接口
+			a) ifup eth0				//开启
+			b) ifdown eth0			//结束
+
+		3) 路由、设置数据出口网关(128)：每台主机都有自己的路由表，传送数据时会按照顺序查找路由表，如果发现目标ip跟本机在同一个网段中则用局域网传送，否则用网关的ip地址传送。
+			传输数据的时候，会通过一个网关来传输数据，这个网关的地址可以为路由的网关，LVS服务器的网关
+			a) route -n   				//查看路由表
+			   mac下		//netstat -nr
+			b) route del -net (ip) netmask (子网掩码) dev (网卡名)    	//删除路由，添加改成add
+			c)	route add default gw 192.168.1.250 							//添加默认网关，要重启网络服务
+				route del default gw														//删除默认网关
+
+			d)	 Flags：总共有多个旗标，代表的意义如下：
+					U (route is up)：该路由是启动的；
+					H (target is a host)：目标是一部主机 (IP) 而非网域；
+					G (use gateway)：需要透过外部的主机 (gateway) 来转递封包；
+					R (reinstate route for dynamic routing)：使用动态路由时，恢复路由资讯的旗标；
+					D (dynamically installed by daemon or redirect)：已经由服务或转 port 功能设定为动态路由
+					M (modified from routing daemon or redirect)：路由已经被修改了；
+					!  (reject route)：这个路由将不会被接受(用来抵挡不安全的网域！)
+
+		4) Ip 以上命令的合集（128）
+			#相当于ifconfig命令
+			a) ip -s link show								//查看本机所有网络接口
+			b) ip link set eth0 up/down 				//开关某个网卡设备
+			c) ip link set eth0 name wade 			//设置网卡名称，必须先关闭down才能设置，不要乱改
+			d) ip address show   						//显示网络接口所有的ip地址
+
+		5) 无线网络(116)
+			a) lsusb 							//查看网卡设备以及其他usb设备
+			b) iwconfig 						//查看网卡是否被内核加载了，如果加载了，要ifconfig ra0 up 启动网卡
+			c) iwlist 网卡名 scan 			//检测网卡查询到的地址，详细见116
+
+		6) dhclient eth0 					//用DHCP协议连接网络
+
+		7)	测试网络连接
+			a) ping -c 3 (ip)									//测试网络
+			b) traceroute -n www.baidu.com		//测试本机与其他服务器，连接的节点.
+
+		8) netstat -tulnp   				//查看开启的端口
+			a) kill pid    					//关闭一个端口
+			b) /etc/services    			//端口对应文件
+
+		9) ip地址，域名互相查找
+			a) host www.baidu.com   									//查找主机的ip地址。(这是用/etc/resolv.conf内的DNS服务Ip来查找的)。
+				 host www.baidu.com 211.161.46.84   			//指定一个DNS主机查找目标的ip
+			b) nslookup  www.baidu.com 							//查看主机的ip
+				 nslookup 168.95.1.1									//查看Ip的主机名
+
+		10) telnet---远程连接与即时通讯
+			a) yum install telnet
+			b) telnet www.baidu.com[ip] 								//连接到某个站点
+			c) telnet 127.0.0.1 80 										//测试一个端口是否畅通
+
+		11) FTP
+			a) yum install ftp
+				 ftp [host|ip] [port] 							//语法
+			b) ftp ftp.ksu.edu.tw 连接一个FTP 			//登录ftp--匿名帐号为 anonymous
+				登陆后命令
+				help 帮助
+				dir 显示目录
+				cd 切换目录
+				get filename 下载一个文件
+				meg filename* 下载多个文件
+				put filename 上传文件
+				delete filename 删除文件
+				mkdir 建立一个文件
+				lcd /home 切换到本地目录
+				bye 结束
+			c) yum install lftp   简化的ftp脚本
+				lftp -p 21 -u wade,wade818 42.96.158.132
+						  端口       账号密码				服务器地址
+
+		12) 文字浏览器
+			a) links http://www.baidu.com   查看网页
+				links /var/www/index.html
+
+			b)	wget http://www.baidu.com/demo.png		//文字下载接口
+
+		13) tcpdump 数据包捕获器(156)
+			tcpdump -i eth1 -nn 		//监听网卡上的数据包
+
+			图形接口捕获器
+			yum install wireshark wireshark-gnome
+
+		14) nc 与 netcat(独立到 module 中)  						//其他测试端口的命令有些系统会改名为netcat
+			 a) yum install nc
+			 	 nc -l [ip|host] [port]  		//测试一个端口连接
+				 nc -l 192.168.160.49 10001   // 检测发送到这个端口的数据, 注意系统端口、注册端口、私有动态端口
+
+				 echo -n "Hello World" | nc -4u -w1 127.0.0.1 10012			// 发送 UDP 数据到端口中
+
+		15) nmap 								//探测主机开启的端口
+			a) yum install nmap 			//安装
+			b) nmap -sTU [ip/域名]		//探测目标主机开启的端口
+			c) nmap -sTU	[192.168.1.0/24、192.168.1.125、192.168.*.*]		//探测局域网内的所有主机以及开启的端口
+
+
+三、主机安全
+	1、被攻击后的处理
+		1) 重装Linux。
+		2) 拔出网线。
+		3) 分析日志文件：/var/log/messages、/var/log/secure/、last命令找出上次登录的用户
+
+	2、重要数据备份
+		1) /etc/passwd、/etc/shadow、/home、数据库文件、www网页数据
+		2) 二进制文件不要备份
+
+	3、把备份的数据复制到系统中，重启
+
+
+四、路由器
+	1、动态路由器：239。软件：quagga
+
+
+
+五、防火墙(linux自带防火墙：Netfilter)
+	#命令
+		service iptables stop 			//关闭
+
+	1、防火墙最重要的任务就是在规划出：
+		1) 切割被信任(如子域)与不被信任(如 Internet)的网段；
+		2) 划分出可提供 Internet 的服务与必须受保护的服务；
+		3) 分析出可接受与不可接受的封包状态；
+
+
+	2、Linux 系统上防火墙的主要类别
+		1) 网域型：此类防火墙都是当作路由器角色。
+			单一主机型 ：在单一主机型的控管方面， 主要的防火墙有封包过滤型的 Netfilter 与依据服务软件程序作为分析的 TCP Wrappers 两种
+
+		2) 模式
+			a) Netfilter: (封包过滤机制)
+				所谓的封包过滤，亦即是分析进入主机的网络封包，将封包的表头数据捉出来进行分析，以决定该联机为放行或抵挡的机制。
+		 		由于这种方式可以直接分析封包表头数据，所以包括硬件地址(MAC), 软件地址 (IP), TCP, UDP, ICMP 等封包的信息都可以进行过滤分析的功能，因此用途非常的广泛。
+		 		(其实主要分析的是 OSI 七层协议的 2, 3, 4 层啦) 在 Linux 上面我们使用核心内建的 Netfilter 这个机制，而 Netfilter 提供了 iptables 这个软件来作为防火墙封包过滤的指令。
+		 		由于 Netfilter 是核心内建的功能，因此他的效率非常的高！ 非常适合于一般小型环境的设定呢！Netfilter 利用一些封包过滤的规则设定，来定义出什么资料可以接收， 什么资料需要剔除，以达到保护主机的目的喔！
+			b) TCP Wrappers (程序控管)
+				另一种抵挡封包进入的方法，为透过服务器程序的外挂 (tcpd) 来处置的！
+				与封包过滤不同的是， 这种机制主要是分析谁对某程序进行存取，然后透过规则去分析该服务器程序谁能够联机、谁不能联机。
+				由于主要是透过分析服务器程序来控管，因此与启动的埠口无关，只与程序的名称有关。
+				 举例来说，我们知道 FTP 可以启动在非正规的 port 21 进行监听，当你透过 Linux 内建的 TCP wrappers 限制 FTP 时， 那么你只要知道 FTP 的软件名称 (vsftpd) ，然后对他作限制，则不管 FTP 启动在哪个埠口，都会被该规则管理的。
+
+
+	3、TCP wrappers 就是透过 /etc/hosts.allow, /etc/hosts.deny 这两个的一个类似防火墙的机制
+
+
+
+	9、IP与MAC---ARP/RARP协议
+		1) ifconfig 									//查看网络配置
+
+		2) arp 			//网卡与IP对应表
+			a) arp -n														//查看
+			b) arp -s 	192.168.1.100	网卡地址			//设置对应关系
+
+
+	10.curl 命令
+		//GET
+		$ curl http://www.linuxidc.com/login.cgi?user=nickwolfe&password=12345
+
+		//POST
+		$ curl -d "user=nickwolfe&password=12345" http://www.linuxidc.com/login.cgi
+
+		//模拟请求
+		curl -X PUT -H "Content-Type:application/x-www-form-urlencoded;charset=UTF-8" -H "Token:NBLP57Z0gypsHjbb4QW9DgFL8GMx1i/eas7t4+m/r6EPfXTxxb+q3ih8kqs34LPI" http://mobi.box.com/contact/1/forbid
+
+		// 模糊 http json 请求
+		curl -X POST -H "Content-Type:application/json;charset=UTF-8" -d '{"custom_ip":"192.168.1.1","host":"random_host.example.com"}' http://log1:10010
+
+	12. scp 从本地传送文件到远程服务器
+		//本地文件传送到远程
+		scp /home/linux/soft/scp.zip root@www.mydomain.com:/home/linux/others/soft/scp.zip
+
+		//本地目录复制到远程
+		scp -r /home/linux/soft/ root@www.mydomain.com:/home/linux/others/
+
+		//远程目录复制到本地
+		scp root@www.mydomain.com:/home/linux/soft/scp.zip /home/linux/others/scp.zip

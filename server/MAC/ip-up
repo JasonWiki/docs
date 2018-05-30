@@ -1,0 +1,7 @@
+#!/bin/sh  /etc/ppp/
+/sbin/route add -net 192.168.1.167s -interface ppp0
+#/sbin/route add -net 10.0.0.0 -interface ppp0
+
+
+#/sbin/route add -net 192.168.1.167 -interface ppp0
+

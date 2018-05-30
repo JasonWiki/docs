@@ -1,0 +1,34 @@
+small 模板
+
+1、引入JS文件
+	{insert_scripts files='common.js,index.js'}
+
+2、引入整个外部文件
+	1) 引入 lbi文件
+		http://blog.163.com/bgh1988@126/blog/static/105888859201201305432691/
+		<!-- #BeginLibraryItem "/library/page_header.lbi" --><!-- #EndLibraryItem -->
+		
+		
+	2) 引入tmp文件
+		{include file="header.tpl"}
+			{* body of template goes here *}
+		{include file="footer.tpl"}
+ 
+ 
+3、数组变量
+	{$lang.shop_notice}
+
+4、调用函数库
+	{insert name='ads' id=$ads_id num=$ads_num}
+	function insert_ads($arr) {
+		$arr['name'] = 'ads';	//类推
+	}
+	
+5、循环
+	  <!--{foreach from=$best_goods item=goods}-->
+	  
+	  <!--{/foreach}-->	
+	  from=循环的数组	item=处理的变量	name=该循环的名称，用于访问该循环	key=当前处理元素的键名
+
+	  
+	  

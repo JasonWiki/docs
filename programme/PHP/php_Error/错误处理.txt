@@ -1,0 +1,4 @@
+
+//提示找不到php_mbstring.dll，将php.ini配置文件按照下面的方法排序
+extension=php_mbstring.dll
+extension=php_exif.dll

@@ -1,0 +1,1685 @@
+CentOS 下载网址http://mirror.centos.org/centos/5/isos/
+linux rescue					//光盘启动程序
+tock.stdtime.gov			//时间服务器
+
+一、热键
+1、Ctrl+F[1-7]	//切换操作终端
+
+2、Ctrl+c	//终止在执行的程序
+
+3、TAB+TAB	//指令补全
+
+4、Ctrl+d	//退出终端
+
+5、man与Info	//查询指令
+
+6、命令组合
+	1) alias grep='grep --color=auto';	//查找代码加亮
+
+
+
+二、开关机
+	1、关机命令
+		shutdown,reboot,halt,poweroff
+
+	2、关机流程
+		1)	sync
+		2)	shutdown -r now  				//系统马上重启
+		  	shutdown -h 20:25 'The System will shutdown'	//系统在指定时间关机，并且告知所有在线用户
+			shutdown -h now		//马上关机
+
+三、目录与文件
+	1、系统目录结构
+		1) /(root) ：与开机系统有关
+		2) /usr ： 与软件安装/执行有关  （可分享不可变动的资源）
+			/usr/bin/  存放可执行文件
+		3) /usr/local/ ：存放用户自己、小的程序
+			/usr/local/bin/	执行文件  （系统会自动加载到执行命令里面）
+		4) /var 			与系统运作有关	 （经常变动的文件，如缓存，数据库文件）
+		5) /bin				里面一般是普通用户的程序，
+		6) /sbin			里面一般是超级用户的程序。s是指super
+
+		7)
+			i) /etc/init.d/				//系统所有的启动服务都放置在这个目录里
+				/etc/rc.d/init.d		CentOS 的启动服务放置位置
+				/etc/rc.d/rc0.d  - rc6.d	启动顺序目录，这里放的是 软连接，连接到(/etc/rc.d/init.d/) 目录中的文件
+
+			ii) /etc/xinetd.d/			//存放super daemon服务的
+
+			c) /etc/inetd.connf 、/etc/xinetd.d/*		//super daemon	配置文件
+
+
+
+
+
+	2、文件与目录权限
+		1)	创建文件默认的权限
+			a) umask 		//查看当前用户创建文件时的默认权限
+			b) umask -S		//查看各组权限
+
+		2)	目录与文件权限
+			a) chgrp -R root install.log 	//改变文件所属的用户组
+			b) chown -R wade:users test		//改变文件的所有者（wade:users表示用户与用户所属组，如不写组名，则不改变所属组）
+			c) chmod -R 740 aaa.txt 			//改变当前文件权限。 其中： (R=4 W=2 X=1)
+				其他写法：（如：chmod -R a+w aaa.txt）添加写入权限到用户、用户组、其他人中。其中：(u,g,o,a 分别表示用户，组，其他人，所有人)
+
+		3) 文件的特殊权限(关于)  USID、SGID、SBIT
+			a) USID（用户4）		 对二进制文件有可执行权力
+			b) SGID（组2） 			与上类似
+			c) SBIT（文件1）		 对目录有效
+			d) 设置 USID（用户）、SGID（组）、SBIT （文件） 等权限
+					原权限：	-rwsr-xr-x
+					//4、2、1
+				chmod 4770 aaa.txt		// -rws r-x r-x
+				chmod 2770 aaa.txt		// -rwx r-s r-x
+				chmod 1770 aaa.txt		// -rwx r-x r-T
+					//7、6
+				chmod 7770 aaa.txt		// -rws r-s r-T
+				chmod 6770 aaa.txt		// -rws r-s r-x
+
+		4) 文件和目录的粘滞位(sticky)位
+			例如目录的 drwxrwxrwxt 最后一位 t
+			目录的 sticky 位表示这个目录里的文件只能被 owner 和 root 删除
+
+			chmod -t 表示删除粘滞位 sticky
+			chmod +t 表示增加粘滞位 sticky
+
+
+
+	3、目录操作命令
+		1)cd: 切换目录
+			a)cd wade/aaa   //进入目录
+			b)cd ~	//进入root用户主目录（cd ~ 回到自己的主目录）
+			c)cd -	//回到上一层目录
+
+		2)pwd: 显示当前所在目录
+			a)pwd	//显示当前目录
+
+		3)mkdir	:创建目录
+			a)mkdir test			创建目录
+			b)mkdir -p test/test/test 	创建多层目录
+			c)mkdir -m 774 test 		创建目录，并且强制设置权限
+
+		4)rmdir , rm :删除目录或文件
+			a)rmdir test 		//删除目录
+			b)rm -ri test			//删除目录与目录下所有文件
+			c)rm -r test*			//删除test开头的所有文件
+			d)rm -rf test*			//删除test开头的所有文件,不询问
+
+		5)cp: 复制文件或目录，创建快捷方式
+			a)cp -apir /var/log/wtmp wtmp	//复制文件的完整属性(复制源文件到目标文件 ./ 表示当前目录)
+			     -i 文件已存在是否询问
+			     -p 连同文件的属性一起复制
+			     -r 复制文件的目录
+			b)cp -s /var/log/wtmp wtmp	//复制文件的链接，即为快捷方式
+
+		6)mv : 移动文件、目录，改名
+			a)mv test test1 		//移动源文件到指定文件中
+			b)mv test test4 		//修改文件名称
+
+		7) ls 查看目录
+			ls -l
+			ls -al
+			ls -h
+			ls -d
+			ls -i				//查看挂载目录节点
+
+		8) ln (213)	 连接文件
+			a) 硬连接			//通过文件系统的inode链接产生新的文件
+			b) 软链接			//类似window的快捷方式，用来快速连接目标文件或者目录
+					ln -s file.txt symlink		//链接文件
+
+
+	4、文件内容及影藏属性
+		1) 读取文件内容 cat、tac、less、od
+			a)	cat -An aaa.txt 					//查看文件内容(从头开始)
+			b)	tac -n aaa.txt						//查看文件内容(从尾部开始)
+			c)	less -N aaa.txt						//查看文件内容(支持翻页)
+					ctrl + F - 向前移动一屏
+					ctrl + B - 向后移动一屏
+					G - 移动到最后一行
+					g - 移动到第一行
+			d)	od -t c /usr/bin/passwd			//读取二进制文件内容 (c 表示以ASCII读取)
+			e) 	nl /etc/passwd 					//读取文件内容，加上行号
+			f) 	tail -f slow.log 				//动态监控文件变化
+			g) 	stat ./readme.md				//读取文件变化信息
+
+		2) 创建或修改文件时间	touch
+			a)	touch aaa.txt 		创建文件
+			b)	touch aaa.txt		文件存在更新文件时间
+
+		3)	设置文件隐藏属性 (提高文件的安全性)	chattr、lsattr
+			a) 设置文件属性
+				chattr +aci aaa.txt  		//添加文件影藏属性 (a:增加数据-root才能设置、c:用的时候解压缩,不用的时候压缩、i:锁定文件,不得做任何修改-root才能设置)
+				chattr -aci aaa.txt			//删除文件影藏属性
+			b) 查看文件属性
+				lsattr -a aaa.txt			//显示文件所有影藏属性
+
+
+	5、查找文件
+		1)	从硬盘查找文件 find  (语法：find [目录] [参数] [文件名])
+			a) find / -name testing[testing.txt]	 			//按照文件名查找
+			b) find / -type   f[b,c,d,l,s,p]					//按照类型查找文件
+			c) find /boot -print							 	//查找boot目录下的所有文件
+			d) find . -type f | xargs grep '内容'				//查找文件内容
+
+		2)	linux文件数据库一般是每天更新一次，保存在/var/lib/mlocate 。可以用updatedb 立马更新文件到数据库中
+			a)		locate 	-i	passwd			//查找linux数据库中记录的匹配内容文件
+			b)		whereis 	inconfig 			//查找linux数据库中记录的文件
+
+		3) which 	ifconfig 		查找二进制执行文件
+
+			# 查询目标软链情况
+			 which -a ping6 | xargs -r ls -la
+
+
+
+四、磁盘格式
+	1、磁盘与目录的容量df、du
+		1)	df 列出文件系统的使用量--(书本203、210)
+			a)	df -h									//查看文件系统（使用量及其他信息）
+			b)	df -aTh								//查看所有的文件系统，及文件系统的分区格式
+			c)	dumpe2fs /dev/hdc2			//查看挂载设备的详细信息（super block中的内容）
+			d) df -T /dev/sdb1				//查看磁盘分区格式
+
+		2)	du 用户评估各个目录的使用量
+			a)	du -sm /* 						//列出目录的使用量(以MB为容量显示)
+			b) du -a
+			c) du -h --max-depth=1 /usr/*		//查询目录下文件的总大小
+
+		#一块新的硬盘，要先分区、
+	2、磁盘分区、格式化(mkfs、mke2fs)
+		1)	fdisk 	磁盘分区设置(书本217)
+				#分区分为主分区，和逻辑分区
+			a)	fdisk -l 							//查看所有设备
+			b)	fdisk /dev/设备名				//分区
+				#分区表修改完毕后，再执行
+				#相关命令
+					p		//查看状态
+					n		//添加分区  ，之后为：+100M  或者+100G
+					d	1	//表示删除分区
+					q		//退出
+					w		//写入分区表
+			c) partprobe						//内核partition table 更新，如果没有安装，则yum -y install parted
+
+			d) 修改分区的id，慎用
+				i) fdisk /dev/hda
+				ii) -t
+				ii) 输入设备id名即可
+
+			#分区后挂载在目录上
+		2)	mkfs	磁盘格式化(书本223)
+			a) mkfs -t ext3 /dev/hdc6		//详细数据看书本
+
+		3)	mke2fs				// 对Ext3 格式label、block、inode 的参数进行详细的设置(书本224)
+
+		4)	parted 				//对大于2TB以上磁盘进行分区 (244)
+
+
+	3、磁盘检查修复  (书本225)
+			1) fsck -C -f -t -ext3 /dev/hdc6	  	// 对出问题的文件系统进行检测修复
+				注意：
+				a) 当文件系统出现严重问题时，进入单用户维护模式，平时不建议使用，会对正常文件系统造成损坏
+				b) 被检查的分区不可以挂载在系统上
+
+			2) badblocks -sv /dev/hdc6
+				检查磁盘的扇区有没有坏道（mke2fs -c 设备名）
+
+			3) e2fsck 修复磁盘
+				执行 e2fsck 或 fsck 前请先 umount partition，否则有机会令档案系统毁损
+
+		  4) smartctl 磁盘健康检测工具
+
+				yum install smartmontools  安装
+
+				smartctl -help
+
+				----- 运行时选项 -----
+				-d TYPE, --device=TYPE  指定设备类型
+		         Specify device type to one of: ata, scsi, sat[,auto][,N][+TYPE], usbcypress[,X], usbjmicron[,x][,N], usbsunplus, marvell, areca,N/E, 3ware,N, hpt,L/M/N, megaraid,N, cciss,N, auto, test
+
+				----- 读取和显示数据选项 -----
+				-i <device> ：显示设备的身份信息，检查硬盘是否打开了SMART支持
+					显示 SMART support is: Enabled 表示硬盘支持, 若为 Disabled 则开启
+					开启: smartctl --smart=on --offlineauto=on --saveauto=on <device>
+
+				-H <device> ：查看硬盘的健康状况
+					PASSED 表示硬盘健康状态良好，如果为 Failure 要立刻更换硬盘
+
+				-A <device> ：显示设备 SMART 厂商属性和值, 显示设备智能供应商特有的属性和值
+
+				-l error <device> ：显示硬盘历史错误信息
+
+				-a <device> ：显示硬盘SMART的全部信息
+
+				----- 设备自检选项 -----
+				--test=TEST <device> ：硬盘自测
+					TEST 可取值：offline, short, long, conveyance, select,M-N, pending,N, afterselect,[on|off], scttempint,N[,p]
+
+				-X <device> 中断后台测试
+
+				-l selftest <device> ：显示硬盘测试信息
+
+
+
+	4、磁盘挂载与卸载设备和文件(文件也可以挂载哦。。) （226）
+		1) mount -l  		//查看设备文件 挂载到的目录
+
+		2) mount /dev/sda1 /web    	把一个Ext2/Ext3 	挂载到指定目录中 ---也可以挂载光盘等其他设备
+						设备名        目录名
+			a) 写到设备文件中 : /etc/fstab
+				dumpe2fs /dev/sdb10 | grep 'Filesystem UUID'				//查看UUID
+				UUID=2321c481-154b-46e4-b1b3-80d545271c34 /var       ext4    defaults        1 2
+
+		3) umount /media/APPLE     卸载一个挂载点
+							目录名或设备名
+
+		4) dd   (用dd命令，在已有的大分区中，制作一个大文件，格式化后，作为设备，挂载在一个目录中)(236)
+				dd if=/dev/sda2 		of=/tmp/back 		 bs=1M count=512		//制作大文件，挂载后，当做一个设备用
+				注:	设备文件			创建大文件(back是文件，不得是目录)
+			mount -o loop /mnt/Quota /home			//挂在一个大文件在home目录中
+
+
+	5、修改	挂载设备，卷标名称	(232)
+		e2label /dev/sda1 '/boot'
+
+	6、内存交换空间(swap)(239)
+		//制作大文件做为内存交换空间
+		http://hi.baidu.com/yangkuntime/item/a2b74fb68b2c2bf362388e89
+
+		1)	swapon -s 							//查看所有swap分区
+		2) mkswap /dev/hdc7				//构建swap格式
+		3)	swapon /dev/hdc7				//加载指定的swap
+		4) swapoff /dev/hdc7				//关闭指定的swap
+		5) free 查看内存使用情况
+
+		6) vi /etc/fstab 		//开机挂载
+		/mnt/big2_swap               swap           swap    defaults        0 0
+
+		UUID=77511feb-debe-4ea5-8d1e-bfa85acbe91c swap                    swap    defaults        0 0
+
+
+
+
+五、压缩与打包、数据备份
+	1、压缩、解压缩
+		#压缩文件bz2
+		1) 文件的压缩
+			a) bzip2,bzcat	(推荐使用)
+				i)	bzip2 -v -k -9 man.config			//压缩文件并且保留原文件
+				ii)	bzip2 -d									//解压缩
+				iii)	bzcat man.config.bz2				//读取压缩文件内容
+
+			b) gzip,zcat
+				i)	gzip -v man.config					//压缩文件(源文件会被替换成压缩文件)
+				ii)	gzip -d man.config.gz				//解压缩文件
+				iii)	zcat man.config.gz					//读取压缩文件内容
+
+			c) zip,nzip
+				i) zip -jrn yasuo.zip abc.txt dir1		//压缩文件与目录
+				ii) unzip yasuo.zip							//解压目录
+
+		#打包文件
+		2)	tar 文件打包压缩、解压
+			a) tar.gz 压缩方式(gzip		-z)
+				i)	tar -zvpc -f /root/etc.tar.gz /etc			//压缩/etc的文件到  /root/etc.tar.bz2目录下
+				ii)	tar -zvt -f /root/etc.tar.gz						//查看压缩数据
+				iii)	tar -zvx -f /root/etc.tar.gz -C /tmp		//解压文件到指定目录
+
+			b) tar.bz2	压缩方式(bzip2    -j)
+				i)	tar -jvpc -f /root/etc.tar.bz2 /etc			//压缩/etc的文件到  /root/etc.tar.bz2目录下
+				ii)	tar -jvt -f /root/etc.tar.bz2					//查看压缩数据
+				iii)	tar -jvx -f /root/etc.tar.bz2 -C /tmp		//解压文件到指定目录
+
+
+	2、文件备份、还原
+		1)	备份系统文件 (259)
+			a) dump 	-0j	 	-f 		home.dump.bz2 	/home  			 //备份系统目录
+							压缩备份			备份的文件名		备份源
+			b) restore			//恢复
+				i) restore -t -f home.dump.bz2 			//打开备份文件
+				ii)	add *												//解压目录
+				iii) quit 													//退出
+
+		2) dd 备份扇区		 或者 制作一个大文件做为挂载设备
+			a) dd if=/dev/sda2 		of=/tmp/back 		 bs=1M count=512		//制作大文件，挂载后，当做一个设备用
+				注:	设备文件			创建大文件(back是文件，不得是目录)
+
+			b)	备份整个扇区
+				i)	dd if=/dev/sda 		of=/tmp/MBR.back  bs=512  count=1		//备份扇区的MBR与分区表
+			   	ii)	dd if=/dev/sda1 		of=/tmp/sda1.back 								//备份一个分区设备文件
+				iii)	dd if=/tmp/sda1.back		 of=/dev/sda1								//还原一个分区设备文件(逆向操作)
+
+		3)	其他备份命令
+			a) cpio 		//可以备份任何文件(270)
+
+		4) 光盘刻录
+			a) mkisofs 建立镜像文件
+			b) cdrecord 光盘刻录
+
+六、vi、vim 编辑器
+	1、操作vi
+		1) 介绍：vi编辑器分为3中模式。一般模式、编辑模式、命令行模式
+			a) 一般模式：搜索、替换、复制、粘贴、删除
+			b)	编辑模式：编辑文件内容
+			3)	命令行模式：读取、保存
+
+		2)	使用vi		(书本278、289)
+			a) 一般模式 ：搜索、替换、复制、粘贴、删除
+				i)	查找 ： 	/word	(输入后，再输入n向下找、N向上找)
+				ii)	替换：  	:1,$s/wade/wade2/gc	(把wade替换为wade2，替换之前询问)
+
+				ii)	删除：	x 删除一个字符 	dd 删除一行
+				iii)复制：	yy	复制一行
+				iiii)粘贴：	p
+				iiiii)撤销： 	u
+
+			b)	编辑模式：编辑文件内容
+				i)	进入编辑模式：	i、I、a、A、o、O
+				ii)	替换模式：r、R
+
+			c)	命令行模式：保存、离开(加感叹号!表示强制)
+				i)	:w	 		保存
+				ii)	:wq		保存退出
+				iii)	:w aaa.txt		另存为文件
+
+
+
+
+七、编码
+	1、echo $LANG		//查看当前系统语言
+		env | grep LANG
+
+	2、locale -a					//查询系统支持的语言(308)
+
+
+	3、修改系统语言
+		1) vi  /etc/sysconfig/i18n
+		#LANG="en_US.UTF-8"
+		LANG="zh_CN.UTF-8"
+		logout		//注销重新登录
+
+		2) ubuntu 支持中文编码
+			参考文章：http://blog.csdn.net/kangear/article/details/9102501
+
+			vim ~/.bashrc
+			sudo locale-gen zh_CN.GB18030
+			LANG="zh_CN.GB18030"
+			LANGUAGE="zh_CN:zh:en_US:en"
+
+
+	3、转换文件编码 (291)
+		1)	iconv --list			 //系统支持的编码格式
+		2) iconv -f big5 	-t utf8 		aaa.txt 		-o 			aaa_utf-8.txt 			//转换语言编码
+			注：		原编码	新编码	原文件	以新文件保存	新保存文件名
+		3)	iconv -t utf8 aaa.txt -o aaa_utf-8.txx				//转换语言编码，不知道原编码的时候
+			iconv -f GBK -t UTF-8 file1 -o file2					//将gbk编码转换为UTF-8
+
+
+八、shell 与 shell script
+
+	1、bash shell
+		1)	cat /etc/shells			//查看系统支持的shell
+		2) .bash_history   			//历史命令都记录在当前目录下中
+		4) type								//查询命令 (bash内置命令)
+		5) .bashrc						//为每一个运行bash shell的用户执行此文件
+		6) .bash_profile			//单一生效 vi (添加~/.bashrc)
+			一般会在.bash_profile文件中先是调用.bashrc。登陆linux启动bash时首先会去读取~/.bash_profile文件，这样~/.bashrc也就得到执行了，
+
+	2、变量
+		永久的：需要修改配置文件，变量永久生效。
+		临时的：使用export命令声明即可，变量在关闭shell时失效。
+		1) 环境变量
+			a)	常用环境变量
+				i)	$HOME 		//当前用户目录
+				ii)	$PATH			//当前脚本路径地址
+				iii) $MAIL			//当前mail目录
+				iiii) $LANG			//当前语言
+			b)	env 			//查看所有环境变量(304)
+			c)	set 			//查看所有环境变量和自己设置的变量(305)
+				set -x    //查看脚本所有执行过程
+			d) $$				//echo 	$$	 查看Shell线程代号，所谓的PID
+			e)	$?				//echo 	$?	 查看上一个执行命令错误信息，没有错误则为0
+				$!
+
+		2) 操作变量
+		 	a) myname=wade		//设置变量
+		 	b) unset myname		//清除变量
+				echo $myname
+			c) export 变量				//把自定义变量设置为环境变量
+			d) source /etc/profile		//所有环境变量都在此处，可以设置环境变量
+
+
+		3) 2.设置变量的三种方法
+
+		　　a)在/etc/profile文件中添加变量【对所有用户生效(永久的)】
+
+			　　用VI在文件/etc/profile文件中增加变量，该变量将会对Linux下所有用户有效，并且是“永久的”。
+
+			　　例如：编辑/etc/profile文件，添加CLASSPATH变量
+
+			　　# vi /etc/profile
+
+					如：
+						export CLASSPATH=./JAVA_HOME/lib;$JAVA_HOME/jre/lib
+							或者
+					  export PATH=/usr/local/node-v4.1.0-linux-x64/bin:$PATH
+
+			　　注：修改文件后要想马上生效还要运行# source /etc/profile不然只能在下次重进此用户时生效。
+
+
+			b)在用户目录下的.bash_profile文件中增加变量【对单一用户生效(永久的)】
+
+			　　用VI在用户目录下的.bash_profile文件中增加变量，改变量仅会对当前用户有效，并且是“永久的”。
+
+			　　例如：编辑guok用户目录(/home/guok)下的.bash_profile
+
+			　　$ vi /home/guok/.bash_profile
+
+			　　添加如下内容：
+
+			　　export CLASSPATH=./JAVA_HOME/lib;$JAVA_HOME/jre/lib
+
+			　　注：修改文件后要想马上生效还要运行$ source /home/guok/.bash_profile不然只能在下次重进此用户时生效。
+
+			c) 直接运行export命令定义变量【只对当前shell(BASH)有效(临时的)】
+
+　				在shell的命令行下直接使用[export 变量名=变量值] 定义变量，该变量只在当前的shell(BASH)或其子shell(BASH)下是有效的，shell关闭了，变量也就失效了，再打开新shell时就没有这个变量，需要使用的话还需要重新定义。
+
+	3、ulimit 限制用户 文件系统及程序资源(312)
+
+		*）查看 linux 能打开的最大文件数(最大文件数不能超过这个数字)
+		   sysctl -a | grep fs.file
+			 cat /proc/sys/fs/file-max
+
+		1) ulimit  -a  				//列出用户所有限额
+
+			open files    (-n) 65535 表示用户打开文件数的限额
+
+		2) ulimit -f 10240		//限制用户可以创建最大的文件
+
+		3) ulimit -n  				// 查看最大可以打开的文件数
+			 ulimit -n 65535  	// 设置最大可以打开的文件数
+
+			 PS : Centos 系统 ~/.bashrc
+
+					 Ubuntu 系统系统 ~/.bashrc
+					 // 方法一、当前终端生效
+					 ulimit -HSn 65535
+
+					 // 方法二、当前环境生效
+					 vim ~/.bashrc
+					 ulimit -HSn 65535
+
+					 // 方法三、永久生效
+					 sudo vim /etc/security/limits.conf
+					 [用户账号]   hard    nofile          65535
+					 [用户账号]   soft    nofile          65535
+					 * 表示所有账号
+
+					 修改了配置文件, 重新登录就生效
+
+		*)	其他还有CPU、内存、进程等限制
+
+
+	4、alias、unalias
+		1) alias							//设置命令别名
+			a) alias 					//查看所有别名
+			b) alias lm='ls -a;'		//设置别名
+
+		2)	unalias	lm		//取消命令别名
+
+
+	5、数据流重定向 ：将某个命令执行后的结果数据，传输到其他地方
+		1)、运行		(书本329)
+			a) >、>> 	标准输出(代码为1)
+				i) ll 		>		aaa.txt		//把ll执行后的结果"更新"到aaa.txt文件中
+					命令  定向	定向文件
+				ii) ll -a  >> aaa.txt			//把ll执行后的结果"追加"到aaa.txt文件中
+
+			b) 2>、2>>	标准错误输出(代码为2)
+				i) lq 	 2>    bbb.txt			//定向错误的信息到bbb.txt
+				ii) lq  2>>  bbb.txt			//追加到bbb.txt
+
+		2) 特殊写法
+			a)	ll		>> success.txt 		2>> error.txt		//将正确或者错误的命令分别写入不同的文件中
+				命令	正确定向文件			错误定向文件
+
+		3) tee ：数据双定向 (338)
+			a) ls -l   |  tee -a  	~/homefile | more
+
+
+
+	6、 &&,|| 命令执行判断依据 (332)
+		1)、逻辑判断 : (命令执行成功：$?回转码为0 )
+			a) && ：第一个命令执行成功，才执行下一个，反之不执行
+				如：ls /tmp/ 　&& 　mkdir /tmp/abc
+
+			b)	|| ： 第一个执行不成功，才则执行下一个，反之不执行
+				如：ls /tmp/ 　||  　mkdir /tmp/abc
+
+		2)、 类似三元表达式
+			a) ls /tmp/demo 	&&	 echo 'success'		||		echo 'error';		//判断第一个命令，
+				 			 判断($?的返回值)				判断($?的返回值)
+
+
+	7、|  管道命令   (334)
+		1)	说明：管道命令就是对standard output(对标准输出后的数据进行分析，取得需要的数据)
+
+		2) 命令
+			a)	cut
+				i)	echo $PATH 	 | 	cut -d 	':' 	-f 	3-	;		//把PATH输出的信息，按照":"分割、并且显示第3个后的所有
+				ii)	echo $PATH 	 | 	cut -d 	':' 	-f 	3	;		//只显示第三个
+
+			b)	grep	：对多行处理(正则)
+				i) last | grep -i 'root'														//找出所有行中包含root的行
+				ii)	grep --color=auto 'MANPATH' -i /etc/man.config		//查看文件，把找出的字符加上颜色
+
+			c)、排序命令：sort,uniq,wc (336)
+				i) 	sort : 排序
+					sort -n -r -k 2
+
+					-n 按照数值排序
+					-r 倒序
+					-k 表示列的第几行
+					-t 按照风格符号
+
+				ii)	uniq : 处理排序后的重复数据
+
+				iii) wc : 计算行数与字符数
+
+	8、切割、分隔文件命令
+		1) split 分割文件
+			a) split -b 300k back back		//把back文件分割成300K一个的小文件
+			b) cat back* >> back_all		//用数据定向留，重新合并文件
+
+
+
+九、正则表达式  (*也是一种管道命令)	349、356、361
+	1、grep 	-n		'正则表达式'  test.txt;					//语法说明
+		1) grep -n 'o\{2\}' regular_express.txt				//查找文件，有2个o的字符串
+
+		2) ls | grep -n '^a.*';		//查找a开头的文件
+
+		3) ls -l /etc | grep '^l';	//查找文件列表，是连接文件的
+
+		4) cat access.20160320.log | grep -n '/mobile/member/inventories/[0-9]*/.*' > browse.log  匹配范围数据
+
+
+	2、sed 查找、编辑多行的文件 (357)
+		1)  nl /etc/passwd | sed -n '5,7p';			//找出5,7行的数据
+
+
+	3、printf (362)    	//格式化输出数据
+
+
+	4、awk		(364)	//处理一行数据
+
+
+	5、diff	(366	)		//文件比较工具，用于同一种文件的内容比较
+
+
+
+十、shell script   程序化脚本，针对shell写的脚本程序	(372)
+	1、内容待定
+
+
+
+十一、使用者管理
+	1、概念
+		1) 账号信息：
+			a) /etc/passwd		系统所有账号信息(如UID、GID、账号所属文件夹)
+			b) /etc/shadow		系统所有账号信息(如密码、失效时间)
+			5) vipw			修改账号信息, 默认组等(配合 id 命令使用)
+
+		2) 组信息：
+			a) /etc/group		      系统所有组信息	(如组名、组id、组下的用户)
+			b) /etc/gshadow		系统用户组管理
+
+
+	2、用户管理
+			###root命令###
+			快捷命令
+			groupadd -r dwadmin组
+			useradd -m -s /bin/bash -g  dwadmin组 dwadmin   -m:创建用户主文件夹 -s:新用户的默认shell
+
+
+		1) 编辑用户 ：用户分为普通用户(500以后的账户)和系统用户(100-499)，普通用户有自己的工作文件夹，系统用户没有
+			a) useradd (409)		//创建用户
+				i)  useradd -D						//查看默认配置
+				ii) useradd -g groupsss user1			//创建一个普通账号，分配到users组中, 即一般用户
+				iii) useradd -r admin1				//创建一个系统账号
+				iiii) useradd -m[-M|-n|-d]
+					-m 自动建立用户的登入目录、
+					-M 不要自动建立用户的登入目录、
+					-n 取消建立以用户名称为名的群组、
+					-d 指定用户登入时的启始目录。
+				useradd -r -g mysql mysql	//创建一个不可以登录的账号
+
+			b) passwd (413)		//用户创建完毕要修改密码后激活
+				i) passwd wade  						//修改账号为wade的密码，提示(all authentication tokens updated successfully)为修改成功
+			   	ii) passwd -l wade						//锁定账号
+			  	iii) passwd -u wade					//解锁账号
+
+			c) usermod (416) 		//修改创建账号参数信息
+				i) usermod 	-c 	  "Wade" 	wade			//修改账户说明信息
+				ii) usermod -g     group1  wade1			//修改wade1的组为group1
+					usermod -G 	apache wade1 				//把用户追加到apache组中
+				iii) usermod 	-l     aaa 	   wade1			//把wade1账号名称修改为aaa
+						usermod -a -G www-data apache	//追加apache到一个组
+
+			d) userdel (417)		//删除用户账号与数据
+				i) userdel  -r  wade						//连同用户的文件夹一起删除
+
+				###用户命令###
+		2) 用户系统信息
+			a) finger    				//查看用户信息（yum install finger）
+				i) finger 				//查看所有在线用户
+			    ii) finger wade		//查看当前用户信息
+
+			b)	id wade				//查看账号的UID与GID等信息
+
+			c) chsh					//列出系统上所有shell
+				i) chsh	-l						//列出系统上所有shell
+			    ii) chsh -s /bin/csh		//修改当前使用的shell为/bin/csh
+
+			d) chage -l wade			//查看账号的密码相关信息
+
+		3) whoami 查看当前登录用户
+
+	3、组管理
+		1) 用户组信息
+			a) groups 						//查看用户当前有效用户组
+			b) groups www-data
+			c) newgrp user				//切换当前用户组
+
+		2) groupadd    		//创建组
+			a) groupadd -r group2			//创建一个公共组，与私有用户无关的(160-499)
+			b) groupadd    group1			//创建一个普通组，与私有用户有关的(500以上) 即一般用户
+
+		3) groupmod			//编辑组
+			a) groupmod -n  up_group  group		//修改组名为up_group1
+
+		4) groupdel			//删除组 （注意：如果用户组内已有用户则无法删除改组）
+			a) groupdel group1   	//删除组
+
+		5) gpasswd 			//设置组管理员
+			a) 设置组管理员流程
+					###root命令###
+				i) gpasswd 	testgroup					//设置设置组密码
+			 	ii) gpasswd -A wade testgroup			//设置wade账号为改组管理员
+
+			 		###组管理员命令###
+				iii)	gpasswd -a wade1 testgroup		//添加用户wade1到组中
+				iiii) gpasswd -d wade1 testgroup		//组中移除用户wade1
+
+		6) 实际案例： 让组内的用户可以修改彼此的文件，要设置SGID，如chmod 2770 (422)
+
+
+	4、ACL - 针对单一用户、单一文件或目录的权限设置  (423)
+		1)、开启ACL
+			a) 文件系统的支持，比如ext3
+			b) mount -o remount,acl /				//执行 		mount -n -o remount，rw /    ->>系统默认自动挂载目录出错，进行编辑
+			c) vi /etc/fstab									//每次开机都生效
+					如：		LABEL=/     /        ext3    defaults,acl    1 1		//不要运行
+																			修改这里,acl
+		2) 命令：
+			a) setfacl						//设置某个文件、目录的ACL权限
+			b) getfacl						//取得某个文件、目录的ACL信息
+
+
+	5、身份切换
+			1) su - wade				//切换账号到wade
+			   su - root -c 'echo 1'	//以root权限运行脚本
+
+			2) sudo (430)			//让用户以其他用的身份（如管理员等）执行命令
+				a)	visudo 				//设置允许执行sudo命令的用户	(root命令) 不要用这个命令
+					i)	找到如下参数：
+						## Allow root to run any commands anywhere
+						root    ALL=(ALL)       ALL
+						wade    ALL=(ALL)       ALL		<<<在此加上一个用户
+					ii) sudo nl /etc/shadow				//被设置的账号，执行部分管理员命令。
+
+
+			3) centos 配置 sudo 权限
+				vim /etc/sudoers
+
+				a) 注释 root
+					#root   ALL=(ALL)       ALL
+					替换成:	%sudo ALL=(ALL:ALL) NOPASSWD:ALL
+
+				b) 注释 wheel (sudo 权限组)
+					%wheel        ALL=(ALL)       NOPASSWD: ALL
+					替换成:	%wheel  ALL=(ALL)       NOPASSWD: ALL
+
+				c) 添加到 sudo 组(在 centos 下是 wheel 组)
+					usermod -a -G  wheel username
+
+				x) 直接在 /etc/sudoers 里面加入
+				 username  ALL=(ALL)       NOPASSWD: ALL
+
+			3) ubuntu 配置 sudo 权限
+					vim /etc/sudoers
+
+				a) 把  %sudo ALL=(ALL:ALL) ALL  这行注释掉
+
+			  b) 用这句替代刚刚注释掉的那句
+						%sudo ALL=(ALL:ALL) NOPASSWD:ALL  移动到文件未尾，
+
+				c) 添加到 sudo 组(在 ubuntu 下是 sudo 组)
+				 	sudo adduser 用户名 sudo
+
+
+			4) sudo -u wade touch /tmp/aaa.txt				//以wade身份执行创建文件的命令 (root命令)
+				 sudo su hdfs -c "touch /tmp/aaa.txt"             //却换身份到 hdfs 运行指定脚本
+
+
+
+
+
+	6、PAM   (434)  应用程序编程接口，验证后返回成功或者失败
+		1) 文件目录：/etc/login.defs
+
+
+	7、用户信息交流
+		1) 查新在线用户
+			a) w				//已在系统登录的用户
+			b) who 			//同上
+			c) last			//查看登录记录
+			d) lastlog		//查看登录日志
+
+		2) 用户对谈
+			a) write root pts/2			//对root账号发送信息
+			b) mesg [y-n]				//用户不想接收信息可以用mesg n 来关闭信息，反之用mesg y开启
+			c) wall 	"Hello"				//管理员广播
+			d) Ctrl -d 						//结束会话
+
+		3) mailbox (441)			//每个账号都有一个mailbox,在/var/spool/mail中
+			a) mail wade -s "nice to meet you"		//发送邮件给wade这个账号
+				内容主体..
+				.
+				Cc:
+			b) mail			//当前账号接收邮件
+
+
+	8、手动增加用户
+		1) 检测工具
+			a) pwck 				//检测/etc/passwd 文件的配置信息，如果有出错的字段则提示错误
+			b) chpasswd  		//老版本的Linux更新密码
+				i) echo "账号:密码" | chpasswd -m			//更新账号的密码
+
+		2) 手动新建账号(445)	//如批量新建账号等等
+
+
+	9、Quota磁盘配额(452)			//限制每个用户的磁盘空间
+		1) 注意：
+			a) 仅针对整个文件系统进行规划
+
+		2) 配置Quota：
+			a) mount -o remount,usrquota,grpquota	 /home				//挂在目录支持Quota
+																		    挂在目录名
+			b) quotacheck -avug			//创建Quota配置文件
+			c) quotaon -auvg				//启用Quota服务(只要启动一次)
+			d) 设置配额
+					#设置用户配额
+				i) edquota -u myquota1		//用户配额
+				ii) edquota -p myquota1 -u myquota2		//符合一个用户配额
+					#组配额
+				iii) edquota -g myquotagrp		//组配额
+					#宽限时间设置
+				iiii) edquota -t
+			e) 查看配额
+					#查看单一用户配额
+				i) quota -uvs myquota1
+					#查看组配额
+				ii) quota -gvs myquotagrp
+					#查看文件系统的配额
+				iii) repquota -auvs
+
+			d) 测试
+				dd if=/dev/zero of=bigfile bs=1M count=270		//创建大文件测试
+
+			e) 对已有的文件进行配额(462)
+
+
+	10、RAID 磁盘列阵  (463)
+		1) 模式：
+			a) RAID 0		等量模式，性能最佳
+			b) RAID 1		映像模式，完整备份
+			c) RAID 0+1 , RAID 1+0	等量模式与映像模式
+			d) RAID 5		性能与数据备份的均衡考虑，至少3快磁盘
+
+			e) Spare Disk   预备磁盘的功能，磁盘阵列的某一块磁盘坏掉时，作为备份磁盘使用
+
+		2) mdadm		//设置磁盘列阵
+			a) 注意：
+				i) /dev/sd[a-p]							//硬件磁盘阵列
+				ii) /dev/md0 , /dev/md1			//软件磁盘阵列(系统仿真磁盘列阵)
+				iii) 一个磁盘列阵是一个 md0设备文件，设置好阵列后，把/dev/md0设备为挂载下在目录下就可以使用啦
+			b) 磁盘阵列不用的时候要关闭掉，不然以后分区会出现问题
+				i) umount /dev/md0		//卸载
+				ii) vi /etc/fstab  				//删除相关数据
+				iii) mdadm --stop /dev/md0		//关闭磁盘阵列
+				iiii) vi /etc/mdadm.conf				//删除相关数据
+
+		3) 实例 （raid5 + 1块备用盘）
+			a) 创建
+				mdadm --create --auto=yes /dev/md0 --level=5 --raid-devices=4 --spare-devices=1 /dev/sda{10,11,12,13,14}
+
+				mdadm --create --auto=yes /dev/md0 --level=5 --raid-devices=4 --spare-devices=1 /dev/sda{10,11,12,13,14}
+				出现询问直接按y
+			b) 查看详情
+				mdadm --detail /dev/md0
+			c) 格式化
+				mkfs -t ext4 /dev/md0
+			d)	挂载
+				mount /dev/md0 /web
+			e)	开机启动
+				i) vi /etc/mdadm.conf	加入：（UUID这么看mdadm --detail /dev/md0 | grep 'UUID'）
+					ARRAY /dev/md0 UUID=1a119e45:4d75c686:8f134b43:514b42f0
+				ii) vi /etc/fstab
+					/dev/md0 /web ext4 defaults  1 2		//开机挂载
+
+
+	11、LVM 逻辑卷管理器  (473)		//弹性调整文件系统容量
+		1) 说明：将几个物理分区(或磁盘)通过软件组合成一个独立大的磁盘(VG)
+
+		2) 注意：
+			a) 任何一个分区坏掉，所有的数据都会损坏
+			b) 在强调性能与备份，那么使用RAID，不要使用LVM
+
+		3) 挂载 LVM 逻辑卷
+			# 安装 lvm2
+			yum install lvm2
+
+			# 查看物理卷: pvs
+				PV         VG     Fmt  Attr PSize    PFree
+			  /dev/sda2  cl     lvm2 a--  <930.51g 4.00m
+			  /dev/sdd2  vg_dw0 lvm2 a--  <111.30g    0
+
+			# 查看卷组: vgs
+				VG     #PV #LV #SN Attr   VSize    VFree
+				cl       1   3   0 wz--n- <930.51g 4.00m
+				vg_dw0   1   3   0 wz--n- <111.30g    0
+
+			# 查看逻辑卷: lvdisplay
+				--- Logical volume ---
+			  LV Path                /dev/vg_dw0/lv_root
+			  LV Name                lv_root
+			  VG Name                vg_dw0
+			  LV UUID                b5Zr6h-eqbQ-hhMf-9Y2e-kE04-Wlch-PBgGtN
+			  LV Write Access        read/write
+			  LV Creation host, time dw0, 2017-01-06 19:27:51 +0800
+			  LV Status              available
+			  # open                 0
+			  LV Size                50.00 GiB
+			  Current LE             12800
+			  Segments               1
+			  Allocation             inherit
+			  Read ahead sectors     auto
+			  - currently set to     256
+			  Block device           253:2
+
+			# 激活 逻辑卷 vgchange
+				vgchange -ay /dev/vg_dw0/lv_root
+
+				LV Status              available 激活状态 , unenable 为非激活状态
+
+			# 挂载 mount
+				mount   /dev/vg_dw0/lv_root   /mnt/ssd_root
+
+
+
+	12、例行共工作 (494)
+		1) atd  启用
+			a) /etc/init.d/atd restart				//开启atd调度
+			b) chkconfig atd on					//开启自动启动
+
+		2) at 使用
+			a)	 设置一个工作调度
+				i)　at 12:24 2013-08-08			//设置执行时间
+				ii)  输入要执行的指令					//输入命令
+				iii)	 Ctrl + d							//完成
+			b) 查询
+				i) al -l									//查询主机所有at工作
+				ii) atq									//同上
+			c) 删除
+				i)　atrm 5								//删除第五个工作调度
+
+		3) crontab 循环执行例行工作 (498)
+
+			http://www.cnblogs.com/cocowool/archive/2009/04/22/1441291.html
+			http://www.cnblogs.com/jiafan/articles/1153066.html
+			30 07 * * *
+
+			Linux crontab 命令格式与详细例子
+
+			(1) 案例
+				每个小时跑一次
+				如: 0 */1 * * * /bin/bash /XXX/SH  > /data/log/xxx.log 2>&1
+
+				ctrl +  O = 保存
+					ctrl + Append 追加
+				ctrl + x 退出
+
+			(2) 语法(调度)
+			crontab -e 打开所有任务列表
+			基本格式 :
+				*　　*　　 *　　 *　　 *　　command
+				分　 时　  日　  月　  周　   命令
+
+				第1列表示分钟1～59 每分钟用*或者 */1表示
+				第2列表示小时1～23（0表示0点）
+				第3列表示日期1～31
+				第4列表示月份1～12
+				第5列标识号星期0～6（0表示星期天）
+				第6列要运行的命令
+
+				*/1 * * * * /home/dwadmin/test/test/demo.sh
+				每 (1) 分钟跑一次
+
+				30 21 * * * /usr/local/etc/rc.d/lighttpd restart
+				每天的 (21:30) 重启 apache。
+
+
+				45 4 1,10,22 * * /usr/local/etc/rc.d/lighttpd restart
+				每月 (1、10、22) 日的 (4 : 45) 重启apache。
+
+				10 1 * * 6,0 /usr/local/etc/rc.d/lighttpd restart
+				每 (周6、周日) 的 (1 : 10) 重启apache。
+
+				0,30 18-23 * * * /usr/local/etc/rc.d/lighttpd restart
+				每天 (18:00 - 23:00) 之间每隔 (30 分钟) 重启apache。
+
+				0 23 * * 6 /usr/local/etc/rc.d/lighttpd restart
+			  每 (星期 6) 的(23 : 00) 重启apache。
+
+				* */1 * * * /usr/local/etc/rc.d/lighttpd restart
+				每 (1) 小时 重启 apache
+
+				* 23-7/1 * * * /usr/local/etc/rc.d/lighttpd restart
+				(晚23 - 早上7点之间) 每隔 (1) 个小时重启 apache
+					PS : Quartz 则这么写 * * 7-23/1 * * *
+
+				0 11 4 * mon-wed /usr/local/etc/rc.d/lighttpd restart
+				每月 (4) 号，(周1 - 周3) (11 点) 重启 apache
+
+				0 4 1 jan * /usr/local/etc/rc.d/lighttpd restart
+				(1)月 (1)号 (4)点  重启 apache
+
+				1 */30 0,7-23 * * ? * /usr/local/etc/rc.d/lighttpd restart
+				每天(0点,7 ~ 23 点之间,每隔30分钟,1 秒执行一次)
+
+				0 0 08-20/1 * * ? *
+				Quartz: 每天 (08:00 - 20:00) , 每隔一个小时跑一次
+
+
+	13、程序与进程管理
+		1) job control 工作管理模式 (511)
+			a) 概念 ：分为前台与后台
+				#命令
+			b) jobs -l									//查看后台，所有的工作进程
+			c) echo "123"	&  					//把命令，丢到后台执行
+			d) Ctrl + z								//把工作，放到后台暂停
+			e) fg 1										//把工作，拿到前台处理
+			f) bg 1										//在后台的工作，编程runing运行。
+			g) kill	 -15	 %		1 				//删除一个工作进程
+					(-9强制删除)	 工作号
+
+		2) nohup 脱机工作管理模式  (515)   	//在脱机后，依然可以执行的命令
+			a) 注意：nohup不支持bash内置命令，需要写在script中，外部调用程序文件
+			b) 命令
+				i) nohup ss.sh  >> /tmp/myout.file 2>&1 &
+
+		3)	 系统进程的查看(516)
+
+			a) ps -l					//查看属于自己的系统进程
+			b) ps aux					//查看所有的系统进程
+			c) top -d 2				//动态查看进程变化
+				M 						//以内存使用量排序
+				q						// 退出该进程
+				1						//查看CPU负载
+				P						按%CPU使用率排行
+        T					  按MITE+排行
+				M						按%MEM排行
+
+			d) pstree -Aup		//查看进程树的结构信息，可以用来查找子进程的父进程
+			e) pgrep firefox  //专门用于进程查询的grep，返回进程 pid
+			f) 性能检测工具
+				htop      查看进程树, 输入 t
+					yum install htop
+					需要 yum 配置(配置额外的企业 Linux（或EPEL）包)
+
+				nmon      查看新能状态 cmdn
+
+
+			g) cat /proc/进程id/status 	查看进程状态
+
+		4) signal 进程的控制(521)
+			优秀文章：http://www.xuebuyuan.com/1964906.html
+			a) 信号：
+				i) 1     								//重新启动程序
+				ii) 9 									//强制停止程序
+				iii) 15								//正常结束程序
+			b) kill 	-9		进程号pid			//强制结束一个程序进程
+				killall -i -15 httpd				//删除一个服务
+				pkill -９ firefox		//pkill＝pgrep+kill。
+
+		5) Nice 程序执行优先级(523)
+			a) 概念：ps -l 查看自己的进程，Ni越小，则被CPU更快执行
+
+				#对要运行的程序进行优先级控制
+			b) nice  -n  -5  vi  &				//打开一个VI，调整Ni为-5，让这个程序更快执行
+
+				#对已经存在程序进行优先级控制
+			c)	renice 10 18622		//调整已存在的进程ID，NI值为10
+
+
+	  6) fork
+			文章：http://www.cnblogs.com/bastard/archive/2012/08/31/2664896.html
+				fork 是unix/linux环境下的创建进程的函数，它所创建的进程是子进程，是父进程的拷贝
+
+				fork() 函数通过系统调用创建一个与原来进程几乎完全相同的进程，也就是两个进程可以做完全相同的事，但如果初始参数或者传入的变量不同，两个进程也可以做不同的事。
+
+				fork 调用的一个奇妙之处就是它仅仅被调用一次，却能够返回两次，它可能有三种不同的返回值：
+			    1）在父进程中，fork返回新创建子进程的进程ID；
+			    2）在子进程中，fork返回0；
+			    3）如果出现错误，fork返回一个负值；
+
+	14、系统资源查看 （525）
+		1) free -m				//查看内存使用情况
+
+		2) uname -a				//查看系统内核相关信息（系统版本）
+			lsb_release -a	//查看linux版本
+			cat /etc/issue
+			cat /proc/version
+
+		3) netstat -tlnp			//查看网络监听
+
+		4) dmesg 	| more			//识别的系统硬件
+
+		5) vmstat 1 3					//检测系统资源变化，内存、IO、CPU等
+
+		6) cat /proc/cpuinfo  //查看硬件信息， cpu cores 是cpu的核数
+
+		7) cat /proc/meminfo  //查看内存详细信息
+
+
+	15、SUID/SGID			权限
+		1) 概念：程序所有者执行程序，程序变成进程后，此程序执行者拥有部分root权限
+
+		2) 查询已打开文件或已执行程序，打开的文件 (532)
+			a) 查看使用该目录的进程
+				i) fuser -mvu /proc
+				ii) fuser -ki /var/gdm/.gdmfifo		//删除使用该文件的进程
+			b) 查看进程使用的目录
+				i) lsof -u root -a -U
+
+		3) 通过与程序名(COMMAND)找出进程的PID
+			i) 与ps aux配合，找出程序的进程PID
+				如： ps aux;
+				pidof passwd		//找出passwd的进程
+
+
+	16、SELinux	  (534) (547)
+		1)原理：
+			a) 运行模式：主题=进程、目标=文件资源、策略=访问资源的限制等级。如targeted
+			b) 安全上下文：身份=帐号、角色=资源类型、类型=策略文件类型（记录在文件的node上的）
+			c) 执行流程：进程触发，获取进程文件的安全上下文，与进程访问文件的安全上下文，得出进程策略中是否包含目标文件的类型，策略通过，则再检查执行程序的用户是否对目标文件有rwx权限。
+
+		2) 结构：Subject(主体进程)、Object(能否访问目标文件)、Policy策略(安全权限)
+
+		3) 作用域：	控制的主体是程序进程对文件的访问权限，而非用户
+
+		4) 控制网络服务是否能访问系统资源的一道管卡
+
+		5) 通过 ll -Z 查看文件上下文：
+			a) Identify 				//身份识别
+			b) role 							//角色
+				i) object_r  				//目录或者文件资源
+				ii) system_r				//进程
+			c) type 					//类型
+				i) domain					//与文件type配合，该程序才能访问这个文件资源
+
+			例如：触发执行文件、执行文件的type：domain(作用域)为httpd_exec_t，这个策略中包含了可以读取目标的资源类型。从而才能访问相应文件资源。
+
+		6) 启动关闭查看
+			a) getenforce 		//查看当前模式
+				i) enforcing			//强制模式，SELinux运行中，已经开始限制domain/type了
+				ii) permissive		//宽容模式：SELinux运行中，会有警告，但是不会实际限制
+				iii) disabled			//关闭模式：没有运行
+
+			b) /etc/selinux/config		//SELinux配置文件
+				i) SELINUX=enforcing				//模式
+				ii) SELINUXTYPE=targeted		//策略
+				iii) 关闭与启动
+					SELINUX=disabled		//为关闭
+					SELINUX=enforcing		//为开启
+					注：1、从关闭到启动模式，系统要对文件写入安全性环境信息，因此开机要长时间。通常需要2次重启。
+						   2、开启时，如果有报错，或者程序无法启动的状况。可以用setenforc=0切换到宽容模式，然后用:
+					restorecon -Rv /			//重新还原所有SELinux类型，再用setenforc=1切换到强制模式。
+
+			c) setenforce		//命令行切换模式
+				注：无法在disabled模式下切换
+				i) setenforce [0/1] 		//0宽容模式，1强制模式
+
+		7) SELinux Type		//文件的type类型修改
+			注：复制文件到目标目录时：被复制的文件会继承目标文件的type
+				   移动文件到目标目录时：被移动的文件会保存自己的文件type
+
+			a) chcon 		//修改文件的SELinux上下文属性
+				语法：chcon [-R] [-t type] [-u user] [-r role]	 文件				//-R连同子目录一起更改，-t文件类型，-u身份识别(system_u)，-r角色(system_r)
+						  chcon [-R] --reference=范例文件  文件
+				i)  chcon  -t  net_conf_t  index.html						//修改文件类型
+					chcon -R  -t  httpd_sys_content_t  www
+				ii) chcon --reference=index.php  index.html			//参照一个文件，修改文件类型
+
+			b) restorecon [-Rv] 目录或文件		//把目录中文件，恢复成SELinux默认的type
+				i) restorecon -Rv  文件
+
+			c) semanage			//se目录相关
+				i) yum install policycoreutils-python			//安装	semanage
+				ii) cat  /etc/selinux/targeted/contexts/files/file_contexts  | grep '/var/www'			//查看规则 配置文件目录
+				iii) semanage fcontext  -a -t  public_content_t  "/home/wade(/.*)?"					//添加一个目录type
+				iiii) semanage fcontext -d "/home/wade(/.*)?"														//删除一个目录type
+
+		8) SELinux 策略 与 布尔值修订
+			a) seinfo				//策略查阅
+				i) seinfo -t			//所有type种类--->程序、文件
+				ii) seinfo -b			//所有规则种类(布尔)，查看系统有多少布尔值条款
+
+			b) sesearch 		//详细查阅类别、或布尔值
+				i) sesearch --all -t  httpd_sys_content_t		//查阅资源的类别
+				ii) sesearch --all -b httpd_sys_content_t		//查阅主体程序可以读取的目标资源类别
+
+			c) 布尔值的查询与修改
+				注：程序主体与目标资源是否能有权限访问跟布尔值有关的 （规则的开关）
+				i) getsebool -a   			//列出系统上所有布尔值条款
+					getsebool -a | grep httpd			//查找指定规则
+				   getsebool httpd_enable_homedirs					//查询布尔值状态
+				ii) setsebool -P   httpd_enable_homedirs=1		//启用此布尔值，直接写入配置文件
+
+		9) SELinux日志文件 (只有是SELinux访问出错时，才会记录)
+			a) yum install setroubleshoot setroubleshoot-server		//安装
+				/etc/init.d/auditd restart													//启动
+			b)	cat /var/log/messages | grep setroubleshoot		//访问出错时，记录的出错信息
+				sealert -l 3952ba67-e23e-45e7-84e7-83cbbc5177b2			//分析日志文件
+				##出错信息##
+				/var/www/html/index.html 默认标签应为 httpd_sys_content_t。		->>>这里的操作
+				# /sbin/restorecon -v /var/www/html/index.html							->>>或者这里的
+
+		10) 排错（220）
+
+
+	17、daemon 端口与服务 (552)
+		常用服务端口名：(572)
+			yun、httpd、nfs等
+
+		1) 端口类型
+			a) stand_alone 　	　	//常开的，自行单独启动服务，如httpd、FTP
+			b) super daemon		//在请求时，去调用相应的服务
+
+		2) 工作类型
+			a) signal-control			//客户端请求时立即处理
+			b) interval-contrlo			//每隔一段时间执行一次
+
+		3) daemon 启动脚本与启动方式
+			a) 不同服务存放的位置
+				i) /etc/init.d/				//系统所有的启动服务都放置在这个目录里
+					CentOS 的启动启动服务放置在，/etc/rc.d/init.d中
+				ii) /etc/xinetd.d/			//存放super daemon服务的
+
+			b) /etc/sysconfig/		//各服务的初始化环境配置文件目录
+				i) 网络设置 /etc/sysconfig/network
+
+			c) /etc/inetd.connf 、/etc/xinetd.d/*		//super daemon	配置文件
+
+			d) /etc/*			//所有服务的配置文件
+
+			e) /var/lib/* 		//各服务产生的数据
+
+			d) /var/run/*		//各服务的程序pid记录处
+
+		**********重点！**********
+		4) 命令 (556)
+			#一直启动 stand alone
+			a) stand alone 启动方式
+				#配置文件启动
+				i) /etc/init.d/服务名   status			//查看服务状态
+				   /etc/init.d/服务名	restart			//重新读一次配置文件(重启)
+				#命令启动
+				ii) service --status-all					//查看目前系统所有服务状态
+					service 服务名	status				//查看某个服务状态
+					service 服务名	restart				//重新启动服务
+
+			#客户端触发启动 super daemon
+			b) super daemon	启动方式		(**super daemon本身也是一个 stand alone服务，所以要开启super daemon服务)
+				#配置文件启动
+				i) grep -i 'disable' /etc/xinetd.d/*				//查看super daemon所管理的服务状态 (disable   = yes 表示该服务是关闭的)
+				ii) /etc/xinetd.d/rsync(服务名)  restart			//重启super daemon下的某个服务	(557)
+				iii) vim /etc/xinetd.d/rsync(服务名)				//针对某个服务的配置文件，编辑此文件来设置服务端口的一些信息，修改文件前先备份(561)
+
+			c) chkconfig 			//管理系统开机时的启动服务
+				i) chkconfig --list 				//查看所有被chkconfig管理的服务
+				   chkconfig --list 服务名			//查看某个服务是否开启
+				   chkconfig --add nginx     		//添加一个nginx服务（前提要把nginx文件放在/etc/rc.d/init.d/ 目录中）
+				ii) 开机启动
+					 chkconfig httpd on;		//开启
+					 chkconfig httpd off;		//关闭
+
+		5) /etc/hosts.allow、/etc/hosts.deny		//对网络ip访问本机资源的限制(562)
+			a) 对telnet端口的ip访问限制设置
+				 grep server /etc/xinetd.d/telnet		//先在文件中找到此服务的in...
+				 vim /etc/hosts.allow						//打开文件，写入允许访问的地址 		in.telnetd:.edu.tw
+				 vim /etc/hosts.deny						//打开文件，写入不允许访问的地址		in.telnetd:ALL
+
+		6)	指令搭配，查看服务
+			#命令
+			chkconfig --list 、
+			service --status-all、
+			#配置文件
+			grep -i 'disable' /etc/xinetd.d/*
+
+
+	18、日志文件(557)
+		1) 日志文件产生的方式
+			a) 自由软件开发商，如apache
+			b) Linux distribution提供的
+				CentOS是通过syslogd服务统一管理日志
+
+		2)	日志文件所需要的服务与程序
+			a) syslogd		//登陆系统与网络等服务
+			b) klogd			//登陆内核产生的信息
+			c) logrotate		//日志文件的轮替功能
+
+
+
+十二、系统管理员
+	1、系统启动与加载程序
+		1)自动以开机启动程序(605)
+
+			a) rc.local 方式
+				# 给与执行权限
+				chmod +x /etc/rc.d/rc.local
+
+				# 把脚本写好放到此文件里
+
+			b) init.d 方式
+				# 写好脚本放到目录中
+				/etc/rc.d/init.d
+
+				# 添加开机启动
+				chkconfig --add autostart.sh
+				chkconfig autostart.sh on
+
+		2)	内核模块的加载与删除(610)
+			a) insmod				//自行加载一个模块
+			b) modprobe			//删除一个模块
+			c) lsmod					//查看内核模块
+
+		3) grub 系统引导程序(611)
+			a) nl /boot/grub/menu.lst			//查看配置文件
+
+		4) 忘记root密码(624)
+
+		5) 光盘启动(627)
+
+		6) 收集硬件信息以及驱动(649)
+			a) lspci --v						//查看硬件详细信息
+			b) lsusb							//查看USB接口
+			c) iostat -dmt	2 3			//查看硬盘开机后存取的数据(651)
+
+		7) 编译程序(667)
+			a) 检测安装包
+				rpm -qa make				//没有找到则 yum instal make
+				rpm -qa gcc				//没有找到则 yum install gcc
+				rpm -qa gcc-c++			//没有找到则 yum install gcc-c++
+
+			b) 编辑安装
+				i) 进入安装包，找到配置文件，可以./configure -h查看配置帮助
+					./configure --prefix=/usr/local/php/		//设置安装目录,如php
+				ii) 执行编译以及安装
+					make   (编译)
+					make install	(安装)
+
+			c) make故障处理
+				#make不能使用的情况
+				yum update kernel				//更新内核驱动，重新启动~
+
+			d) 删除安装
+				关闭进程。
+				rm -rf /usr/local/php/			//删除安装目录、或者删除编译包，重新解压编译
+
+			e) 故障
+				i) checking whether build environment is sane... configure: error: newly created file is older than distributed files!
+					表示文件时间与系统时间不符合
+					解决方法：cp configure configure.bak
+									rm configure
+									cp configure.bak configure
+
+
+
+	2、软件安装：RPM、SRPM
+		1) 各版本的distribution 依附关系	(686)
+			distribution (代表)		软件管理机制		使用命令					在线升级机制(命令)
+			Red Hat/Fedora   			RPM						rpm,rpmbuild		yum
+			Debian/Ubunt					DPKG					dpkg						apt-get
+
+		2) RPM  //软件管理机制，提供软件安装时，需要依赖其他软件的名称（690）
+			注：安装目录：/	/bin、/usr/lib、/usr/share/doc、/usr/share/man
+
+			a) RPM 安装
+				i) rpm -ivh  rp-pppoe-3.5-32.1.i386.rpm													//安装软件
+				ii) rpm -ivh  http://website.name/rp-pppoe-3.5-32.1.i386.rpm					//网络地址安装
+				iii) rpm -ivh  http://website.name/rp-pppoe-3.5-32.1.i386.rpm --test		//检测安装的软件是否有依赖其他软件
+
+			b) 升级与更新
+				i) rpm -Uvh  rp-pppoe-3.5-32.1.i386.rpm			//用于安装与升级
+				ii) rpm -Fvh  rp-pppoe-3.5-32.1.i386.rpm			//用于已存在的软件的升级
+
+			c) 查询 （692）
+				i) rpm -qalc (跟软件名称，查看该软件的信息)					//查看所有安装到Linux的软件
+				ii) rpm -q logrotate												//查找是否有安装logrotate
+				iii) rpm -ql cloudera-manager-server 			// 软件包的所有数据,配置,执行路径等等
+
+			d) 查看被改动过的文件 (695)
+				i)  rmp -Va 软件名称
+
+			e) 卸载与重建数据库(697)
+				i) rpm -e 软件名称				//删除软件(注意软件依赖关系)
+				ii) rpm --rebuilddb			//经常删除安装软件，导致数据库损坏，此命令用来重建数据库
+
+		2) SRPM  安装文件	(698)
+			 注：这个文件里面包含源码，通常已*.src.rpm结尾
+					文件安装目录：(698) 一般在：/usr/src/.....
+
+			a) rpmbuild --recomlile 	文件.rpm			//安装文件
+
+
+	3、 yum 在线查询、安装、升级、删除 (705)、(主要解决rmp软件安装依赖性问题)
+
+		*) 资源路径: /etc/yum.repos.d , 文件以 .repo 结尾
+
+			注意，安装时：Install 1 Package(s)				//表示有1个依赖软件要安装
+					 删除时：remove	1 Package(s)			//标示有1个依赖软件要删除
+
+		1) 搜索与查询
+			a) yum list 							//列出yum管理的所有软件
+				yum list 软件名称			//列出已pam*开头的软件信息
+			b) yum search 软件名称 		//网络搜索软件名称
+			c) yum info 软件名称			//查看软件详细信息
+
+		2) 添加yum源、清除yum已下载的数据
+			a) yum clean all
+					清除/var/cache/yum 中的，已下载的数据
+
+			b) 添加yum源：
+				i) 添加源，或者添加源文件。
+
+					位置在：/etc/yum.repos.d/, 以.repo 为后缀，文件内容格式如下
+
+					[base_wade]		//yum系统名
+					name=CentOS-$releasever - Base - 163.com			//描述名
+					baseurl=http://mirrors.163.com/centos/$releasever/os/$basearch/		//地址
+					#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os
+					gpgcheck=1
+					enabled=1			//表示启用
+					gpgkey=http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-6
+					http://mirrors.163.com/.help/CentOS6-Base-163.repo
+
+
+			c) 源地址 (更新到网易的原)
+				注：把系统原来的文件.bak掉或者，放入以下文件
+				网易：（打开http://mirrors.163.com/.help/centos.html）
+				http://mirrors.163.com/.help/CentOS6-Base-163.repo
+
+
+			d) 添加源后生效
+				yum repolist all		//查看是否加载
+				yum search vim			//搜索
+
+				# 清理并重新生成 yum 缓存
+				yum clean all				//清除缓存
+				yum clean metadata
+				# 生效新增源
+				yum makecache
+
+		3) yum 管理的软件更新
+			a) yum check-update			//列出所有可更新的软件清单
+			b) yum -y update				//执行所有软件自动升级
+			c) yum update 					//升级前询问
+			d) yum list updates				//列出系统中可以升级的软件
+			e) yum install 软件名称			//安装软件
+			f) yum remove 软件名称		//删除文件
+
+
+
+		4) 软件组 (710)
+			a) yum  grouplist								//查看系统安装的软件组
+			b) yum 	groupinfo 软件组名					//查看详细信息
+			c) yum  groupinstall 软件组名				//安装软件组(重要)
+			d) yum  groupremove软件组名				//删除软件组
+
+		5) yum 的配置
+			a) /etc/yum.conf     			//yum配置文件，keepcache = 1	表示把rpm下载的文件保存起来
+
+		6) yum 进程的查杀
+			rm -rf /var/run/yum.pid
+
+
+	4、apt-get 管理
+
+		*) 资源路径 /etc/apt/sources.list.d , 文件以 list 结尾
+
+			1) dpkg
+					dpkg -l 列出所有安装包
+
+					dpkg -i <package.deb>
+					安装一个 Debian 软件包，如你手动下载的文件。
+
+					dpkg -r <package>
+					移除一个已安装的包裹
+
+					dpkg -P <package>
+					完全清除一个已安装的包裹。和 remove 不同的是，remove 只是删掉数据和可执行文件，purge 另外还删除所有的配制文件。
+
+					dpkg -s <package>
+					显示已安装包裹的信息。同时请看 apt-cache 显示 Debian 存档中的包裹信息，以及 dpkg -I 来显示从一个 .deb 文件中提取的包裹信息。
+
+					dpkg -c <package.deb>
+					列出 <package.deb> 的内容
+
+
+			2) apt 包依赖管理器
+
+					apt-cache search package 搜索软件包
+
+					apt-cache show package  获取包的相关信息，如说明、大小、版本等
+
+					sudo apt-get install package 安装包
+
+					sudo apt-get install package --reinstall   重新安装包
+
+					sudo apt-get -f install   修复安装
+
+					sudo apt-get remove package 删除包
+
+					sudo apt-get remove package --purge 删除包，包括配置文件等
+
+						sudo apt-get update  更新源
+
+					sudo apt-get upgrade 更新已安装的包
+
+					sudo apt-get dist-upgrade 升级系统
+
+					apt-cache depends package 了解使用该包依赖那些包
+
+					apt-cache rdepends package 查看该包被哪些包依赖
+
+					sudo apt-get build-dep package 安装相关的编译环境
+
+					apt-get source package  下载该包的源代码
+
+					sudo apt-get clean && sudo apt-get autoclean 清理无用的包
+
+					sudo apt-get check 检查是否有损坏的依赖
+
+
+			3) aptitude
+
+					aptitude update 更新可用的包列表
+
+					aptitude upgrade 升级可用的包
+
+					aptitude dist-upgrade 将系统升级到新的发行版
+
+					aptitude install pkgname 安装包
+
+					aptitude remove pkgname 删除包
+
+					aptitude purge pkgname 删除包及其配置文件
+
+					aptitude search string 搜索包
+
+					aptitude show pkgname 显示包的详细信息
+
+					aptitude clean 删除下载的包文件
+
+					aptitude autoclean 仅删除过期的包文件
+
+			4) 网易源
+					更新apt-get源：
+					cd /etc/apt
+					sudo cp sources.list sources.list.backup
+					sudo vim sources.list
+
+					deb http://mirrors.163.com/ubuntu/ precise main restricted universe multiverse
+					deb http://mirrors.163.com/ubuntu/ precise-security main restricted universe multiverse
+					deb http://mirrors.163.com/ubuntu/ precise-updates main restricted universe multiverse
+					deb http://mirrors.163.com/ubuntu/ precise-proposed main restricted universe multiverse
+					deb http://mirrors.163.com/ubuntu/ precise-backports main restricted universe multiverse
+					deb-src http://mirrors.163.com/ubuntu/ precise main restricted universe multiverse
+					deb-src http://mirrors.163.com/ubuntu/ precise-security main restricted universe multiverse
+					deb-src http://mirrors.163.com/ubuntu/ precise-updates main restricted universe multiverse
+					deb-src http://mirrors.163.com/ubuntu/ precise-proposed main restricted universe multiverse
+					deb-src http://mirrors.163.com/ubuntu/ precise-backports main restricted universe multiverse
+
+
+十三、系统备份
+	1、需要备份的数据，以及备份频率
+
+		1) 系统基本信息数据
+			a) /etc  						//备份目录，因为系统的所有配置信息都在里面
+			b) /home						//用户目录
+			c) /var/spool/mail				//邮件目录
+			d) /boot						//第一扇区
+			e) /root						//管理员目录
+			f) /usr/local					//自定义安装软件目录
+			g) /opt							//自定义安装软件目录
+
+		2)	 网络服务的内容数据
+			a) /boot
+			b) /etc
+			c) /home
+			d) /root
+			e) /usr/local 、/opt、/srv
+			f) /var/www、/srv/www
+			g) /var/lib/mysql
+
+		3) 备份指令
+			a) dd备份整个系统
+			b) tar或者dump 备份一个目录
+
+		4) script
+			a) 每周备份	//744
+			b) 每日备份	//745
+			c) 远程备份	//746
+
+
+十四、其他功能命令
+
+	1、时间
+		1) 设置系统时区
+			cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime		//复制相应的时区文件，替换CentOS系统时区文件；或者创建链接文件
+
+		2) 设置查看时间
+			a) date 									//查看当前时间
+			b) date -s 3/15/14				//将CentOS系统日期设定成2014年3月15日的命令
+			c) date -s 13:16:00				//修改系统时间
+
+		3) 同步网络时区
+			Centos 下安装：
+				yum install ntp 安装
+				chkconfig ntpd on 开机启动
+				chkconfig --list ntpd
+				yum install ntp
+
+			配置文件启动
+				vim /etc/ntp.conf
+
+				#允许本机的所有操作
+				restrict 127.0.0.1
+				restrict -6 ::1
+
+				# 拒绝客户端的所有操作
+				restrict default kod nomodify notrap nopeer noquery
+
+				# 设置常用的同步服务器(master专属) ntp.sjtu.edu.cn
+				server cn.pool.ntp.org prefer
+
+				sudo service ntpd start
+
+			手动同步日期：
+				ntpdate -d time.nist.gov
+				ntpdate -d pool.ntp.org
+				ntpdate cn.pool.ntp.org
+
+			自动同步:
+				crontab -e
+				*/5 * * * * /usr/sbin/ntpdate monitor.50bang.org && /sbin/hwclock -w
+
+			ntpq -c version 查看版本
+
+	2、输出
+		watch -n1 ls -lh 			//每隔一秒监控指令输出状态，动态
+
+	3、sudo cat /var/log/messages 	//查看系统日志
+
+		ll /var/spool/mail/hadoop  系统账号日志
+
+	4、查询
+		查询字符串在文件出现的位置
+		grep -rn [查询的字符串] [目录地址|文件名]
+
+	5、jmap  J输出所有内存中对象的工具，甚至可以将VM 中的heap，以二进制输出成文本。打印出某个java进程（使用pid）内存内的，所有‘对象’的情况（如：产生那些对象，及其数量）。
+		jmap -heap pid
+
+
+十五、 Centos6.x 升级 Centos7.x
+
+	1. 网络
+		1.1 ifconig 被 ip 替代
+			ip address show 显示 ip 地址
+			ip route show 显示路由
+
+  	1.2. netstat 被 ss 替代
+			ss -ant
+
+		1.3 解决：yum install net-tools 安装扩展工具
+
+
+	2. iptables 被 firewalld 替代
+		systemctl stop firewalld 停止防火墙
+		systemctl disable firewalld 禁用防火墙
+
+
+	3. 版本号
+		cat /etc/redhat-release
+
+
+	4. 主机名
+		cat /etc/hostname
+
+
+	5. /etc/init.d
+		systemctl enable httpd.service 启动服务, 替代 chkconfig --add httpd

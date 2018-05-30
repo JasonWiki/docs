@@ -1,0 +1,46 @@
+第一种方法：
+#设置本网站的根目录 (二个都要写)
+NameVirtualHost *:80
+<VirtualHost 121.199.12.139:80>
+        ServerAdmin linus.php@gmail.com
+        DocumentRoot /web/www
+        ServerName 121.199.12.139
+        ErrorLog logs/dummy-host.example.com-error_log
+        CustomLog logs/dummy-host.example.com-access_log common
+</VirtualHost>
+
+#设置二级域名指定的目录
+#<VirtualHost zun.jsonlin.cn:80>
+<VirtualHost *:80>
+		ServerAdmin linus.php@gmail.com
+		DocumentRoot /web/www/index
+		ServerName jiezoudashi.eicp.net
+		##如果多个域名，不要设置别名，否则冲突
+		#ServerAlias jiezoudashi.eicp.net
+		ErrorLog logs/dummy-host.example.com-error_log
+		CustomLog logs/dummy-host.example.com-access_log common
+</VirtualHost>
+
+
+第二种方法:
+在 httpd.conf 中打开rewrite_module  mod_rewrite
+//并且添加
+RewriteEngine on
+RewriteMap lowercase int:tolower
+#注意创建：vhost.map 镜像文件，一般放在apache的配置文件目录最好
+RewriteMap vhost txt:/etc/httpd/conf/vhost.map
+RewriteCond ${lowercase:%{SERVER_NAME}} ^(.+)$
+RewriteCond ${vhost:%1} ^(/.*)$
+RewriteRule ^/(.*)$ %1/$1
+
+www.zunlvhui.com.cn   /data/www/zun
+hotel.zunlvhui.com.cn /data/www/zun
+admin.zunlvhui.com.cn /data/www/zun
+lottery.jsonlin.cn /data/www/lottery
+yuyuan.jsonlin.cn /data/www/yuyuan
+
+//最后编辑vhost.map，并且在网站下创建相应的目录
+www.domain.com /web/www/www
+bbs.domain.com /web/www/bbs
+anyname.domain.com /web/www/anyname
+以上部分都是：” 域名+空格+绝对路径” 的形式。

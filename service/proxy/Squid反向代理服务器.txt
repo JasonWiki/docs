@@ -1,0 +1,211 @@
+http://linuxme.blog.51cto.com/1850814/372960
+
+一、介绍
+	1、代理服务器上网：比较安全，内网外网独立开。
+	2、代理服务器：可以在浏览器设置代理服务器上网，代理服务器的和客户端处于同一个网段中。
+	3、代理服务器偏重于用户用浏览器上网的。
+
+
+
+二、Squid 代理服务器
+	1、基本功能
+		1) 提供http、ftp协议的代理
+		2) 缓存代理内容
+		3) 对客户端进行访问控制，限制允许访问Squid服务器的客户机
+		4) 对目标地址进行访问控制，限制客户端允许访问的网站
+		5) 根据时间进行访问控制，限定客户端可以使用代理服务的时间
+		
+	2、原理
+		1) 客户端请求代理服务器时，代理服务器每次都会去目标地址比对数据，看是否发生更新
+			有更新：重新缓存到代理服务器，再回馈给客户端
+			无更新：直接把缓存数据回馈给客户端	
+		
+		
+	3、代理内容
+		1) 标准的代理缓冲服务器
+			普通标准的，要在软件设置代理服务器IP，端口
+			有更新：重新缓存到代理服务器，再回馈给客户端
+			无更新：直接把缓存数据回馈给客户端
+			
+		2) 透明代理
+			适用于企业网关主机
+			客户端不需要指定服务器端口
+			通过iptables或者Ipchains,将客户机的Web访问数据转交给服务程序处理
+			
+		3) 反向代理
+			反向代理服务器承担了对原始WEB服务器的静态页面的请求，防止原始服务器过载。
+			它位于本地WEB服务器和Internet之间，处理所有对WEB服务器的请求，组织了WEB服务器和Internet的直接通信。
+			如果互联网用户请求的页面在代理服务器上有缓冲的话，代理服务器直接将缓冲内容发送给用户。
+			如果没有缓冲则先向WEB服务器发出请求，取回数据，本地缓存后再发送给用户。
+			这种方式通过降低了向WEB服务器的请求数从而降低了WEB服务器的负载。	
+		
+		
+三、配置文件参数
+	1、 Squid 主要组成部分
+		服务名：squid
+		主程序：/usr/sbin/squid
+		配置目录：/etc/squid
+		主配文件：/etc/squid/squid.conf
+		监听tcp端口号：3128
+		默认访问日志文件：/var/log/squid/access.log
+		
+	2、安装
+		yum -y install squid*		//安装前检查是否已安装
+		service squid start			//启动服务
+		squid -k reconfig 			//在进程不停用的状态下，把配置文件重新加载到内存中
+		
+	3、squid 常用配置选项(/etc/squid/squid.conf)
+		http_port 192.168.10.1:3128							//代理服务器的监听端口号和IP，(http_port 3128  直接在本机监听端口)
+		cache_mem 64MB        									//缓存占内存大小
+		maximum_object_size 4096KB            			//最大缓存块
+		reply_body_max_size  1024000 allow all  		//限定下载文件大小
+		access_log /var/log/squid/access.log   			//访问日志存放的文件
+		visible_hostname  squid.jsonlin.cn  					//代理服务器出现问题时，提示给用户的网站域名
+		cache_dir ufs /var/spool/squid 100 16 256		//缓存文件存放目录 100表示大小兆，16表示/var/spool/squid目录下创建16个一级目录。256表示在一级目录下每个目录创建256个目录
+			#usf:缓存数据的存储格式
+	                /var/spool/squid 缓存目录
+	                100 : 缓存目录占磁盘空间大小（M）
+	                16 ：缓存空间一级子目录个数
+	                256 ：缓存空间二级子目录个数
+		cache_mgr  webmaster@test.com   				//定义管理员邮箱
+		#http_access deny all   										//访问控制
+		
+		http_access: 允许 HTTP 访问。这个是主要的访问控制条目。
+　　	  no_cache: 定义对缓存请求的响应。
+	
+	4、查看日志
+		cat access_log /var/log/squid/access.log		//成功日志
+		cat access_log /var/log/squid/cache.log			//缓存日志
+		cat access_log /var/log/squid/cat squid.out		//错误日志
+		
+
+
+四、不同代理下的设置
+
+	#内网配置时，记得设置客户机的默认网关指向代理服务器
+	
+	1、标准的代理缓冲服务器 （用于的业务为http、ftp、支持代理的服务的软件）
+		#目的：局域网用户通过代理服务器上网。
+		1) 网络环境：
+			a) 双网卡，一块对内eth0 192.168.10.1，一块对外 eth1 200.168.10.1
+			b) 设置客户机IP为：192.168.10.2
+			c) 客户机与代理服务器用交换机连接
+			
+		2) 配置安装
+			a) yum -y install squid*		//安装	
+			b) 完成后删除rm -i /etc/squid/squid.conf   再重新 vi /etc/squid/squid.conf  输入以下信息
+				# (可写多个)设置代理服务开启的IP和端口
+				http_port 192.168.10.1:3128					
+				#错误时提示
+				visible_hostname squid.jsonlin.cn
+				#设置客户机允许进入代理服务器的192.168.10.0 的网段
+				acl innet src 192.168.10.0/24
+				http_access allow innet
+				#设置代理服务器出去的网段
+				acl all src 0.0.0.0/0.0.0.0	
+				http_access deny all
+				cache_dir ufs /var/spool/squid 100 16 256
+				access_log /var/log/squid/access.log
+			c) 设置客户机浏览器的代理服务器地址为192.168.10.1  端口为3128
+			
+			
+		3) Squid 访问控制ACL说明	(当ACL什么都不写，则拒绝所有)
+				src : 源地址 （即客户机IP地址）
+				dst : 目标地址 （即服务器IP地址）
+				srcdomain : 源名称 （即客户机名称）
+				dstdomain : 目标名称 （即服务器名称）
+				time : 一天中的时刻和一周内的一天
+				url_regex : URL 规则表达式匹配
+				urlpath_regex: URL-path 规则表达式匹配，略去协议和主机名
+				proxy_auth : 通过外部程序进行用户验证
+				maxconn : 单一 IP 的最大连接数	
+	
+			配置文件中的声明格式为：
+			acl acl_element_name type_of_acl_element values_to_acl
+			
+			  1. acl_element_name 可以是任一个在 ACL 中定义的名称。
+		　　2. 任何两个 ACL 元素不能用相同的名字，名字不能重复
+		　　3. 每个 ACL 由列表值组成。当进行匹配检测的时候，多个值由逻辑或运算连接；换言之，即任一 ACL bbs.bitsCN.com
+		　　	元素的值被匹配，则这个 ACL 元素即被匹配。
+		　　4. 并不是所有的 ACL 元素都能使用访问列表中的全部类型。
+		　　5. 不同的 ACL 元素写在不同行中，Squid 将把它们组合在一个列表中。
+		
+		
+		
+	2、透明代理
+		#目的：局域网用户通过代理服务器上网，不需要设置代理ip和端口。
+		1) 网络环境：
+			a) 双网卡，一块对内eth0 192.168.10.1，一块对外 eth1 200.168.10.1
+			b) 设置客户机IP为：192.168.10.2
+			c) 客户机与代理服务器用交换机连接，并且把客户端的网关指向代理服务器即可
+			
+		2) 原理：
+			客户端访问时，把数据通过网关发送给代理服务器。
+			代理服务器接收到数据后，通过iptables防火墙规则，把数据原封不动的重定向到squid代理的端口。由squid完成代理请求。
+				
+		3) 配置安装
+			a) yum -y install squid*		//安装	
+			b) 完成后删除rm -i /etc/squid/squid.conf   再重新 vi /etc/squid/squid.conf  输入以下信息
+				http_port 192.168.10.1:3128 transparent	
+				visible_hostname squid.jsonlin.cn
+				acl innet src 192.168.10.0/24
+				acl all src 0.0.0.0/0.0.0.0	
+				http_access allow innet
+				http_access deny all
+				cache_dir ufs /var/spool/squid 100 16 256
+
+			c) 设置防火墙规则	：
+				iptables -t nat -I PREROUTING -i eth0 -s 192.168.10.0/24 -p tcp -dport 80 -j REDIRECT --to-ports 3128
+					#说明
+					通过nat地址转换技术
+					PREROUTING（在进行路由判断之前所要进行的规则），把通过eth0(客户端网关地址)。
+					192.168.10.0/24这个网段的IP，访问80端口的数据。
+					重定向到（REDIRECT本机的3128端口）
+			c) 设置客户机的网关为squid的ip地址192.168.10.1
+			
+		
+	3、反向代理
+		#目的：客户通过访问squid代理服务器，去连接集群后端的正式服务器，达到集群（非负载）的目的。
+		1) 网络环境：
+			a) 双网卡，一块对内eth0 192.168.10.1，一块对外 eth1 200.168.10.1
+			b) 设置客户机IP为：外网Ip真实ip
+			c) 设置集群服务器的真实服务器的网关为192.168.10.1
+			d) 设置集群服务器的A的IP为192.168.10.2
+			
+		2) 原理：
+			在squid代理服务器开启一个虚拟的提供服务的80端口，供客户端访问
+			然后把访问80端口的数据，转发到squid的3128端口，去访问集群中的真实服务器
+			
+		3) 配置安装
+			a) yum -y install squid*		//安装	
+			b) 完成后删除rm -i /etc/squid/squid.conf   再重新 vi /etc/squid/squid.conf  输入以下信息
+				http_port 外网Ip:80 vhost
+				visible_hostname squid.jsonlin.cn
+				acl all src 0.0.0.0/0.0.0.0	
+				http_access allow all
+				cache_dir ufs /var/spool/squid 100 16 256
+				#设置真实服务器地址，如果有多台服务器可以设置多个，防止宕机
+				cache_peer 192.168.10.2 parent 80 0 originserver weight=5 max-conn=30 name=a
+				cache_peer 192.168.10.3 parent 80 0 originserver weight=5 max-conn=30 name=b
+				#设置域名访问时的放行
+				cache_peer_domain a www.lamp.com
+				cache_peer_access a allow all
+				cache_peer_domain b www.jsonlin.cn
+				cache_peer_access b allow all
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+		
+		
+	

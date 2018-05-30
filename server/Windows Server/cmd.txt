@@ -1,0 +1,15 @@
+﻿ipconfig   查看本电脑的ip地址参数
+
+ping 域名或者Ip地址     链接域名地址
+
+netstat -ano  	查看端口进程
+
+ntsd -c q -p PID   杀进程
+
+net mysql start		//启动服务
+
+//查看参数
+convert /？
+
+//转换文件格式，转换为NTFS
+convert G:/FS:NTFS

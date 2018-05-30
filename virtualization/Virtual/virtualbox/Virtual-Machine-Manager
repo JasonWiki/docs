@@ -1,0 +1,84 @@
+# Virtual Machine Manager 管理虚拟机
+
+## 一、文档
+
+### 官方文档
+http://www.ibm.com/developerworks/cn/cloud/library/cl-managingvms/
+
+### 其他参考文档
+http://yhf8377.blog.163.com/blog/static/176860177201382991510156/
+
+http://www.freeoa.net/osuport/sysadmin/create-vbox-vm-by-cmd_1952.html
+
+### 说明
+virt-manager	虚拟机桌面管理工具
+
+virt-install	虚拟机配给工具
+
+virt-clone	虚拟机映像克隆工具
+
+virt-image	从一个 XML 描述符构造虚拟机
+
+virt-viewer	虚拟机图形控制台
+
+virsh	virsh Guest 域的交互式终端
+
+
+## 二、安装
+
+### 1、安装命令
+```
+VBoxManage --help
+
+虚拟机创建
+vboxmanage createvm  --name "ubuntu-dev1" --ostype "Ubuntu_64" --register --basefolder /var/VBox/
+
+现对其配置进行修改，使其具备基本'计算机'功能。
+BoxManage modifyvm "ubuntu-dev1" --memory 1024 --vram 8 --acpi on --ioapic on --hwvirtex on --vtxvpid on --cpus 2 --cpuhotplug on --chipset ich9 --boot1 disk  --boot2 dvd --nic1 bridged --bridgeadapter1 eth0 --nictype1 virtio --nic2 bridged --bridgeadapter2 eth1 --nictype2 82543GC --mouse usb --keyboard usb --vrde on --vrdeport 3380
+
+为其创建一块虚拟硬盘
+VBoxManage createhd --filename /var/VBox/data/ubuntu-dev1.vdi --size 10240 --variant Standard
+
+为机器分配磁盘控制器，这里当然为其分配'stat'控制器了(不推荐使用ide控制器了)
+VBoxManage storagectl "ubuntu-dev1" --name "SATA Controller" --add sata --hostiocache on --bootable on
+
+#在控制器上加磁盘，当然是刚才我们创建的那块虚拟硬盘。
+VBoxManage storageattach "ubuntu-dev1" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium /var/VBox/data/ubuntu-dev1.vdi
+
+
+#在控制器上加引导设备及镜像(即可传统意义上的光驱)。
+VBoxManage storageattach "ubuntu-dev1" --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium /opt/ubuntu-14.04-server-amd64.iso
+```
+
+
+### 2、命令控制
+```
+#开启虚拟机
+VBoxManage startvm ubuntu-dev1
+
+查看vbox支持哪些操作系统
+VBoxManage list ostypes
+
+查看已经注册的虚拟机
+VBoxManage list vms
+
+查看在运行的虚拟机
+VBoxManage list runningvms
+
+查看已有的虚拟机的信息
+VBoxManage showvminfo vm_name
+
+将'xdeb'的内存修改为512MB
+VBoxManage modifyvm "xdeb" --memory "512"
+
+将'xdeb'的显存修改为32MB
+VBoxManage modifyvm "xdeb" --vram "32"
+
+将其光驱控制器改为ICH6的驱动(中文环境)
+VBoxManage storagectl "xdeb" --name "IDE 控制器" --controller ICH6
+
+控制虚拟机
+VBoxManage controlvm <uuid>|<name>
+pause|resume|reset|poweroff|savestate|acpipowerbutton|
+暂停|继续|重置|关机|保存此时状态关机|调用系统关机|
+```

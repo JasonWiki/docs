@@ -1,0 +1,17 @@
+-- Upgrade MetaStore schema from 1.1.0 to 1.1.0-cdh5.12.0
+
+SOURCE 041-HIVE-16556.mysql.sql;
+
+--
+-- Table structure for table METASTORE_DB_PROPERTIES
+--
+CREATE TABLE IF NOT EXISTS `METASTORE_DB_PROPERTIES` (
+  `PROPERTY_KEY` varchar(255) NOT NULL,
+  `PROPERTY_VALUE` varchar(1000) NOT NULL,
+  `DESCRIPTION` varchar(1000),
+ PRIMARY KEY(`PROPERTY_KEY`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE VERSION ADD COLUMN SCHEMA_VERSION_V2 VARCHAR(255);
+UPDATE VERSION SET SCHEMA_VERSION='1.1.0', VERSION_COMMENT='Hive release version 1.1.0', SCHEMA_VERSION_V2='1.1.0-cdh5.12.0' where VER_ID=1;
+SELECT 'Finished upgrading MetaStore schema from 1.1.0 to 1.1.0-cdh5.12.0' AS ' ';

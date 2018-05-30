@@ -1,0 +1,25 @@
+#xinetd服务是防火墙机制（260）
+
+一、原理：
+	1、通过 /etc/hosts.allow  /etc/hosts.deny  这二个文件管理
+		1) 先以 /etc/hosts.allow 为优先比对，该规则符合就予以放行；
+	 2) 再以 /etc/hosts.deny 比对，规则符合就予以抵挡；
+	 3) 若不在这两个档案内，亦即规则都不符合，最终则予以放行。
+	
+	2、通过xinetd服务来控制
+		注：由 super daemon 管理的服务、支持 libwrap.so 模块(函数)的服务器，才可以使用xinetd管理的防火墙
+
+二、检查是否支持
+	1、查看ssh xinetd httpd 几个服务，是否包含“ libwrap ”动态函数库
+			ldd $(which rsyslogd ssh xinetd httpd)			
+	
+	2、查看sshd xinetd httpd , 把存在“ libwrap ”动态函数库的服务的打印出来
+			for name in rsyslogd sshd xinetd httpd; 
+				do echo $name;
+				ldd $(which $name) | grep libwrap; 
+			done
+
+	3、安装
+		yum install xinetd		
+
+

@@ -1,0 +1,429 @@
+http://wenku.baidu.com/view/a9dd7037ee06eff9aef8071e.html
+
+
+模板文件目录如下：
+		images/ (存放模板中用到的图片)
+		library/ (存放一些小模板文件及重复被用到的模板文件)
+		style.css (模板样式文件)
+		index.dwt (首页的模板index.php )
+		goods.dwt (商品显示页的模板goods.php )
+		*.dwt (表示其它.dwt 文件)
+
+{foreach from=$best_goods item=goods}
+{$goods.short_style_name}
+{/foreach}
+
+
+
+ECShop2.5.1_Beta upload 的目录
+
+//前台目录
+         ┣ activity.php 活动列表
+         ┣ affiche.php 广告处理文件
+         ┣ affiliate.php 生成商品列表
+         ┣ article.php 文章内容
+         ┣ article_cat.php文章分类
+         ┣ auction.php 拍卖前台文件
+         ┣ brand.php 品牌列表
+         ┣ captcha.php 生成验证码
+         ┣ catalog.php 列出所以分类及品牌
+         ┣ category.php 商品分类
+         ┣ comment.php 提交用户评论
+         ┣ compare.php 商品比较程序
+         ┣ cycle_image.php   轮播图片程序
+         ┣ feed.php RSS Feed 生成程序		//获取订阅数据的，最新更新数据
+         ┣ flow.php 购物流程
+         ┣ gallery.php 商品相册
+         ┣ goods.php 商品详情
+         ┣ goods_script.php 生成商品列表
+         ┣ group_buy.php 团购商品前台文件
+         ┣ index.php 首页文件
+         ┣ myship.php 支付配送DEMO
+         ┣ pick_out.php 选购中心
+         ┣ receive.php 处理收回确认的页面
+         ┣ region.php 地区切换程序
+         ┣ respond.php 支付响应页面
+         ┣ robots.txt
+         ┣ search.php 搜索程序
+         ┣ sitemaps.php   google sitemap 文件
+         ┣ snatch.php 夺宝奇兵前台页面
+         ┣ tag_cloud.php 标签云
+         ┣ topic.php 专题前台
+         ┣ user.php 会员中心
+         ┣ vote.php 调查程序
+         ┣ wholesale.php 批发前台文件
+         
+	    ┣ api 的目录
+         ┃ ┣ checkorder.php 检查订单 API
+         ┃ ┣ cron.php
+         ┃ ┗ init.php API 公用初始化文件
+         
+         ┣ cert 的目录
+         
+         ┣ data 的目录---网站数据
+         ┃ ┣ ffiliate.html
+         ┃ ┣ goods_script.html
+         ┃ ┣ order_print.html
+         ┃ ┣ afficheimg 的目录
+         ┃ ┣ brandlogo 的目录
+         ┃ ┣ captcha 的目录 验证码背景图片存放位置
+         ┃ ┣ cardimg 的目录
+         ┃ ┣ feedbackimg 的目录
+         ┃ ┣ images 的目录
+         ┃ ┣ packimg 的目录
+         ┃ ┗ sqldata 的目录
+         ┃ ┗config.php	数据库配合文件
+         
+         ┣ images 的目录		//上传目录
+         ┃ ┗ upload 的目录
+         ┃        ┣ File 文件上传存放处
+         ┃        ┣ Flash flash上传存放处
+         ┃        ┣ Image 图片上传存放处
+         ┃        ┗ Media 视频上传存放处
+         
+         ┣ includes 的目录---前台类库
+         ┃ ┣ cls_captcha.php 验证码图片类
+         ┃ ┣ cls_ecshop.php 基础类
+         ┃ ┣ cls_error.php 用户级错误处理类
+         ┃ ┣ cls_iconv.php 字符集转换类
+         ┃ ┣ cls_image.php 后台对上传文件的处理类(实现图片上传，图片缩小， 增加水印)
+         ┃ ┣ cls_json.php JSON 类
+         ┃ ┣ cls_mysql.php MYSQL 公用类库
+         ┃ ┣ cls_rss.php RSS 类
+         ┃ ┣ cls_session.php SESSION 公用类库
+         ┃ ┣ cls_sms.php 短信模块 之 模型（类库）
+         ┃ ┣ cls_smtp.php SMTP 邮件类
+         ┃ ┣ cls_sql_executor.php SQL语句执行类
+         ┃ ┣ cls_template.php 模版类
+         ┃ ┣ cls_transport.php 服务器之间数据传输器
+         ┃ ┣ inc_constant.php 常量
+         ┃ ┣ init.php 前台公用文件
+         ┃ ┣ lib.debug.php
+         ┃ ┣ lib_article.php 文章及文章分类相关函数库
+         ┃ ┣ lib_clips.php ECSHOP 用户相关函数库
+         ┃ ┣ lib_code.php 加密解密类
+         ┃ ┣ lib_common.php 公用函数库
+         ┃ ┣ lib_goods.php 商品相关函数库
+         ┃ ┣ lib_insert.php 动态内容函数库
+         ┃ ┣ lib_main.php 前台公用函数库
+         ┃ ┣ lib_order.php 购物流程函数库
+         ┃ ┣ lib_passport.php 用户帐号相关函数库
+         ┃ ┣ lib_payment.php 支付接口函数库
+         ┃ ┣ lib_time.php 时间函数
+         ┃ ┣ lib_transaction.php ECSHOP 用户交易相关函数库
+         ┃ ┣ codetable 的目录
+         ┃ ┃ ┣ big5-gb.table
+         ┃ ┃ ┣ big5_utf8.php
+         ┃ ┃ ┣ gb-big5.table
+         ┃ ┃ ┣ gb_utf8.php
+         ┃ ┃ ┗ ipdata.dat
+         ┃ ┣ fckeditor 的目录 fckeditor编辑器目录
+         ┃ ┗ modules 的目录
+         ┃       ┣ convert 的目录
+         ┃       ┃ ┣ shopex46.php vshopex4.6转换程序插件
+         ┃       ┃ ┗ shopex47.php shopex4.7转换程序插件
+         ┃       ┣ cron 的目录
+         ┃       ┃ ┣ auto_manage.php 自动上下架管理
+         ┃       ┃ ┗ ipdel.php 定期删除
+         ┃       ┣ integrates 的目录
+         ┃       ┃ ┣ bmforum.php 会员数据处理类
+         ┃       ┃ ┣ discuz.php
+         ┃       ┃ ┣ discuz55.php
+         ┃       ┃ ┣ dvbbs.php
+         ┃       ┃ ┣ ecshop.php
+         ┃       ┃ ┣ integrate.php
+         ┃       ┃ ┣ ipb.php
+         ┃       ┃ ┣ molyx.php
+         ┃       ┃ ┣ phpbb.php
+         ┃       ┃ ┣ phpwind.php
+         ┃       ┃ ┣ phpwind5.php
+         ┃       ┃ ┗ vbb.php
+         ┃       ┣ payment 的目录
+         ┃       ┃ ┣ alipay.php 支付宝插件
+         ┃       ┃ ┣ balance.php 余额支付插件
+         ┃       ┃ ┣ bank.php 银行汇款（转帐）插件
+         ┃       ┃ ┣ cappay.php 首信易支付插件
+         ┃       ┃ ┣ chinabank.php 网银在线插件
+         ┃       ┃ ┣ cncard.php 云网支付插件
+         ┃       ┃ ┣ cod.php 货到付款插件
+         ┃       ┃ ┣ ctopay.php Ctopay 支付插件
+         ┃       ┃ ┣ express.php express支付系统插件
+         ┃       ┃ ┣ ips.php ips支付系统插件
+         ┃       ┃ ┣ kuaiqian.php 快钱插件
+         ┃       ┃ ┣ nps.php NPS支付插件
+         ┃       ┃ ┣ pay800.php 800pay 支付宝插件
+         ┃       ┃ ┣ paypal.php 贝宝插件
+         ┃       ┃ ┣ paypalcn.php 贝宝中国插件
+         ┃       ┃ ┣ post.php 邮局汇款插件
+         ┃       ┃ ┣ tenpay.php 财付通插件
+         ┃       ┃ ┣ udpay.php 网汇通插件
+         ┃       ┃ ┣ xpay.php 易付通插件
+         ┃       ┃ ┗ yeepay.php YeePay易宝插件
+         ┃       ┗ shipping 的目录
+         ┃             ┣ cac.php 上门取货插件
+         ┃             ┣ city_express.php 城际快递插件
+         ┃             ┣ ems.php EMS插件
+         ┃             ┣ flat.php 邮政包裹插件
+         ┃             ┣ fpd.php 到付运费插件
+         ┃             ┣ post_express.php 邮政包裹插件
+         ┃             ┣ post_mail.php 邮局平邮插件
+         ┃             ┣ presswork.php 挂号印刷品插件
+         ┃             ┣ sf_express.php 顺丰速运 配送方式插件
+         ┃             ┣ sto_express.php 申通快递 配送方式插件
+         ┃             ┣ yto.php 圆通速递插件
+         ┃             ┗ zto.php 中通速递插件
+         ┣ install 的目录   安装文件目录
+         ┣ js 的目录
+         ┃ ┣ auto_complete.js
+         ┃ ┣ calendar.php
+         ┃ ┣ common.js
+         ┃ ┣ compare.js
+         ┃ ┣ global.js
+         ┃ ┣ lefttime.js
+         ┃ ┣ myship.js
+         ┃ ┣ region.js
+         ┃ ┣ shopping_flow.js
+         ┃ ┣ transport.js
+         ┃ ┣ user.js
+         ┃ ┣ utils.js
+         ┃ ┗ calendar 的目录
+         ┣ languages 的目录   语言风格文件
+         ┃ ┣ zh_cn 的目录
+         ┃ ┃ ┣
+         ┃ ┃ ┣ admin 的目录
+         ┃ ┃ ┣ convert 的目录
+         ┃ ┃ ┣ cron 的目录
+         ┃ ┃ ┣ payment 的目录
+         ┃ ┃ ┗ shipping 的目录
+         ┃ ┗ zh_tw 的目录
+         ┃        ┣ admin 的目录
+         ┃        ┣ convert 的目录
+         ┃        ┣ cron 的目录
+         ┃        ┣ payment 的目录
+         ┃        ┗ shipping 的目录
+         ┣ plugins 的目录
+         ┣ templates 的目录
+         ┃ ┣ backup 的目录
+         ┃ ┃ ┗ ibrary 的目录
+         ┃ ┣ caches 的目录
+         ┃ ┗ compiled 的目录
+         ┃        ┗ admin 的目录 
+         
+
+//模板目录 	   
+		┣ themes 的目录
+         ┃ ┣ default 的目录
+         ┃ ┃ ┣ images 的目录		
+         ┃ ┃ ┗ library 的目录		//公共文件模板
+         ┃ ┗ sport 的目录
+         ┣ wap 的目录
+         ┃ ┣ article.php
+         ┃ ┣ brands.php
+         ┃ ┣ buy.php
+         ┃ ┣ category.php
+         ┃ ┣ comment.php
+         ┃ ┣ goods.php
+         ┃ ┣ goods_list.php
+         ┃ ┣ index.php
+         ┃ ┣ user.php
+         ┃ ┣ includes 的目录
+         ┃ ┃ ┣ init.php
+         ┃ ┃ ┣ lib_main.php
+         ┃ ┗ templates 的目录
+         ┃        ┣ article.wml
+         ┃        ┣ article_list.wml
+         ┃        ┣ brands.wml
+         ┃        ┣ buy.wml
+         ┃        ┣ category.wml
+         ┃        ┣ comment.wml
+         ┃        ┣ goods.wml
+         ┃        ┣ goods_img.wml
+         ┃        ┣ goods_list.wml
+         ┃        ┣ index.wml
+         ┃        ┣ login.wml
+         ┃        ┣ order_list.wml
+         ┃        ┗ user.wml
+         ┗ widget 的目录
+               ┣ blog_sohu.php
+               ┣ blog_sohu.xhtml
+               ┗ images 的目录       
+         
+         
+//admin文件夹
+         ┃ ┣ account_log.php 管理中心帐户变动记录
+         ┃ ┣ admin_logs.php 记录管理员操作日志
+         ┃ ┣ ads.php 广告管理程序
+         ┃ ┣ adsense.php 站外JS投放的统计程序
+         ┃ ┣ ad_position.php广告位置管理程序
+         ┃ ┣ affiliate.php 程序说明
+         ┃ ┣ affiliate_ck.php 程序说明
+         ┃ ┣ agency.php 管理中心办事处管理
+         ┃ ┣ area_manage.php 地区列表管理文件
+         ┃ ┣ article.php 管理中心文章处理程序文件
+         ┃ ┣ articlecat.php 文章分类管理程序
+         ┃ ┣ article_auto.php
+         ┃ ┣ attention_list.php
+         ┃ ┣ attribute.php 属性规格管理
+         ┃ ┣ auction.php 管理中心拍卖活动管理
+         ┃ ┣ bonus.php 红包类型的处理
+         ┃ ┣ brand.php管理中心品牌管理
+         ┃ ┣ captcha_manage.php
+         ┃ ┣ card.php 贺卡管理程序
+         ┃ ┣ category.php 商品分类管理程序
+         ┃ ┣ check_file_priv.php 系统文件检测
+         ┃ ┣ comment_manage.php 用户评论管理程序
+         ┃ ┣ convert.php 转换程序
+         ┃ ┣ cron.php 计划任务
+         ┃ ┣ database.php 数据库管理
+         ┃ ┣ ebao_commend.php 易宝推荐
+         ┃ ┣ edit_languages.php 管理中心语言项编辑(前台语言项)
+         ┃ ┣ email_list.php 邮件列表管理
+         ┃ ┣ favourable.php 管理中心优惠活动管理
+         ┃ ┣ flashplay.php
+         ┃ ┣ flow_stats.php 综合流量统计
+         ┃ ┣ friend_link.php 友情链接管理
+         ┃ ┣ gen_goods_script.php 生成显示商品的js代码
+         ┃ ┣ get_password.php 找回管理员密码
+         ┃ ┣ goods.php 商品管理程序
+         ┃ ┣ goods_auto.php
+         ┃ ┣ goods_batch.php 商品批量上传、修改
+         ┃ ┣ goods_booking.php 缺货处理管理程序
+         ┃ ┣ goods_export.php
+         ┃ ┣ goods_type.php 商品类型管理程序
+         ┃ ┣ group_buy.php 管理中心团购商品管理
+         ┃ ┣ guest_stats.php 客户统计
+         ┃ ┣ index.php 控制台首页
+         ┃ ┣ integrate.php 第三方程序会员数据整合插件管理程序
+         ┃ ┣ magazine_list.php
+         ┃ ┣ mail_template.php 管理中心模版管理程序
+         ┃ ┣ message.php 管理中心管理员留言程序
+         ┃ ┣ navigator.php    
+	    ┃ ┣ order.php 订单管理
+         ┃ ┣ order_stats.php 订单统计
+         ┃ ┣ pack.php 包装管理程序
+         ┃ ┣ payment.php 支付方式管理程序
+         ┃ ┣ picture_batch.php 图片批量处理程序
+         ┃ ┣ privilege.php 管理员信息以及权限管理程序
+         ┃ ┣ sale_general.php 销售概况
+         ┃ ┣ sale_list.php 销售明细列表程序
+         ┃ ┣ sale_order.php 商品销售排行
+         ┃ ┣ searchengine_stats.php 搜索引擎关键字统计
+         ┃ ┣ search_log.php
+         ┃ ┣ shipping.php 配送方式管理程序
+         ┃ ┣ shipping_area.php 配送区域管理程序
+         ┃ ┣ shophelp.php 帮助信息管理程序
+         ┃ ┣ shopinfo.php 网店信息管理页面
+         ┃ ┣ shop_config.php   管理中心商店设置
+         ┃ ┣ sitemap.php 站点地图生成程序
+         ┃ ┣ sms.php 短信模块 之 控制器
+         ┃ ┣ snatch.php 夺宝奇兵管理程序
+         ┃ ┣ sql.php sql管理程序
+         ┃ ┣ tag_manage.php 后台标签管理
+         ┃ ┣ template.php 管理中心模版管理程序
+         ┃ ┣ topic.php 专题管理
+         ┃ ┣ users.php 会员管理程序
+         ┃ ┣ users_order.php 会员排行统计程序
+         ┃ ┣ user_account.php 会员帐目管理(包括预付款，余额)
+         ┃ ┣ user_msg.php 客户留言
+         ┃ ┣ user_rank.php 会员等级管理程序
+         ┃ ┣ view_sendlist.php
+         ┃ ┣ virtual_card.php 虚拟卡商品管理程序
+         ┃ ┣ visit_sold.php 访问购买比例
+         ┃ ┣ vote.php 调查管理程序
+         ┃ ┣ wholesale.php   管理中心批发管理
+         ┃ ┣ help 的目录   后台操作帮助文件
+         ┃ ┣ images 的目录
+         ┃ ┣ includes 的目录       
+         ┃ ┃   ┣ cls_exchange.php 后台自动操作数据库的类文件
+         ┃ ┃   ┣ cls_google_sitemap.php Google sitemap 类
+         ┃ ┃   ┣ cls_phpzip.php ZIP 处理类
+         ┃ ┃   ┣ cls_sql_dump.php 数据库导出类
+         ┃ ┃   ┣ inc_menu.php 管理中心菜单数组
+         ┃ ┃   ┣ init.php 管理中心公用文件
+         ┃ ┃   ┣ lib_goods.php 管理中心商品相关函数
+         ┃ ┃   ┣ lib_main.php 管理中心公用函数库
+         ┃ ┃   ┗ lib_template.php 管理中心模版相关公用函数库
+         ┃ ┣ styles 的目录
+         ┃ ┣ templates 的目录
+         ┃ ┗ js 的目录
+         ┃    ┣ colorselector.js
+         ┃    ┣ common.js
+         ┃    ┣ listtable.js
+         ┃    ┣ md5.js
+         ┃    ┣ selectzone.js
+         ┃    ┣ tab.js
+         ┃    ┣ todolist.js
+         ┃    ┣ topbar.js
+         ┃    ┗ validator.js 表单验证类 
+
+        
+        
+http://www.cnblogs.com/lmule/archive/2010/11/05/1869624.html        
+ecs_region 地区菜单       
+#数据表结构       
+ecs_account_log 					// 用户账目日志表 
+ecs_activity								 // 活动表（代码，名称，开始，结束，描述） 
+ecs_ad 									// 广告表（位置，类型，名称，链接，图片，开始，结束，广告主相关信息，点击， 是否显示） 
+ecs_admin_action 					// 管理权限分配（父类ID，权限代码） 
+ecs_admin_log						 // 管理日志（登陆时间，登陆管理员ID，操作描述，IP） 
+ecs_admin_message			 // 管理员留言（发送者ID，接收者ID，发送日期，阅读日期，是否 已读，是否删除，标题，内容） 
+ecs_admin_user 					// 管理员管理（用户名，email ，密码，加入时间，最后登陆时间，最后 登陆IP，权限等） 
+ecs_adsense							 // 广告相关统计（来源广告，来源位置，点击） 
+ecs_ad_position 					// 广告位（名称，宽，高，描述，样式） 
+ecs_area_region					 // 配送区域关联（配送区域ID，具体地址ID） 
+ecs_article 								// 文章（分类ID，标题，内容，作者，作者email ，关键字，类型，是否显示， 添加时间，文件地址，打开类型） 
+ecs_article_cat						 // 文章分类（名称，类型，关键字，描述，排序，是否导航显示） 
+ecs_attribute 							// 商品属性（分类，名称，选择样式，类型，值，检索类型，排序，是否关 联） 
+ecs_bonus_type 					// 红包（名称，金额，发放起始日期，发放结束日期，使用起始日期，使 用结束日期，发放类型，金额下限（按订单发放），金额上限） 
+ecs_booking_goods 				// 缺货登记（登记用户ID，email ，电话，商品ID，描述，数量，登 记时间，是否已处理，处理管理员，处理时间，处理备注） 
+ecs_brand 								// 品牌（名称，logo，描述，链接，排序，是否显示） 
+ecs_card									 // 祝福贺卡（名称，图片，费用，免费额度，描述） 
+ecs_cart 									// 购物车（用户ID，session_id ，商品ID，商品编号，商品名称，市场价，购买 价，数量，属性，是否真实商品，扩展代码，父类ID，类型，是否赠品，能否处理） 
+ecs_category							 // 商品分类（名称，关键字，描述，父类ID，排序，是否有子类，模板文件， 数量单位，是否导航显示） 
+ecs_collect_goods				 // 收藏（用户ID，商品ID，收藏时间） 
+ecs_comment 						// 评论（类型，类型ID，email ，用户名，内容，评星，添加时间，IP，状 态，父类ID） 
+ecs_delivery_goods				//  查询：取得发货单商品 
+ecs_delivery_order				// 发货单
+ecs_feedback						 // 用户留言（父类ID，用户ID，用户名，email，标题，类型，内容，时间， 图片，是否回复） 
+ecs_friend_link						 // 友情链接（名称，链接，logo，排序） 
+ecs_gift 									// 赠品（送赠品活动ID，商品ID，赠品价格） 
+ecs_gift_type							 // 送赠品活动（名称，发送类型，相关参数，数量，开始，结束） 
+ecs_goods 							// 商品（分类ID，名称，点击，品牌ID，供应商名称，库存，重量，市场价， 售价，fitting_price(未知)，促销价，促销开始日期，结束日期，警告数量，关键字，简介， 描述，缩略图，图，原图，是否真实商品，扩展代码，是否上架，是否单独销售，是否关联， 配件关联，是否赠品，能否成为赠品，单位，添加时间，排序，是否回收，精品，新品，推 荐，热销，红包ID，更新日期，商品类型，商品备注，首页轮播） ecs_goods_article // 商品文章关联（gid,aid ） 
+ecs_goods_attr						 // 商品属性（商品ID，属性ID，属性值，属性附加价） 
+ecs_goods_cat 						// 未知 
+ecs_gallery 							// 商品相册（商品ID，图片，描述，缩略图，原图） 
+ecs_goods_type					 // 商品类型（名称，状态） 
+ecs_group_buy 						// 团购（商品ID，结束日期，价格阶梯，限购数量，描述，订购量，订单，赠送积分数，流程，押金，是否完成） 
+
+ecs_group_goods 				// 配件（父类ID，商品ID，配件价格） 
+ecs_link_goods 						// 商品关联（商品ID，关联ID，单双向） 
+ecs_mail_templates 				// 邮件样式（代码，是否html，名称，样式，最后修改日期） 
+ecs_member_price 				// 会员价（商品ID，会员等级，会员价） 
+ecs_nav									// 首页导航
+ecs_order_action 					// 订单处理（订单ID，处理用户，订单状态，配送状态，支付状态，处 理时间，备注） 
+ecs_order_goods					 // 订单－商品（订单ID，商品ID，商品名称，商品编号，商品数量，市 场价，订单价，商品属性，配送数量，是否真实商品，扩展代码，父类ID，是否赠品） 
+ecs_order_info						 // 订单信息（好多(-_-|||略...） 
+ecs_pack 								// 包装（名称，图片，费用，免费额，描述） 
+ecs_payment							 // 支付工具（代码，名称，费用，描述，排序，配置，状态，is_cod(未知)） 
+ecs_pay_log							 // 支付记录（略） 
+ecs_plugins 							// 插件（代码，版本，库，签名，安装日期） 
+ecs_region 							// 地方数据（没什么好说的） 
+ecs_sessions 						// 保存session 的（也没什么好说的（嗯？为什么要加个“也”呢）） 
+ecs_shipping 							// 配送（代码，名称，描述，保价费，support_cod(未知)，状态） 
+ecs_shipping_area 				// 配送区域（序列配置） 
+ecs_shop_config 					// 设置（父类ID，代码，类型，范围，文件夹，值） 
+ecs_snatch 							// 夺宝奇兵（活动ID，商品ID，最小价，最大价，定价，积分消耗） 
+ecs_snatch_log						 // 夺宝奇兵出价记录（还是没什么好说的） 
+ecs_stats 								// 访问记录（时间，IP，访问次数，浏览器，系统，语言，地区，来源域名，来 源地址，关键字，进入链接） 
+ecs_tag 									// 用户标签（不说） 
+ecs_template 						// 模板区域（文件名，区域，模板库，排序，id，数量，类型，模板）也不 怎么清楚 
+ecs_users 								// 会员（一些会员信息） 
+ecs_user_account					 // 会员帐户（用户ID，管理员，总额，添加时间，支付时间，管理备注， 用户备注，处理类型，支付工具，是否支付） 
+ecs_user_address 				// 用户收货地址（略） 
+ecs_user_bonus 					// 用户红包（红包ID，红包编号，用户ID，使用时间，订单ID，是否已 发邮件） 
+ecs_user_rank 						// 会员等级（名称，积分最小限额，最大限额，折扣，是否显示价格，特 殊会员） 
+ecs_virtual_cart 						// 虚拟卡（商品ID，卡号，密码，添加时间，失效时间，是否已卖完， 编号，crc32 校验码） 
+ecs_vote 								// 投票（名称，开始，结束，能否多选，统计） ecs_vote_log // 投票记录（投票ID，IP，时间） 
+ecs_vote_option 					// 投票内容（投票ID，条目名称，条目统计） 
+         
+         

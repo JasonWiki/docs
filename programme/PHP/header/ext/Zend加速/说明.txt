@@ -1,0 +1,37 @@
+//官方下载
+http://www.zend.com/en/products/guard/downloads
+//Linux
+http://hohoqi.blog.163.com/blog/static/10795561201181221249991/
+
+都是写入PHP的ini中
+
+一、ZendGuardLoader(php5.3+)
+//1、window的
+[Zend.loader]
+zend_loader.enable=1
+zend_loader.disable_licensing=1
+zend_loader.obfuscation_level_support=3
+zend_loader.license_path=
+zend_extension=”E:\wamp\bin\php\php5.4.16\zend_ext”
+
+//2、linux
+[Zend Guard Loader]
+zend_extension=/usr/lib/httpd/modules/ZendGuardLoader.so
+zend_loader.enable=1
+zend_loader.disable_licensing=0
+zend_loader.obfuscation_level_support=3
+
+
+二、ZendOptimizer(php5.2)
+//1、Linux
+[Zend]
+zend_extension_manager.optimizer=/alidata/server/Zend/lib/Optimizer-3.3.3
+zend_extension_manager.optimizer_ts=/alidata/server/Zend/lib/Optimizer_TS-3.3.3
+zend_optimizer.version=3.3.3
+zend_extension=/alidata/server/Zend/lib/ZendExtensionManager.so
+zend_extension_ts=/alidata/server/Zend/lib/ZendExtensionManager_TS.so
+  
+//2、windows
+zend_extension_manager.optimizer_ts="C:\Program Files\Zend\ZendOptimizer-3.3.0\lib\Optimizer-3.3.0"
+zend_extension_ts="C:\Program Files\Zend\ZendOptimizer-3.3.0\lib\ZendExtensionManager.dll"
+  

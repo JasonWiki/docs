@@ -1,0 +1,414 @@
+端口：4575
+
+mongodb（分布式文档存储数据库）
+
+一、结构
+	1、数据库->很多集合(Collenction)->很多文档（json对象）
+
+	2、对字段没有要求，字段的扩张很灵活
+
+	3、存储格式为BSON ( 一直二进制的json )
+
+
+二、使用环境
+	1、适用环境
+		1) 持久化缓存层
+		2) 高效的实施性
+		3) 用于对象及JSON数据的存储
+		4) 高伸缩的场景
+		5) 大尺寸、低价值的数据存储
+
+	2、不适用环境
+		1) 高度事务性的系统
+		2) 传统的商业智能应用
+		3) 复杂多表查询
+
+
+三、安装使用
+	1、下载安装
+		#这里下载的是二进制文件包
+		1) http://www.mongodb.org/downloads
+			注意不同位数的计算机，只能用对应位数的
+
+		2) tar zxvf mongodb-linux-i686-2.4.9.tgz			//解压缩
+
+		3) cp -airp mongodb-linux-i686-2.4.9 /usr/local/mongodb-版本号		//拷贝二进制包到系统目录下
+
+		4) mkdir /web/data 				//创建一个防止数据库的文件夹
+			touch /web/dblogs					//创建数据库日志文件
+
+			创建软链
+			ln -s /usr/local/mongodb-2.6.6/bin/* /usr/local/bin/
+			//ln -s /usr/local/mongodb-2.6.6/bin/mongod /usr/local/bin/mongod
+
+		5) 启动及开机启动、关闭程序
+			a) 进入mongodb二进制文件目录
+				cd /usr/local/mongodb/bin
+
+			b) 设置数据库目录和日志文件，并且启动，详细参数看pc1.jpg
+					/usr/local/mongodb/bin/mongod  --auth --dbpath=/web/data/ --logpath=/web/dblogs --fork
+					i) 当出现forked process:进程ID时，就说明启动成功
+						pstree -Aup	 | grep mongod			//查看启动PID结构
+					ii) 启动失败的话
+						进入/web/data/目录下，查找mongod.lock，把这个文件删除，找出配置错误，重新启动
+
+			c) 开机启动
+				vi /etc/rc.d/rc.local				//加入以下
+				/usr/local/mongodb/bin/mongod --auth --dbpath=/web/data/ --logpath=/web/dblogs --fork
+
+			d) pkill mongod 						//停止服务
+				killall -i -15 mongod			//停止服务（跟以上二选1）
+				不可以使用kill -9
+
+
+四、体系结构
+	1、逻辑结构关系对比
+		1) 关系型数据库
+			MySQL数据库(database)、表(table)、记录(rows)三个层次
+
+		2)  非关系型数据库
+			MongoDB数据库(database)、集合(collection)、文档对象(document)三个层次
+			集合对应关系型数据库里的表，但是集合没有列、行的关系和概念，集合中只有文档，一个文档就相当于一个记录
+
+
+
+
+五、命令操作
+
+	1、/usr/local/mongodb/bin/mongo			//进入数据库
+		> exit				//退出数据库
+		> show dbs		// 显示数据库
+		> db					//查看当前数据库
+		> use test			//使用test数据库
+		> show tables;		//查看当前数据库的集合
+		> show collections;	 //查看当前数据库的集合
+
+	2、数据
+		支持的数据类型：
+		null 、布尔值、32位整数、64位整数、64为浮点数、字符串、符号、ObjectID、日期(new Date()) 、代码、数组、内嵌文档
+
+		1) 插入数据
+			#在当前数据库下创建一个c1集合，并在集合里面创建一个文档
+			a) > db.c1.insert({name:"user1",age:30});			//insert		插入的值相同则添加失败
+			b) > db.c1.save({name:"user1",age:30});			//save		插入的值相同则修改
+			c) > db.c1.insert({name:"user1",post:{tit:1}});		//json
+			d) > db.c1.insert({name:"user1",post:[1,2,3,4,5]});	//数组
+
+
+		2) 删除方法
+			a) > db.c1.remove();										//删除c1集合下所有json
+			b) > db.c1.remove({name:"user1"});			//删除c1集合下name是user1的所有数据
+
+		3) 查找
+			a) > db.c1.find();									//查找所有数据
+			b) > db.c1.find({name:'user1'});			//查找符合条件的数据
+			d) > db.c1.find({name:'user1'},{name:1,_id:0});		//查找name列、_id列不显示
+
+		4) update ,修改、更新
+			#语法参数
+				db.collection.update(criteria,objNew,upsert,multi)
+				criteria：查询的条件
+				objNew：设置更新的内容
+				upsert：记录存在更新，否则添加一条
+				multi：多个符合记录则全部更新
+
+			a) > db.c1.update({'yy':5},{'$set':{'xx':2}},0,1);						//对已经存在的数据进行更新，可以用于更新多条数据、追加一个新的字段等（推荐）
+
+			b) > db.c1.update({name2:"user2"},{age:300},0);				//把匹配到的JSON，替换成修改的JSON，包括数据结构。
+
+			c) $inc   ,  对于整形累加、累减值
+				> db.c1.update({name2:"user2"},{$inc:{age:-300}});			//把所有匹配到得知进行操作，只能用于INT类型
+
+			d) $unset 	，删除字段
+				> db.c1.update({name2:"user2"},{$unset:{age:1}},0,1);			//删除age字段
+
+			e) $push  ， 在数组中，追加数据（可以是任何数据，但只能添加一条）
+				> db.c1.update({name:"user1"},{$push:{arr:6}});				//arr数组中追加一个值
+
+			f) $pushAll  ， 在数组中，追加数据，可以追加多条数据
+				> db.c1.update({name:"user1"},{$pushAll:{arr:[1,2,3,4,5,6]}});				//arr数组中追加多个值
+
+			g) $pop， 在数组开头处，弹出一个值
+				#参数
+					1：从数组尾部开始删除
+					-1：从数组头部开始删除
+				> db.c1.update({name:"user1"},{$pop:{arr:1}});				//arr数组头部弹出一个值，1表示true
+
+			h) $addToSet，  数据压入数组中，对不存在的值压入，存在的值不压入
+				> db.c1.update({age:3},{$addToSet:{arr:7}});			//把7压入数组中
+				> db.c1.update({age:3},{$addToSet:{arr:{$each:[7,8,9]}}});		//配合$each 压入多条数据
+
+			i) 	$pull   	,  删除数组中的指定值
+				> db.c1.update({age:3},{$pull:{arr:2}});		//删除数组中值是2的数据
+
+			j) 	$pullAll ，删除数组里的多个值
+				> db.c1.update({age:3},{$pullAll:{arr:[1,2,3,4,5]}});		//删除数组里的多个值
+
+			k) $rename ， 修改字段名
+				> db.c1.update({name:'user1'},{$rename:{age:'age2'}},0,1);			//把匹配到的数据的字段改成
+
+			l) $  , 通配符
+				> db.c1.update({arr.tit:'php'},{$set:{arr.$.newField:'aaaa'}});		//从c1集合中查找数组arr.tit为php的数据，在里面添加一个新的字段为newField，值为aaaa
+					$表示	{arr.tit:'php'} 	匹配到的当前对象
+
+			m) save() 方法
+				#参数：json对象
+				如： > var x = db.c1.find({user:'user1'});
+						  x.sex = '男';
+						  db.c1.save(x);		//写入数据库中
+
+		5) 表达式查询
+			$gt(大于)、$lt(小于)、$gte(大于等于)、$lte(小于等于)、$ne(不等于)
+			> db.c1.find({age:{$gt:5}});
+
+		6) 其他高级查询
+			a) 查询条数 ，参数 [1|0]
+				> db.c1.find().count();			//查询条数
+
+			b) sort排序，参数 [1|0]
+				> db.c1.find().sort(name:-1);		//排序，1为正序，-1为倒序
+
+			c) db.c1.find().limit(1)										//筛选条数
+				> db.c1.find().skip(5).limit(2)	;						//跳过5(从第一个开始)个选择2条数据出来，像MySql的分页一样，从第5行后选择2条数据出来
+				> db.c1.find().skip(5).limit(2)	.count(0);			//0表示忽略前面的条件
+
+			d) $all， 数组查询
+				> db.c2.find( {post: {$all:[1,2,3]} } );			//数组里面包含1,2,3的数据
+
+			e) $exists ，参数 [1|0]， 查询字段存在的数据
+				> db.c2.find({name:{$exists:1}});		//查询name字段存在的数据
+
+			d) $mod ，取模取余
+				> db.c1.find({age:{$mod:[2,1]}})			//取模为2，为1的数据
+
+			e) $in , 包含
+				> db.c1.find({name:{$in:["user1","user2"]}})		//包含user1、user2的数据
+
+				$nin，不包含
+
+			f) $or，	//满足多条件
+				> db.c1.find( { $or:[ {name:"user1"},{name:"user3"} ] } );		//多条件查询
+
+				$nor，	//不满足多条件，过滤
+
+			g) $size , 满足长度的数组进行过滤
+				> db.c2.find({post:{$size:5}});		//查找数组长度为5的数据
+
+			h) 正则表达式
+				> db.c2.find({name:/user*/i});
+
+			i) $elemMatch	,		//嵌套查询
+				如：{ "_id" : ObjectId("52f0c6cc66df68af6d8658eb"), "name" : "user1", "post" : [  {  "tit" : 1 },  {  "tit" : 2 } ] }
+				> db.c1.find({post:{$elemMatch:{tit:1}}});			//查询
+
+				> db.c1.find({post:{$elemMatch:{tit:1,tit:2}}});	//多条件
+
+			j) null 值查询
+				> db.c1.find({y:{$type:10}});				//查询
+
+			k) slice		//取前几位和后几位，只能用于数组
+				详细见：slice.jpg
+
+
+		5) 代码
+			a) 循环
+			>	for(i=0;i<=10;i++) {
+					db.c1.insert({name:'user'+i})
+				}
+
+			b)
+
+
+
+六、固定集合
+	1、功能特点：
+		可以插入更新，但是不能collection的大小，否则更新失败。
+		不允许删除，但是可以drop()删除所有行。
+		32位机子上一个集合最大值为482.5M
+		64位上受系统文件大小限制。
+
+	2、使用场合
+		1) 特点
+			速度快
+			按照顺序插入
+			插入新数据时，淘汰掉超过设定大小的最早数据。
+
+		2) 定位
+			存储日志信息
+			缓存少量文档
+			存储实施需要更新的数据。
+
+	3、命令
+		//创建一个固定集合,大小为10K，最大记录条数为100条的json
+		>	db.createCollection('c1',{capped:true,size:10000,max:100});
+		>	db.c1.stats();							//查看集合属性
+			#capped为1表示  ，是固定集合
+
+		>	db.c1.drop();							//删除集合
+		>	db.dropDatabase();				//删除数据库
+
+		//普通集合转换为固定集合
+		db.runCommand({convertToCapped:'c1',size:10000,max:10000}	)
+
+
+
+七、文件的上传下载
+	1、说明
+
+	2、命令
+		/usr/local/mongodb/bin/mongofiles list			//查看已上传文件
+		/usr/local/mongodb/bin/mongofiles put aaa.txt		//上传文件
+		/usr/local/mongodb/bin/mongofiles get aaa.txt		//下载文件
+		/usr/local/mongodb/bin/mongofiles delete aaa.txt	//删除一个文件
+
+
+
+八、性能
+	1、索引
+		1) 索引
+			> db.c1.find({name:'user6'}).explain();		//语句性能测试
+			> db.c1.ensureIndex((name:1});		//创建name索引，1升序，-2降序
+			> db.c1.getIndexKeys();					//获取索引键
+			> db.c1.getIndexes();						//获取所有索引
+
+		2) 唯一索引
+			> db.c1.ensureIndex({age:1},{unique:1});		//设置age为唯一索引
+
+		3) 删除索引
+			> db.c1.dropIndex({age:1})
+
+
+	2、慢查询日志
+		1) > db.getProfilingLevel();			//获取慢查询级别
+			0-不开启、1-记录慢命令（默认>100ms）、2记录所有命令
+
+		2) > db.setProfilingLevel(1);			//开启慢查询
+
+		3) 设置开机启动，更多查看/usr/local/mongodb/bin/mongod -h  的帮助手册
+			/usr/local/mongodb/bin/mongod --auth --dbpath=/alidata/mongodb/ --logpath=/alidata/mongodb/dblogs --fork  --profile 1 --slowms 100
+
+
+
+九、数据库管理
+	1、数据导出、导入
+		1) 导出test数据库c1集合下的数据，保存名为test-c1.out
+			/usr/local/mongodb/bin/mongoexport -d test -c c1 -o test-c1.out
+		2) 导入
+			/usr/local/mongodb/bin/mongoimport -d test -c c1 test-c1.out
+
+
+	2、数据备份、恢复
+		1) 备份test数据库到当前目录的test下
+			usr/local/mongodb/bin/mongodump -d test -o test
+
+		2) 恢复数据到test库下
+			/usr/local/mongodb/bin/mongorestore -d test test/test/
+
+
+	3、用户授权
+		#默认没用户的时候，都是以超级管理员登陆的
+		1) 用户分为2种
+			超级用户
+			每个数据库的管理员
+
+		2) 设置开机需要身份验证登陆
+			a) 加入--auth 需要登陆
+				/usr/local/mongodb/bin/mongod --auth --dbpath=/alidata/mongodb/ --logpath=/alidata/mongodb/dblogs --fork
+			b)  再进入mongodb数据库中
+				/usr/local/mongodb/bin/mongo		//进入数据
+				> use admin										//切换到admin库
+				> db.addUser('root','514591')			//在admin数据库中，创建超级管理员用户
+				#> use test											//也可在test中创建数据库管理用户
+				#> db.addUser('test','123456')
+				exit;														//退出
+				##此时再看已经无法查看库和表了。show dbs ,和show collections都无法使用
+
+			c) 重新进入数据库
+				#超级管理员登录时要在admin库中验证，否则无法登陆
+				#数据库管理员也要在对应的管理库中验证，否则也无法登陆
+				//登陆系统
+				/usr/local/mongodb/bin/mongo 127.0.0.1:27017/admin -uroot -p514591
+
+		3) 高级操作
+			a) db.system.users.find()			//查看用户列表
+
+			b) db.auth('name','pwd');			//用户认证
+
+			c) db.removeUser('name');		//删除用户
+
+			d) show users								//查看所有用户
+
+
+
+十、架构、集群
+	1、MongoDB的主从集群分为二种。
+		#主服务器作为增删改，从服务器读
+		1) Master-Slave 复制(主从)	,一共是二台服务器
+			主服务器故障后，由从服务器读，从服务器不可变成主服务，需要设置。
+		2) Replica Sets 复制(副本集)
+			一台主服务器，多台从服务器，主服务器故障后，由从服务器中选举一台作为主服务器完成增删改。
+
+
+	3、Master-Slave 复制(主从)	。（从服务器不能创建数据）
+		1) 主服务器配置
+			/usr/local/mongodb/bin/mongod --auth --dbpath=/alidata/mongodb/ --logpath=/alidata/mongodb/dblogs --fork --port 27017
+		2) 从服务器配置（主服务器要设置至服务器的ip地址，这里设置的是127.0.0.1）
+			/usr/local/mongodb/bin/mongod --auth --slave --source 127.0.0.1:27017 --dbpath=/alidata/mongodb/ --logpath=/alidata/mongodb/dblogs --fork --port 27018
+		3) 从服务可以用来备份数据
+			/usr/local/mongodb/bin/mongodump --port 27018 -d test -o test		//备份test数据库到test目录中
+
+
+	4、Replica Sets 复制(副本集)
+		#
+
+		1) 创建数据文件存储路径
+			mkdir -p /data/data1			//主
+			mkdir -p /data/data2			//从
+
+		2) 创建日志文件路径
+			mkdir -p /data/log/
+			touch /data/log/dblog1		//主
+			touch /data/log/dblog2		//从
+
+		3) 设置主从Key文件用于表示几圈的私钥的完整路径，如果各个实例的key file内容不一致，程序将不能正常使用
+			mkdir -p /data/key/
+			echo "123456" >> /data/key/key1			//设置秘钥(主)
+			echo "123456" >> /data/key/key2			//设置秘钥(从)
+			chmod 600 /data/key/key1				//主
+			chmod 600 /data/key/key2				//从
+
+		4) 启动
+			主服务器启动192.168.10.1
+			/usr/local/mongodb/bin/mongod
+			--auth --dbpath=/data/data1 --logpath=/data/log/dblog1
+			--replSet rsl --keyFile=/data/key/key1 --port 27017 --fork
+
+			从服务器启动192.168.10.2
+			/usr/local/mongodb/bin/mongod
+			--auth --dbpath=/data/data2 --logpath=/data/log/dblog2
+			--replSet rsl --keyFile=/data/key/key2 --port 27018 --fork
+
+
+		5) 配置及初始化	Replica
+			//进入主服务器
+			/usr/local/mongodb/bin/mongo 192.168.10.1:27017
+			#主服务器，设置服务器会员清单，会自动同步到从服务器上(priority值越高，表示越会成为主服务器)
+			> config_rsl={
+				_id : 'rs1',
+				members: [
+					{_id:0,host:'192.168.10.1:27017',priority:2},
+					{_id:1,host:'192.168.10.2:27018',priority:1},
+				]
+			};
+			> rs.initiate(config_rsl);
+
+			//然后回车，等待启动结果
+			等主服务器出现priority>
+			从服务器出现secondary>
+			表示配置成功
+
+		6) 读写设置
+			secondary> rs.slaveOk();		//让从服务器可以有读的权限
+
+		7) 状态查看
+			>rs.status();				//查看服务器服务器组状态

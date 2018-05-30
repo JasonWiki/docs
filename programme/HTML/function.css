@@ -1,0 +1,55 @@
+@CHARSET "UTF-8";
+
+ul,ol {
+	list-style-type:none;
+}
+
+a {
+	text-decoration:none;
+	color:#fff;
+}
+
+a:hover {
+	text-decoration:underline;
+}
+
+#top h1 {
+	width:150px;
+	height:80px;
+	font-size:12px;
+	background:url(../images/logosmall.png) no-repeat;
+	float:left;
+	text-align:center;
+	font-weight:bold;
+	text-decoration:none;
+	border-bottom:1px solid #ccc;
+	margin-right:auto;
+	text-align:center;
+	vertical-align:40px
+	cursor:pointer;	//手形状
+	letter-spacing:1px;
+	display:inline;
+
+	line-height:30px;
+	font-family:Tahoma;
+
+	max-width:370px  ! important;
+	min-width:370px;
+
+	//字体设置
+	text-indent:35px;
+	letter-spacing:5px  !important;
+
+	cursor:pointer;
+
+	//DIV自适应高度与宽度
+	overflow :auto;		//滚动条
+	overflow:hidden;	//在设置了z-index时候兼容
+
+	position:relative;
+	position: absolute;
+
+	clear:both;
+	display: inline-block;
+
+}

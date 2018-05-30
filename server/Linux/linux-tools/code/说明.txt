@@ -1,0 +1,39 @@
+2 .先安装Libmcrypt
+    tar -zxvf libmcrypt-2.5.8.tar.gz
+   cd libmcrypt-2.5.8
+   ./configure prefix=/usr/local/libmcrypt
+   make
+   make install
+
+   说明：libmcrypt默认安装在/usr/local
+
+   软链一份
+   ln -s /usr/local/libmcrypt/bin/libmcrypt-config /usr/bin/  防止安装 mcrypt 时报错
+   ln -s /usr/local/libmcrypt/lib/* /usr/local/lib
+
+3.安装mhash
+   tar -zxvf mhash-0.9.9.9.tar.gz
+   cd mhash-0.9.9.9
+   ./configure prefix=/usr/local/mhash
+   make
+   make install
+
+   ln -s /usr/local/mhash/lib/* /usr/local/lib
+
+4.安装mcrypt (需要安装Libmcrypt，mhash)、还是报错带解决
+   tar -zxvf mcrypt-2.6.8.tar.gz
+   cd mcrypt-2.6.8
+   #export LD_LIBRARY_PATH=/usr/local/lib: LD_LIBRARY_PATH
+   ./configure prefix=/usr/local/mcrypt
+   make
+   make install
+
+
+
+
+5.安装libxml2
+	tar -zxvf libxml2-2.9.2.tar.gz
+	cd libxml2-2.9.2
+	./configure --prefix=/usr/local/libxml2
+	make;
+	make install

@@ -1,0 +1,15 @@
+# default: on
+# description: NSCA (Nagios Service Check Acceptor)
+service nsca
+{
+       	flags           = REUSE
+        socket_type     = stream        
+       	wait            = no
+        user            = nagios
+	group		= nagios
+       	server          = /usr/local/nsca/bin/nsca
+        server_args     = -c /usr/local/nsca/etc/nsca.cfg --inetd
+       	log_on_failure  += USERID
+        disable         = no
+	only_from       = 127.0.0.1
+}
