@@ -15,7 +15,7 @@
   - [python](programme/python/)
   - [scala](programme/scala/)
 - [大数据](big_data/)
-  - [cloudera](cloudera/)
+  - [cloudera](big_data/cloudera/)
   - [子工程](big_data/sub_project/)
     - [hadoop](big_data/sub_project/hadoop) (hadoop)
     - [hbase](big_data/sub_project/hbase) (hbase)
