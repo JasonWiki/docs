@@ -70,6 +70,17 @@ source ~/.bashrc
 4. 验证
   mvn -v
 
+5. 添加 alibab 源
+  vim $MAVEN_HOME/conf/settings.xml
+
+  <!-- 阿里源 -->
+  <mirror>
+     <id>alimaven</id>
+     <name>aliyun maven</name>
+     <mirrorOf>central</mirrorOf>
+     <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+   </mirror>
+
 ```
 
 ### 2. 配置 settings.xml
@@ -199,8 +210,18 @@ source ~/.bashrc
   <artifactId>my-maven-app</artifactId>
   <!-- 表示要使用的包类型的工件(例如 JAR, WAR, EAR) -->
   <packaging>jar</packaging>
-  <!-- 生成项目的版本 -->
-  <version>1.0-SNAPSHOT</version>
+  <!-- 生成项目的版本
+  1.0.2 (发布版本)
+    1 大版本, 0 小版本, 2 Bug 和修订版本
+  SNAPSHOT (项目阶段)
+    SNAPSHOT < M1 < M2 < RC < GA < RELEASE
+     SNAPSHOT 开发版本
+     M[N] 里程碑版本(即将发布版本)
+     RC 发布候选版本
+     GA 基本可以用版本
+     RELEASE 正式版本
+ -->
+  <version>1.0.1-SNAPSHOT</version>
   <!-- 用于项目的显示名称。这是常用于Maven生成文档 -->
   <name>my-maven-app</name>
   <!-- 表明项目的网站可以找到。这是常用于Maven生成文档 -->
@@ -215,8 +236,13 @@ source ~/.bashrc
       <artifactId>junit</artifactId>
       <!-- 版本 -->
       <version>4.11</version>
-      <!-- 依赖的范围 : compile 编译,runtime 运行时,test system 测试系统, provided 并提供 -->
-      <scope>test</scope>
+      <!-- 依赖的范围 :
+        compile 编译和打包都需要(默认),
+        provided 编译需要，打包不需要
+        runtime 编译和打包都不需要, 在运行时需要,
+        test  测试在单元测试中需要,
+        -->
+      <scope>compile</scope>
     </dependency>
 
 
@@ -224,7 +250,7 @@ source ~/.bashrc
     <dependency>
       <groupId>mydependency</groupId>
       <artifactId>mydependency</artifactId>
-      <scope>system</scope>
+      <scope>scope</scope>
       <version>1.0</version>
       <systemPath>${basedir}\war\WEB-INF\lib\mydependency.jar</systemPath>
     </dependency>
@@ -334,8 +360,7 @@ mvn eclipse:eclipse
       <artifactId>junit</artifactId>
       <!-- 版本 -->
       <version>4.11</version>
-      <!-- 依赖的范围 : compile 编译,runtime 运行时,test system 测试系统, provided 并提供 -->
-      <scope>test</scope>
+      <scope>scope</scope>
     </dependency>
   </dependencies>
 
