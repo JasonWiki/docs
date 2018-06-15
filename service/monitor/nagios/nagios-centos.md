@@ -84,6 +84,9 @@
   2) CentOS 7.x | RHEL 7.x | Oracle Linux 7.x
     systemctl start nagios.service
 
+ps. 或者直接命令行启动
+  /usr/local/nagios/bin/nagios -d /usr/local/nagios/etc/nagios.cfg
+
 12. 访问
   http://host-name/nagios
 ```
