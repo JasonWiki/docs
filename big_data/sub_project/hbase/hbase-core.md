@@ -22,6 +22,7 @@
 
   - HRegionServer
     - HRegion (对应 Table 中的一个 Region)
+      - HLog
       - HStore (对应一个 Column Family)
         - MemStore (先写内存, 写满阀值, 会 flush 到 StoreFile 文件中)
         - StoreFile (当 StoreFile 文件数量到一定阀值时, 会进行一次 Compact 合并操作, 把多个 StoreFile 合并成一个大的 StoreFile 文件)
@@ -29,7 +30,7 @@
         - StoreFile (存储格式)
           - HFile (是 Hadoop 的二进制文件格式)
           - HLog File (是 Hadoop 的 Sequence File)
-      - HStore
+      - HStore ...
     - HRegion
       - HStore
       - HStore
