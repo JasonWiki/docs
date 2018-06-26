@@ -23,7 +23,7 @@
 
 ### 1、组件
 
-```
+``` doc
 用户接口 : shell Client、thrift(自动生成Java代码)、web UI
 
 Thrift 服务器：提供了可以远程访问其他进程的功能，也提供使用 JDBC 和 ODBC 访问 hive 的功能，这些都是基于 Thirft 实现的
@@ -327,11 +327,11 @@ CREATE TABLE employees(
   ROW FORMAT DELIMITED
   --Hive 将使用 ^A 做为列分隔符
   FIELDS TERMINATED BY '\001'
-  --表明Hive 将使用 ^B 做为集合元素间分隔符
+  --Hive 将使用 ^B 做为集合元素间分隔符
   COLLECTION ITEMS TERMINATED BY '\002'
   --Hive 将使用 ^C 做为 MAP 的键值之间的分隔符
   MAP KEYS TERMINATED BY '\003'
-  --到目录前为止 Hive 对于 lines terminated by 公支持 \n 也就是说行与行之间分隔符只能是 \n
+  -- 到目录前为止 Hive 对于 lines terminated by 公支持 \n 也就是说行与行之间分隔符只能是 \n
   LINES TERMINATED BY '\n'
   STORED AS TEXTFILE;
 
@@ -437,9 +437,11 @@ CREATE TABLE access_log_20150326 (
     auth string,
     mobile_agent string
 )
-ROW FORMAT
-SERDE 'org.apache.hadoop.hive.contrib.serde2.RegexSerDe'
-WITH SERDEPROPERTIES ("input.regex" = "(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t\\[(.+?)T(.+?)\\+.*?\\]\\t(.*?)\\t(.*?)\\s(.*?)\\s.*?\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)","output.format.string" = "%1$s %2$s %3$s %4$s %5$s %6$s %7$s %8$s %9$s %10$s %11$s %12$s %13$s %14$s %15$s %16$s %17$s %18$s")
+ROW FORMAT SERDE 'org.apache.hadoop.hive.contrib.serde2.RegexSerDe'
+WITH SERDEPROPERTIES (
+  "input.regex" = "(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t\\[(.+?)T(.+?)\\+.*?\\]\\t(.*?)\\t(.*?)\\s(.*?)\\s.*?\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)\\t(.*?)",
+  "output.format.string" = "%1$s %2$s %3$s %4$s %5$s %6$s %7$s %8$s %9$s %10$s %11$s %12$s %13$s %14$s %15$s %16$s %17$s %18$s"
+)
 STORED AS TEXTFILE;
 
 
@@ -530,12 +532,12 @@ hive表默认的分隔符是'\001'
 #### 4.1、导出到本地文件系统 <INSERT LOCAL directory>
 
 ``` sql
-row format deLIMITed
+row format delimited
 FIELDS TERMINATED BY '\001' 字段分隔符是 '\001'
 LINES TERMINATED BY '\n' 行分隔符是 '\n'
 语法：
 INSERT OVERWRITE LOCAL directory <to_file_dir>
-<row format deLIMITed>
+<row format delimited>
 <FIELDS TERMINATED BY '\001'>
 <LINES TERMINATED BY '\n'>
 <fields>
@@ -543,7 +545,7 @@ INSERT OVERWRITE LOCAL directory <to_file_dir>
 
 命令：
 INSERT OVERWRITE LOCAL directory 'to_file_dir'
-row format deLIMITed
+row format delimited
 FIELDS TERMINATED BY '\001'
 LINES TERMINATED BY '\n'
 SELECT fields FROM FROM_TABLE_name;
@@ -621,8 +623,7 @@ STRING
 
 ``` sql
 创建视图
-CREATE VIEW
-  view_1 AS
+CREATE VIEW view_1 AS
 SELECT
   id,
   name,
@@ -635,8 +636,7 @@ DROP VIEW IF EXISTS TABLE_name;
 
 
 动态视图
-CREATE IF NOT EXISTS VIEW
-  TABLE_name AS
+CREATE IF NOT EXISTS VIEW TABLE_name AS
 SELECT
   id,
   name,

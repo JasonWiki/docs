@@ -35,8 +35,8 @@ CREATE EXTERNAL TABLE source_json_table (
     c1:string,
     c2:string,
     c3:string,
-    c4:array<string>>,
-
+    c4:array<string>
+  >,
   `ip` string
 ) PARTITIONED BY (p_dt String)
 ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
@@ -56,12 +56,14 @@ SELECT common.c1 FROM source_json_table LIMIT 10;
 
 
 
-## 二、org.openx.data.jsonserde.JsonSerDe
+## 二、org.openx.data.jsonserde.JsonSerDe (推荐)
+
+### 1. 处理 json 格式
 
 - hive 表结构可根据 json 格式任意调节
 - [文档](http://www.lamborryan.com/hive-json/)
 - [github 项目和文档](https://github.com/rcongiu/Hive-JSON-Serde)
-  - [二进制 jar 下载](http://www.congiu.net/hive-json-serde/)
+  - [二进制 jar 下载](http://www.congiu.net/hive-json-serde)
 
 测试数据:
 
@@ -110,13 +112,11 @@ CREATE EXTERNAL TABLE source_json_table  (
       b:string,
       c:array<string>
     >
-)
-ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+) ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
 WITH SERDEPROPERTIES (
   -- 当前行 json 解析失败跳过
   "ignore.malformed.json"="true"
-)
-STORED AS TEXTFILE
+) STORED AS TEXTFILE
 LOCATION '/path/20170117';
 
 
@@ -124,6 +124,37 @@ LOCATION '/path/20170117';
 SELECT common['c1'],count.a FROM ods.ods_pinyin_click LIMIT 1
 ```
 
+
+### 2. 处理 json arr 格式
+
+测试数据
+
+``` json
+["00:00:35","27.188.84.94","SERVER_RES",1,"F852FB306F94EDCFA59C806F8BDFCD2F","",""]
+```
+
+映射表
+
+``` sql
+CREATE TABLE IF NOT EXISTS source_json_arr_table (
+  `time` string,
+  `ip` string,
+  `server` string,
+  `num` string,
+  `mac` string,
+  `other1` string,
+  `other2` string
+) ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+WITH SERDEPROPERTIES (
+ -- 当前行 json 解析失败跳过
+ "ignore.malformed.json"="true"
+)
+STORED AS TEXTFILE
+LOCATION '/path/20170117';
+;
+
+SELECT * FROM ods.ods_pinyin_click LIMIT 1
+```
 
 
 ## 三、org.apache.hadoop.hive.contrib.serde2.JsonSerde 解析
@@ -142,7 +173,6 @@ ROW FORMAT SERDE 'org.apache.hadoop.hive.contrib.serde2.JsonSerde'
 STORED AS TEXTFILE
 LOCATION '/path/20170117'
 ;
-
 ```
 
 
@@ -159,5 +189,4 @@ export HIVE_AUX_JARS_PATH=/etc/hive/auxlib/*.jar
   <name>hive.aux.jars.path</name>
   <value>file:///etc/hive/auxlib/hive-json-serde-0.2.jar</value>
 </property>
-
 ```

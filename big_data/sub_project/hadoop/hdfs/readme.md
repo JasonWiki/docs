@@ -47,22 +47,23 @@
   hdfs dfs –mv [原目录地址] [新目录地址]
   hdfs dfs –mv /user/test/new.txt  /user/test/new1.txt
 
-11) 将hdfs指定目录下所有内容保存为一个文件，同时下载至本地
+11) 将 hdfs 指定目录下所有内容保存为一个文件，同时下载至本地
   hdfs dfs –getmerge [原目录地址] [本地目录地址]
   hdfs dfs –getmerge /user/test/ ./
 
-12) hdfs dfs -count -q /  
+12) 查看文件目录数量
+  查看目录数量并且排序
+  hdfs dfs -count -q /path/* | sort -n -r -k 2
 
   hdfs dfs -count -q -h -v /
-
-  QUOTA（命名空间的限制文件数）: 8.0 E
-  REMAINING_QUATA(剩余的命名空间): 8.0 E
-  SPACE_QUOTA(限制空间占用大小): none
-  REMAINING_SPACE_QUOTA(剩余的物理空间): inf
-  DIR_COUNT(目录数统计): 81.4 K
-  FILE_COUNT(文件数统计): 272.6 K
-  CONTENT_SIZE: 258.6 G
-  FILE_NAME :  /
+    QUOTA（命名空间的限制文件数）: 8.0 E
+    REMAINING_QUATA(剩余的命名空间): 8.0 E
+    SPACE_QUOTA(限制空间占用大小): none
+    REMAINING_SPACE_QUOTA(剩余的物理空间): inf
+    DIR_COUNT(目录数统计): 81.4 K
+    FILE_COUNT(文件数统计): 272.6 K
+    CONTENT_SIZE: 258.6 G
+    FILE_NAME :  /
 
 13) 查看目录使用情况
   hdfs dfs -du -s -h /
@@ -114,9 +115,7 @@
   hdfs zkfc -formatZK
 
 21) 跨集群复制
-
   hdfs distcp hdfs://nn1:8020/foo/bar hdfs://nn2:8020/bar/foo
-
 ```
 
 
