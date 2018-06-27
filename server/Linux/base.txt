@@ -848,7 +848,6 @@ tock.stdtime.gov			//时间服务器
 			b) RAID 1		映像模式，完整备份
 			c) RAID 0+1 , RAID 1+0	等量模式与映像模式
 			d) RAID 5		性能与数据备份的均衡考虑，至少3快磁盘
-
 			e) Spare Disk   预备磁盘的功能，磁盘阵列的某一块磁盘坏掉时，作为备份磁盘使用
 
 		2) mdadm		//设置磁盘列阵
@@ -1031,7 +1030,7 @@ tock.stdtime.gov			//时间服务器
 			b) 命令
 				i) nohup ss.sh  >> /tmp/myout.file 2>&1 &
 
-		3)	 系统进程的查看(516)
+		3) 系统进程的查看(516)
 
 			a) ps -l					//查看属于自己的系统进程
 			b) ps aux					//查看所有的系统进程
@@ -1045,15 +1044,7 @@ tock.stdtime.gov			//时间服务器
 
 			d) pstree -Aup		//查看进程树的结构信息，可以用来查找子进程的父进程
 			e) pgrep firefox  //专门用于进程查询的grep，返回进程 pid
-			f) 性能检测工具
-				htop      查看进程树, 输入 t
-					yum install htop
-					需要 yum 配置(配置额外的企业 Linux（或EPEL）包)
-
-				nmon      查看新能状态 cmdn
-
-
-			g) cat /proc/进程id/status 	查看进程状态
+			f) cat /proc/进程id/status 	查看进程状态
 
 		4) signal 进程的控制(521)
 			优秀文章：http://www.xuebuyuan.com/1964906.html
@@ -1100,9 +1091,18 @@ tock.stdtime.gov			//时间服务器
 
 		5) vmstat 1 3					//检测系统资源变化，内存、IO、CPU等
 
-		6) cat /proc/cpuinfo  //查看硬件信息， cpu cores 是cpu的核数
+		6) cat /proc/cpuinfo  //查看硬件信息 cpu cores 是cpu的核数
 
 		7) cat /proc/meminfo  //查看内存详细信息
+
+		iostat -dmt	2 3
+
+		8) 性能检测工具
+			htop      				查看进程树, 输入 t
+				yum install htop
+				需要 yum 配置(配置额外的企业 Linux（或EPEL）包)
+
+			nmon      监控查看状态 cmdn
 
 
 	15、SUID/SGID			权限
@@ -1313,9 +1313,9 @@ tock.stdtime.gov			//时间服务器
 				chkconfig autostart.sh on
 
 		2)	内核模块的加载与删除(610)
-			a) insmod				//自行加载一个模块
-			b) modprobe			//删除一个模块
-			c) lsmod					//查看内核模块
+			a) insmod				 // 自行加载一个模块
+			b) modprobe			 // 删除一个模块
+			c) lsmod				 // 查看内核模块
 
 		3) grub 系统引导程序(611)
 			a) nl /boot/grub/menu.lst			//查看配置文件
@@ -1325,9 +1325,9 @@ tock.stdtime.gov			//时间服务器
 		5) 光盘启动(627)
 
 		6) 收集硬件信息以及驱动(649)
-			a) lspci --v						//查看硬件详细信息
-			b) lsusb							//查看USB接口
-			c) iostat -dmt	2 3			//查看硬盘开机后存取的数据(651)
+			a) lspci --v						// 查看硬件详细信息
+			b) lsusb							  // 查看 USB 接口
+			c) iostat -dmt	2 3			// 查看硬盘开机后存取的数据(651)
 
 		7) 编译程序(667)
 			a) 检测安装包
