@@ -571,7 +571,7 @@ tock.stdtime.gov			//时间服务器
 				i)	echo $PATH 	 | 	cut -d 	':' 	-f 	3-	;		//把PATH输出的信息，按照":"分割、并且显示第3个后的所有
 				ii)	echo $PATH 	 | 	cut -d 	':' 	-f 	3	;		//只显示第三个
 
-			b)	grep	：对多行处理(正则)
+			b)	grep：对多行处理(正则)
 				i) last | grep -i 'root'														//找出所有行中包含root的行
 				ii)	grep --color=auto 'MANPATH' -i /etc/man.config		//查看文件，把找出的字符加上颜色
 
@@ -605,16 +605,12 @@ tock.stdtime.gov			//时间服务器
 
 		4) cat access.20160320.log | grep -n '/mobile/member/inventories/[0-9]*/.*' > browse.log  匹配范围数据
 
-
 	2、sed 查找、编辑多行的文件 (357)
 		1)  nl /etc/passwd | sed -n '5,7p';			//找出5,7行的数据
 
-
 	3、printf (362)    	//格式化输出数据
 
-
 	4、awk		(364)	//处理一行数据
-
 
 	5、diff	(366	)		//文件比较工具，用于同一种文件的内容比较
 
@@ -1506,7 +1502,7 @@ tock.stdtime.gov			//时间服务器
 
 					sudo apt-get remove package --purge 删除包，包括配置文件等
 
-						sudo apt-get update  更新源
+					sudo apt-get update  更新源
 
 					sudo apt-get upgrade 更新已安装的包
 

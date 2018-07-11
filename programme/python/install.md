@@ -11,24 +11,22 @@
 #### 1、Linux/UNIX
 
 ``` python
-
 1. 系统会默认安装 python
 
-2. tar 包方式安装 (如果要折腾的话)
+
+2. python2.7 tar 包方式安装 (如果要折腾的话)
   linx 选择 (Gzipped source tarball) 自己编译
 
   wget http://www.python.org/ftp/python/2.7.10/Python-2.7.10.tar.xz
-  unxz Python-2.7.10.tar.xz
+  tar -zxvf Python-2.7.10.tar.xz 解压
+  cd Python-2.7.10 进入
 
-  tar -zxvf Python-version.tgz 解压
-
-  cd Python-version 进入
-
-  ./configure --prefix=/usr/local/Python-version  编译
+  # 编译
+  ./configure --prefix=/usr/lib/python2.7
 
   make
-
   make install
+
 
 3. centos 2.6 升级到 2.7
 
@@ -48,7 +46,8 @@
     cd /usr/local/src/Python-2.7.10
     ./configure --enable-shared --enable-loadable-sqlite-extensions --with-zlib
 
-    make && make install
+    make
+    make install
 
   3) 备份老系统 python
     mv /usr/bin/python /usr/bin/python2.6.6
@@ -72,6 +71,29 @@
     执行:
       /sbin/ldconfig  
       /sbin/ldconfig -v
+
+
+4. python3.6 tar 包方式安装
+  wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tgz
+  tar -zxvf Python-3.6.6.tgz 解压
+  cd Python-3.6.6 进入
+
+  # 编译
+  ./configure --prefix=/usr/lib/python3.6 --enable-shared CFLAGS=-fPIC --enable-optimizations
+  make
+  make install
+
+  # python3 home
+  export PYTHON3_HOME=/usr/lib/python3.6
+
+  # python lib
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PYTHON3_HOME/lib
+
+  # python 第三方依赖包
+  export PYTHONPATH=$PYTHONPATH:$PYTHON3_HOME/site-packages:$PYTHON3_HOME/dist-packages
+
+  # pip3.6
+  $PYTHON3_HOME/bin/pip3
 ```
 
 
@@ -82,16 +104,14 @@
 #### 1、包存放地址
 
 ``` python
-
 1. 管理软件包存放的地址 (pip 和 easy_install)
-  /usr/local/lib/python2.7/dist-packages
+  /usr/lib/python2.7/dist-packages
 
 2. 第三方自定义下载的包存放地址
-  /usr/local/lib/python2.7/site-packages
+  /usr/lib/python2.7/site-packages
 
 3. 查找 site-packages
   locate site-packages
-
 ```
 
 #### 2、加载类包方法
@@ -106,8 +126,7 @@
   sys.path.append(path)
 
 2.PYTHONPATH 环境变量
-  export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
-
+  export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/site-packages
 ```
 
 
@@ -120,7 +139,6 @@
 以使用 easy_install 实际上是在调用 setuptools 来完成安装模块的工作。
 
 ``` python
-
 1. apt-get 方式安装
 
   sudo apt-get install python-setuptools
@@ -145,7 +163,6 @@
 - [官方文档](http://pip-cn.readthedocs.org/en/latest/installing.html)
 
 ``` python
-
 1.Debian 和 Ubuntu:
   sudo apt-get install python-pip
 
