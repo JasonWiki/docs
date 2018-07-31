@@ -297,6 +297,11 @@ map 数组
     done;
   }
 
+(for) 递减循环
+  for i in $(seq $offset_day -1 1 )
+  do
+      echo $i
+  done
 
 (while) 无限循环，直到满足条件
   while [ “$trythis” != “secret” ];

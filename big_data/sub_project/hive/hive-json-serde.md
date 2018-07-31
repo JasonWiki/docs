@@ -1,6 +1,7 @@
 # Hive Json Serde
 
 - SERDE 是序列化/反序列化
+- [教程](https://www.jianshu.com/p/043223b0024d)
 
 ## 一、org.apache.hive.hcatalog.data.JsonSerDe
 

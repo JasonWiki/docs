@@ -5,20 +5,21 @@
 ``` sql
 
 * 创建数据库
-  CREATE DATABASE `hive` /*!40100 DEFAULT CHARACTER SET utf8 */
+  CREATE DATABASE `test_demo` /*!40100 DEFAULT CHARACTER SET utf8 */
+  CREATE DATABASE IF NOT EXISTS test_demo DEFAULT CHARACTER SET = utf8mb4;
 
 * 创建表
-CREATE TABLE `demo_test` (
-  `id` int(10) unsigned NOT NULL  AUTO_INCREMENT COMMENT '主键',
-  `db_name` char(20) NOT NULL DEFAULT '' COMMENT '数据库名',
-  `tb_name` char(20) NOT NULL DEFAULT '' COMMENT '数据表名',
-  `im_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '导入方式',
-  `is_snapshot` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否快照',
-  `is_delete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
-  `CREATE_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建日期',
-  PRIMARY KEY (`id`),
-  KEY `idx_qy` (`db_name`,`tb_name`,`is_delete`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+  CREATE TABLE `demo_test` (
+    `id` int(10) unsigned NOT NULL  AUTO_INCREMENT COMMENT '主键',
+    `db_name` char(20) NOT NULL DEFAULT '' COMMENT '数据库名',
+    `tb_name` char(20) NOT NULL DEFAULT '' COMMENT '数据表名',
+    `im_type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '导入方式',
+    `is_snapshot` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否快照',
+    `is_delete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
+    `CREATE_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建日期',
+    PRIMARY KEY (`id`),
+    KEY `idx_qy` (`db_name`,`tb_name`,`is_delete`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
 
 * 复制表
@@ -82,7 +83,7 @@ CREATE TABLE `demo_test` (
   //创建表时, 添加索引
 
   	CREATE INDEX 索引名 ON 表名（字段名1，字段名2）
-    
+
   	CREATE INDEX idx_ac_st ON app_users(account(11),is_del)
 
   //修改表时, 增加索引
