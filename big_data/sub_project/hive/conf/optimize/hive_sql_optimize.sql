@@ -144,7 +144,7 @@ set hive.exec.parallel=false;
 set hive.exec.parallel.thread.number=2;
 
 -- 开启本地mr(本地模式的参数, 是 and 关系, 都满足才会生效)
-set hive.exec.mode.local.auto=true;
+set hive.exec.mode.local.auto=false;
 -- 设置local mr的最大输入数据量,当输入数据量小于这个值的时候会采用local  mr的方式(字节) 1024000000
 set hive.exec.mode.local.auto.inputbytes.max=1024000000;
 -- 设置local mr的最大task 数量,小于这个数量使用本地模式

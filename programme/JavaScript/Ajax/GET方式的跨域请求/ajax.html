@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>跨域AJAX</title>
+<script type="text/javascript" src="js/jquery-1.9.0.js"></script>
+
+<script type="text/javascript">
+$.ajax({
+
+	type : "get",
+	data : {
+		'demo1':'demo1',
+		'demo2':'demo2'
+	},
+
+	headers: {
+        //'Access-Token':"$.cookie('access_token')",
+        'Content-Type': 'application/x-www-form-urlencoded',
+    },
+
+	async:false,
+	url : 'http://121.199.12.139/ftp/cyndi/server.php',
+	dataType : "jsonp",		//html、json、jsonp、script或者text。解析返回的数据
+//	jsonp: "callback"	,									//服务端用于接收callback调用的function名的参数
+	jsonpCallback:"callback",						//回调函数名称
+	success : function(json){
+		console.log(json);
+		//alert(json);
+		//alert(json[0].name);
+	},
+	error:function(){
+		alert('fail');
+	}
+
+});
+</script>
+</head>
+<body>
+
+
+
+</body>
+</html>
