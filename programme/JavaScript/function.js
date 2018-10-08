@@ -817,7 +817,17 @@ str.replace(ze,'架构');								//匹配替换		return 替换完毕的字符串
 str.split(',')	;											//字符串转换成数组   return Array
 arr.join("")	;											//数组转换为字符串	 return Str
 
-str.indexOf('d');										//查找字符，在字符串中第一次出现的位置
+// 查找
+var isHave = str.indexOf('d');										//查找字符，在字符串中第一次出现的位置
+if (isHave != -1) {
+	alert("存在")
+}
+
+var isHave = str.indexOf('d');
+if (isHave != null) {
+	alert("存在")
+}
+
 str.substr(1,3);										//截取字符串，从n位置，截取m个字符
 
 //分组() $1	 $2 ...
