@@ -1085,20 +1085,27 @@ tock.stdtime.gov			//时间服务器
 
 		4) dmesg 	| more			//识别的系统硬件
 
-		5) vmstat 1 3					//检测系统资源变化，内存、IO、CPU等
-
 		6) cat /proc/cpuinfo  //查看硬件信息 cpu cores 是cpu的核数
 
 		7) cat /proc/meminfo  //查看内存详细信息
 
-		iostat -dmt	2 3
-
 		8) 性能检测工具
-			htop      				查看进程树, 输入 t
+			# 检测系统资源变化，内存、IO、CPU等
+			vmstat 1 3
+
+			# 查看磁盘负载
+			iostat -dmt 2 3
+
+			# 顾名思义, 统计进程(pid)的stat,进程的stat自然包括进程的IO状况
+			pidstat  -5
+
+			# 查看进程树
+			htop    输入 t
 				yum install htop
 				需要 yum 配置(配置额外的企业 Linux（或EPEL）包)
 
-			nmon      监控查看状态 cmdn
+			# 查看张红那个题负载
+			nmon    					监控查看状态 cmdn
 
 
 	15、SUID/SGID			权限

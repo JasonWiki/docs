@@ -70,6 +70,8 @@ export PATH=$KAFKA_HOME/bin:$PATH
 ``` sh
 
 1. Topic 主题
+  kafka-topics.sh 参数)
+
   1) 创建 Topic
     kafka-topics.sh --create --zookeeper zookeeper-hostname:2181 --replication-factor 1 --partitions 1 --topic test
 
@@ -91,10 +93,14 @@ export PATH=$KAFKA_HOME/bin:$PATH
       replicas : 副本所在 Broker
       Isr : 这个副本列表的子集目前活着的和以后的领导人
 
-  3) Topic 增加 partition 数目 kafka-add-partitions.sh
+
+3. Topic Partitions 分区
+  kafka-add-partitions.sh 参数)
+
+  1) Topic 增加 partition 数目 kafka-add-partitions.sh
     kafka-add-partitions.sh --topic test --partition 2   --zookeeper  zookeeper-hostname:2181,zookeeper-hostname:2181 （为topic test增加2个分区）
 
-  4）查询 topic 中 offset 的最大和最小值
+  2）查询 topic 中 offset 的最大和最小值
     # 例如 -1 最大值
     kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list broker-hostname:9092 --topic test --time -1
 
@@ -107,29 +113,47 @@ export PATH=$KAFKA_HOME/bin:$PATH
       test:0:26
 
 
-2. producer 生产者
+3. producer 生产者
+  kafka-console-producer.sh 参数)
+
   1) 向 Topic 生产数据
     kafka-console-producer.sh --broker-list broker-hostname:9092 --topic test
-
 
   2) 从文件读取数据
     kafka-console-producer.sh --broker-list broker-hostname:9092 --topic test < file-input.txt
 
 
-3. consumer 消费者
+4. consumer 消费者
+  kafka-console-consumer.sh 参数)
+    --offset <String: consume offset>
+      latest 最新, 默认
+      earliest 最早
+
+    --max-messages <Integer: num_messages> 退出前要使用的最大消息数。如果没有设置，消费是持续的
+      100000
+
+    --partition <Integer: partition> 要使用的分区。消耗从分区的末尾开始，除非指定了“—offset”。
+      2
+
+    --from-beginning  从最开始, 如果使用者还没有一个已建立的偏移量，那么从日志中出现的最早消息开始，而不是从最新消息开始。
+
+
   1) 从 Topic 消费数据
     # 从 zookeeper 中消费
     kafka-console-consumer.sh --zookeeper zookeeper:2181 --topic test --from-beginning
 
-    # 从 broker 指定组消费数据
+  2）从 broker 指定组消费数据
     kafka-console-consumer.sh --bootstrap-server broker-hostname:9092 --topic test --consumer-property group.id=test-consumer-group
 
-    # 读取配置文件消费
+  3）读取配置文件消费
     kafka-console-consumer.sh --bootstrap-server broker-hostname:9092 --topic test --consumer.config $KAFKA_HOME/config/consumer.properties
 
+  4) 指定分区消费,从最新开始消费
+    kafka-console-consumer.sh --bootstrap-server broker-hostname:9092 --topic test --consumer-property group.id=test-consumer-group --partition 2  --offset latest
 
-4. consumer groups
-  新的接口要加入 : --new-consumer
+
+5. consumer groups
+  kafka-consumer-groups.sh 参数)
 
   1) 查看 consumer groups
    # 查看保存在 zookeeper 中的组
@@ -142,10 +166,10 @@ export PATH=$KAFKA_HOME/bin:$PATH
    kafka-consumer-groups.sh --bootstrap-server broker-hostname:9092 --describe --group test-consumer-group
 
   2) 重置 offset
-   kafka-consumer-groups.sh  --bootstrap-server dw7:9092,dw8:9092,dw9:9092  --reset-offsets --group test-consumer-group --topic test --to-offset  1
+   kafka-consumer-groups.sh  --bootstrap-server broker-hostname-1:9092,broker-hostname-2:9092,broker-hostname-3:9092  --reset-offsets --group test-consumer-group --topic test --to-offset  1
 
 
-5. 使用卡夫卡连接到导入/导出数据
+6. 使用卡夫卡连接到导入/导出数据
   1) 配置文件
     $KAFKA_CONF_DIR/connect-standalone.properties  卡夫卡连接的配置过程,包含常见的配置如卡夫卡代理连接和数据的序列化格式
 
@@ -154,5 +178,5 @@ export PATH=$KAFKA_HOME/bin:$PATH
   2) kafka-run-class.sh kafka.tools.ConsumerOffsetChecker --group accessLogBase  --topic accessLog  --zookeeper uhadoop-ociicy-master1:2181/kafka
 
 
-6. kafka-configs 配置 Kafka 参数
+7. kafka-configs 配置 Kafka 参数
 ```

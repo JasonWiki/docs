@@ -169,12 +169,12 @@ spark.dynamicAllocation.executorIdleTimeout           60s
 ## * FAIR 公平调度器, FIFO 先进先出调度器
 spark.scheduler.mode                                  FAIR
 
-## * 任务推测
+## * 任务推测, 任务推测, 把那些持续慢的节点去掉
 spark.speculation                                     true
-## Spark 检查要推测的任务的时间间隔。
+## Spark 检查要推测的任务的时间间隔, 一个任务的速度可以比推测的平均值慢多少倍
 spark.speculation.interval                            100ms
 ## 一个任务的速度可以比推测的平均值慢多少倍, 默认(1.5)
-spark.speculation.multiplier                          2
+spark.speculation.multiplier                          1.5
 ## 对特定阶段启用推测之前必须完成的任务的分数。默认(0.75)
 spark.speculation.quantile                            0.75
 
@@ -239,7 +239,6 @@ spark.streaming.ui.retainedBatches                    300
 spark.streaming.ui.retainedBatches                    300
 
 ##### Spark UI End #####
-
 ```
 
 
@@ -281,33 +280,93 @@ spark.sql.default.fileformat                          orc
 
 
 
-
-
-
 ## 三、Spark Streaming 优化
 
 ``` sh
+
+如果 spark 的批次时间 batchTime 超过了 kafka 的心跳时间（30s），需要增加 hearbeat.interval.ms 以及 session.timeout.ms。
+假如 batchTime 是 5min，那么就需要调整 group.max.session.timeout.ms
+
+
+# 超时时间配置规则
+## group.[min | max].session.timeout.ms
+group.min.session.timeout.ms(in the server.properties) < session.timeout.ms(in the consumer.properties).
+group.max.session.timeout.ms(in the server.properties) > session.timeout.ms(in the consumer.properties).
+
+## request.timeout.ms
+request.timeout.ms > session.timeout.ms and fetch.max.wait.ms
+
+## heartbeat.interval.ms
+(session.timeout.ms)/3 > heartbeat.interval.ms
+
+## session.timeout.ms
+session.timeout.ms > Worst case processing time of Consumer Records per consumer poll(ms). (每个消费者调查(ms)的消费者记录的最坏情况处理时间)
+
+## 总结
+group.min.session.timeout.ms > session.timeout.ms < group.max.session.timeout.ms
+
+request.timeout.ms > session.timeout.ms > heartbeat.interval.ms
+
+
+
+# Consumer Configs
+## http://kafka.apache.org/documentation.html#newconsumerconfigs
+
+## 使用 Kafka 的组管理工具时检测消费者故障的超时。消费者定期发送心跳以指示其对经纪人的活跃性。如果在此会话超时到期之前代理没有收到心跳，则代理将从该组中删除此使用者并启动重新平衡。
+## 每个消费者轮询的消费者记录的最坏情况处理时间
+## 默认 10000(10 秒), 请注意，该值必须在范围内 ( group.min.session.timeout.ms > session.timeout.ms < group.max.session.timeout.ms )
+session.timeout.ms                                    10000
+
+# 控制客户端等待请求响应的最长时间。如果在超时之前未收到响应，则客户端将在必要时重新发送请求，或者如果重试耗尽则请求失败。
+# 默认 30000(30 秒),  request.timeout.ms > session.timeout.ms
+request.timeout.ms                                    10001
+
+
+## 使用 Kafka 集群管理设施时，心跳与集群协调员之间的预计时间。心跳用于确保工作人员的会话保持活动状态，并在新成员加入或离开组时促进重新平衡
+## 默认 3000(3 秒), heartbeat.interval.ms < session.timeout.ms ( 但通常应设置为不高于该值的 1/3 ), 单位毫秒
+heartbeat.interval.ms                                 3000
+
+
+# Broker Configs (kafka 服务端增加)
+## http://kafka.apache.org/documentation.html#brokerconfigs
+
+## 注册用户的最小允许会话超时。更短的超时导致更快的故障检测，代价是更频繁的消费者心跳，这可能压倒代理资源。
+## 默认 6000(6 秒)
+group.min.session.timeout.ms                          6000
+
+## 已注册使用者的最大允许会话超时。较长的超时时间使消费者有更多时间在心跳之间处理消息，但代价是检测故障的时间较长。
+## 默认 300000(300 秒)
+group.max.session.timeout.ms                          300000
+```
+
+
+``` sh
 # Spark StreamingContext在JVM关闭时关闭而不是立即关闭
-spark.streaming.stopGracefullyOnShutdown   true   
+spark.streaming.stopGracefullyOnShutdown              true   
 
-# Spark Streaming能够根据当前的批量调度延迟和处理时间来控制接收速率，以便系统只接收系统可以处理的速度
-spark.streaming.backpressure.enabled   true   
+# Spark Streaming 能够根据当前的批量调度延迟和处理时间来控制接收速率，以便系统只接收系统可以处理的速度
+spark.streaming.backpressure.enabled                  true   
 
-# 在使用新的Kafka直接流API时，每秒从 1 个 Kafka partition 读取数据的最大条数。
-spark.streaming.kafka.maxRatePerPartition   3000   
+# 在使用新的 Kafka 直接流 API 时，每秒从 1 个 Kafka partition 读取数据的最大条数。
+spark.streaming.kafka.maxRatePerPartition             3000   
 
-# 接收器的 block 间隔(秒 s), 接收到的数据在存储到 Spark BlockManager 之前会合并为数据块。
+# Spark Streaming 每隔一段时间, 默认 200 毫秒, 将接收到的数据合并成一个 block，然后将这个 block 写入到 BlockManager.
 ## 每批中 block 的数量决定了将用于处理类似 map 转换中接收到的数据的 task 数量. task 数量影响处理效率
 ## spark RDD partition 数量 = batch time interval / block interval
 ## 建议配置的值为: batch interval(单位是秒 s, 要转换为毫秒 ms) / block interval >= CPU 的核数
-spark.streaming.blockInterval   100
+spark.streaming.blockInterval                         100
 
+  * 以下是重点
+  1. spark 每个 batch_time 处理的日志条数由以下公式决定
+    spark.streaming.kafka.maxRatePerPartition * batch_time * kafka_partition_num
 
-* 以下是重点
-1. spark 每个 batch_time 处理的日志条数由以下公式决定
-  spark.streaming.kafka.maxRatePerPartition * batch_time * kafka_partition_num
+  2. spark partition 并行优化
+    inputStream.repartition(<number of partitions>) 用来替换 spark.streaming.blockInterval
 
-2. spark partition 并行优化
-  inputStream.repartition(<number of partitions>) 用来替换 spark.streaming.blockInterval
+# 新的 Kafka 使用者 API 将预先获取消息到缓冲区。
+## 消费者缓存默认为最大 64k，如果希望处理超过（64*executor数量）kafka 的分区，可以调节 spark.streaming.kafka.consumer.cache.maxCapacity 这个参数
+## 另外，可以调节 spark.streaming.kafka.consumer.cache.enable  false  来禁止缓存，可以解决 Spark-19185 的 bug
+spark.streaming.kafka.consumer.cache.enabled          false
 
+spark.streaming.kafka.consumer.cache.maxCapacity      64k
 ```
