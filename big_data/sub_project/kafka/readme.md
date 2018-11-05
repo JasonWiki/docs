@@ -35,12 +35,19 @@
 
 - Producer: 发送消息到 broker 时，会根据 Paritition 机制选择将其存储到哪一个 Partition。Partition 机制设置合理，所有消息可以均匀分布到不同的 Partition 里，这样就实现了负载均衡。
 
-- Paritition: 在发送一条消息时，可以指定这条消息的key，Producer 根据这个 key 和 Partition 机制来判断应该将这条消息发送到哪个 Parition。
+- Paritition: 在发送一条消息时，可以指定这条消息的 key，Producer 根据这个 key 和 Partition 机制来判断应该将这条消息发送到哪个 Parition。
 
 - Paritition 机制可以通过指定 Producer 的 paritition.class 这一参数来指定，该 class 必须实现 kafka.producer.Partitioner 接口
  - 如果 key 可以被解析为整数则将对应的整数与 Partition 总数取余，该消息会被发送到该数对应的 Partition
 
 - 每个 Parition 都会有个序号, 序号从 0 开始
+
+- 分区规则规则
+
+  ```
+kafka producer 发送消息的时候，可以指定 key，这个 key 的作用是为消息选择存储分区，key可以为空，当指定key且不为空的时候，kafka是根据key的hash值与分区数取模来决定数据存储到那个分区
+
+  ```
 
 
 

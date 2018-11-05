@@ -75,8 +75,8 @@ export PATH=$KAFKA_HOME/bin:$PATH
   1) 创建 Topic
     kafka-topics.sh --create --zookeeper zookeeper-hostname:2181 --replication-factor 1 --partitions 1 --topic test
 
-  2) 创建一个主题和 3 个复制因子(--replication-factor 不能超过 broker 服务的数量)
-    kafka-topics.sh --create --zookeeper zookeeper-hostname:2181 --replication-factor 3 --partitions 3 --topic test
+  2) 创建一个主题和 2 个复制因子(--replication-factor 不能超过 broker 服务的数量)
+    kafka-topics.sh --create --zookeeper zookeeper-hostname:2181 --replication-factor 2 --partitions 3 --topic test
 
   3) 删除主题
     kafka-topics.sh --zookeeper zookeeper-hostname:2181 --delete --topic "clicki_info_topic"
@@ -137,6 +137,8 @@ export PATH=$KAFKA_HOME/bin:$PATH
 
     --from-beginning  从最开始, 如果使用者还没有一个已建立的偏移量，那么从日志中出现的最早消息开始，而不是从最新消息开始。
 
+    --property
+      print.key=true   打印 key
 
   1) 从 Topic 消费数据
     # 从 zookeeper 中消费

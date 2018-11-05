@@ -83,7 +83,7 @@ spark-sql \
     --master yarn \
     --deploy-mode client \
     --name spark-sql-service \
-    --queue default \
+    --queue root.default \
     --driver-cores 2 \
     --driver-memory 4096M \
     --executor-cores 1 \

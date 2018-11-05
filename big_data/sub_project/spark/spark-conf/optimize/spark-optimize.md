@@ -236,7 +236,7 @@ spark.sql.ui.retainedExecutions                       300
 spark.streaming.ui.retainedBatches                    300
 
 ## 在垃圾回收前，Spark UI 和 API 有多少 dead executors。
-spark.streaming.ui.retainedBatches                    300
+spark.ui.retainedDeadExecutors	                      300
 
 ##### Spark UI End #####
 ```
@@ -315,16 +315,16 @@ request.timeout.ms > session.timeout.ms > heartbeat.interval.ms
 ## 使用 Kafka 的组管理工具时检测消费者故障的超时。消费者定期发送心跳以指示其对经纪人的活跃性。如果在此会话超时到期之前代理没有收到心跳，则代理将从该组中删除此使用者并启动重新平衡。
 ## 每个消费者轮询的消费者记录的最坏情况处理时间
 ## 默认 10000(10 秒), 请注意，该值必须在范围内 ( group.min.session.timeout.ms > session.timeout.ms < group.max.session.timeout.ms )
-session.timeout.ms                                    10000
+session.timeout.ms                                    100000
 
 # 控制客户端等待请求响应的最长时间。如果在超时之前未收到响应，则客户端将在必要时重新发送请求，或者如果重试耗尽则请求失败。
 # 默认 30000(30 秒),  request.timeout.ms > session.timeout.ms
-request.timeout.ms                                    10001
+request.timeout.ms                                    100001
 
 
 ## 使用 Kafka 集群管理设施时，心跳与集群协调员之间的预计时间。心跳用于确保工作人员的会话保持活动状态，并在新成员加入或离开组时促进重新平衡
 ## 默认 3000(3 秒), heartbeat.interval.ms < session.timeout.ms ( 但通常应设置为不高于该值的 1/3 ), 单位毫秒
-heartbeat.interval.ms                                 3000
+heartbeat.interval.ms                                 30000
 
 
 # Broker Configs (kafka 服务端增加)
@@ -341,14 +341,16 @@ group.max.session.timeout.ms                          300000
 
 
 ``` sh
-# Spark StreamingContext在JVM关闭时关闭而不是立即关闭
-spark.streaming.stopGracefullyOnShutdown              true   
-
 # Spark Streaming 能够根据当前的批量调度延迟和处理时间来控制接收速率，以便系统只接收系统可以处理的速度
-spark.streaming.backpressure.enabled                  true   
+spark.streaming.backpressure.enabled                  true
+# Spark Streaming 冷启动时首次处理的条数
+spark.streaming.backpressure.initialRate	            1000
 
 # 在使用新的 Kafka 直接流 API 时，每秒从 1 个 Kafka partition 读取数据的最大条数。
 spark.streaming.kafka.maxRatePerPartition             3000   
+
+# 每个接收器将接收数据的最大速率（每秒记录数）。将此配置设置为0或负数将不会对速率进行限制。
+# spark.streaming.receiver.maxRate                      -1
 
 # Spark Streaming 每隔一段时间, 默认 200 毫秒, 将接收到的数据合并成一个 block，然后将这个 block 写入到 BlockManager.
 ## 每批中 block 的数量决定了将用于处理类似 map 转换中接收到的数据的 task 数量. task 数量影响处理效率
@@ -362,6 +364,12 @@ spark.streaming.blockInterval                         100
 
   2. spark partition 并行优化
     inputStream.repartition(<number of partitions>) 用来替换 spark.streaming.blockInterval
+
+# Spark Streaming 生成并持久化的强制 RDD 将自动从 Spark 的内存中取消。自动清理 RDD 数据
+spark.streaming.unpersist	                            true
+
+# Spark StreamingContext 在 JVM 关闭时关闭而不是立即关闭
+spark.streaming.stopGracefullyOnShutdown              true  
 
 # 新的 Kafka 使用者 API 将预先获取消息到缓冲区。
 ## 消费者缓存默认为最大 64k，如果希望处理超过（64*executor数量）kafka 的分区，可以调节 spark.streaming.kafka.consumer.cache.maxCapacity 这个参数

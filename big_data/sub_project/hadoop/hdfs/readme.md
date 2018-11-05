@@ -68,6 +68,9 @@
 13) 查看目录使用情况
   hdfs dfs -du -s -h /
 
+  查看目录大小, 按照目录大小倒序排序
+  hdfs dfs -du  / | sort -n -r -k 2
+
 14) 获取配置
   hdfs getconf -confKey [key]  配置参数
 
