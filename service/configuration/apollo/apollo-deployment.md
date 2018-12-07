@@ -31,7 +31,7 @@ apollo 主要由以下几个角色组成
 ### 2. 编译版本和修改配置
 
 - [基于 1.2.0 版本编译](https://gitee.com/java-project/apollo/tree/feature-v1.2.0/)
-
+- [官方文档](https://github.com/ctripcorp/apollo/wiki/分布式部署指南)  
 
 #### 2.1 下载脚本修改配置
 
