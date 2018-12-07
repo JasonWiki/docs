@@ -171,7 +171,7 @@ unzip -o apollo/apollo-configservice/target/apollo-configservice-1.2.0-SNAPSHOT-
   mkdir -p /opt/logs/service/apollo/configservice
 
   # 关闭
-  scripts/startup.sh
+  scripts/shutdown.sh
 
   # 启动
   scripts/startup.sh
@@ -206,7 +206,7 @@ unzip -o apollo/apollo-adminservice/target/apollo-adminservice-1.2.0-SNAPSHOT-gi
   mkdir -p /opt/logs/service/apollo/adminservice
 
   # 关闭
-  scripts/startup.sh
+  scripts/shutdown.sh
 
   # 启动
   scripts/startup.sh
@@ -269,7 +269,7 @@ unzip -o apollo/apollo-portal/target/apollo-portal-1.2.0-SNAPSHOT-github.zip
   mkdir -p /opt/logs/service/apollo/portal
 
   # 关闭
-  scripts/startup.sh
+  scripts/shutdown.sh
 
   # 启动
   scripts/startup.sh
@@ -284,7 +284,7 @@ unzip -o apollo/apollo-portal/target/apollo-portal-1.2.0-SNAPSHOT-github.zip
 
   b) 如果出现网络超时, 设置
     修改 scripts/startup.sh 脚本, 添加 eureka 指定注册地址
-      -Deureka.instance.ip-address=172.16.24.140
+      -Deureka.instance.ip-address=xxx.xxx.com
     例如:
-      export JAVA_OPTS="$JAVA_OPTS -Deureka.instance.ip-address=172.16.24.140 -Dserver.port=$SERVER_PORT -Dlogging.file=$LOG_DIR/$SERVICE_NAME.log -Xloggc:$LOG_DIR/gc.log -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=5M -XX:HeapDumpPath=$LOG_DIR/HeapDumpOnOutOfMemoryError/"
+      export JAVA_OPTS="$JAVA_OPTS -Deureka.instance.ip-address=xxx.xxx.com -Dserver.port=$SERVER_PORT -Dlogging.file=$LOG_DIR/$SERVICE_NAME.log -Xloggc:$LOG_DIR/gc.log -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=5M -XX:HeapDumpPath=$LOG_DIR/HeapDumpOnOutOfMemoryError/"
 ```
