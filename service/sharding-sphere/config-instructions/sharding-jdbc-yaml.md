@@ -11,7 +11,6 @@ Yaml语法说明
 [] 表示数组，可以与减号相互替换使用
 ```
 
-
 ## 一. 配置项说明
 
 ### 1. 数据分片
@@ -28,23 +27,50 @@ dataSources: #数据源配置，可配置多个data_source_name
 shardingRule:
   tables: #数据分片规则配置，可配置多个logic_table_name
     <logic_table_name>: #逻辑表名称
-      actualDataNodes:
+       :
       # 由数据源名 + 表名组成，以小数点分隔。
       # 多个表以逗号分隔，支持inline表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点。用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
 
-      databaseStrategy: #分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
+      databaseStrategy: #分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一，Sharding提供了以下4种算法接口：
+
+        # PreciseShardingAlgorithm    精确分片算法
+        ## 对应 PreciseShardingAlgorithm，用于处理使用单一键作为分片键的=与IN进行分片的场景。需要配合 StandardShardingStrategy 使用
+        ## PreciseShardingAlgorithm 标准分片策略。提供对 SQL 语句中的 =, IN和BETWEEN AND 的分片操作支持。
+        ## StandardShardingStrategy 只支持单分片键，提供PreciseShardingAlgorithm 和 RangeShardingAlgorithm 两个分片算法。
+        ### PreciseShardingAlgorithm 是必选的，用于处理 = 和 IN 的分片
+        ### RangeShardingAlgorithm 是可选的，用于处理 BETWEEN AND 分片，如果不配置 RangeShardingAlgorithm，SQL 中的 BETWEEN AND 将按照全库路由处理。
+
+        # ComplexShardingStrategy 复合分片策略
+        ## 复合分片策略。提供对SQL语句中的=, IN和BETWEEN AND的分片操作支持。
+        ## ComplexShardingStrategy 支持多分片键，由于多分片键之间的关系复杂，因此 Sharding-JDBC 并未做过多的封装，而是直接将分片键值组合以及分片操作符交于算法接口，完全由应用开发者实现，提供最大的灵活度
+
+        # InlineShardingStrategy Inline 表达式分片策略
+        ## Inline 表达式分片策略。使用 Groovy 的 Inline 表达式，提供对 SQL 语句中的 = 和 IN 的分片操作支持
+        ## InlineShardingStrategy 只支持单分片键，对于简单的分片算法，可以通过简单的配置使用，从而避免繁琐的 Java 代码开发，如: tuser${user_id % 8} 表示 t_user 表按照 user_id 按 8 取模分成 8 个表，表名称为 t_user_0 到 t_user_7。
+
+        # HintShardingStrategy
+        ## 通过 Hint 而非 SQL 解析的方式分片的策略。
+
+        # NoneShardingStrategy
+        ## 不分片的策略
+
+
         standard: #用于单分片键的标准分片场景
           shardingColumn: #分片列名称
           preciseAlgorithmClassName: #精确分片算法类名称，用于=和IN。。该类需实现PreciseShardingAlgorithm接口并提供无参数的构造器
           rangeAlgorithmClassName: #范围分片算法类名称，用于BETWEEN，可选。。该类需实现RangeShardingAlgorithm接口并提供无参数的构造器
+
         complex: #用于多分片键的复合分片场景
           shardingColumns: #分片列名称，多个列以逗号分隔
           algorithmClassName: #复合分片算法类名称。该类需实现ComplexKeysShardingAlgorithm接口并提供无参数的构造器
+
         inline: #行表达式分片策略
           shardingColumn: #分片列名称
           algorithmInlineExpression: #分片算法行表达式，需符合groovy语法
+
         hint: #Hint分片策略
           algorithmClassName: #Hint分片算法类名称。该类需实现HintShardingAlgorithm接口并提供无参数的构造器
+
         none: #不分片
       tableStrategy: #分表策略，同分库策略
 
