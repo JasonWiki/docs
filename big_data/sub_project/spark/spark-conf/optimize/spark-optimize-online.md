@@ -199,6 +199,9 @@ spark.sql.files.maxPartitionBytes                     67108864
 ## 把小于这个值的文件合并到一个分区中, 避免分区过多, 默认 4194304 (4 MB)
 spark.sql.files.openCostInBytes                       67108864
 
+## BroadcastHashJoin 中广播表的超时时间，当任务并发数较高的时候，可以调高该参数值，或者直接配置为负数，负数为无穷大的超时时间。 默认 300(300 秒, 5 分钟)
+spark.sql.broadcastTimeout                            600
+
 ## 一个表在执行 join 操作时能够广播给所有 worker 节点的最大字节大小, 默认 10485760(10 M), 公式 (Executor Memory * 0.01)
 spark.sql.autoBroadcastJoinThreshold                  67108864
 

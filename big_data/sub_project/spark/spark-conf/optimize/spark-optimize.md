@@ -256,7 +256,7 @@ spark.sql.files.maxPartitionBytes                     67108864
 spark.sql.files.openCostInBytes                       67108864
 
 ## BroadcastHashJoin 中广播表的超时时间，当任务并发数较高的时候，可以调高该参数值，或者直接配置为负数，负数为无穷大的超时时间。 默认 300(300 秒, 5 分钟)
-spark.sql.broadcastTimeout                            300
+spark.sql.broadcastTimeout                            600
 
 ## * 把数据集小的表, 加载到 Driver 并通过 Broadcast 方法广播到各个 Executor 中, 可以将 Reduce Join 替换为 Map Join, 可以避免 shuffle, 和数据倾斜.
 # 优势: 避免了Shuffle，彻底消除了数据倾斜产生的条件，可极大提升性能。劣势: 要求参与Join的一侧数据集足够小，并且主要适用于Join的场景，不适合聚合的场景，适用条件有限。
