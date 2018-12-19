@@ -1,22 +1,22 @@
 # Docker
 
 ``` sh
-sudo yum install docker
+sudo yum install docker-ce
 
 1. 转到 https://download.docker.com/linux/centos/7/x86_64/stable/Packages/ 并下载.rpm要安装的Docker版本的文件。
 
 
-2. 安装 Docker CE，将下面的路径更改为您下载Docker软件包的路径。
+2. 安装 Docker CE，将下面的路径更改为您下载 Docker 软件包的路径。
 
   sudo yum install docker-ce-18.03.1.ce-1.el7.centos.x86_64.rpm
 
-3. 启动Docker
+3. 启动 Docker
 
   sudo systemctl start docker
 
   sudo systemctl restart docker.service
 
-4. docker通过运行hello-world 映像验证是否已正确安装
+4. docker 通过运行 hello-world 映像验证是否已正确安装
 
   sudo docker run hello-world
 
@@ -31,14 +31,9 @@ x.
 
   {
   "registry-mirrors": ["http://hub-mirror.c.163.com"]
-}
+  }
 
-
-
-
- systemctl stop docker echo "DOCKER_OPTS="$DOCKER_OPTS --registry-mirror=http://f2d6cb40.m.daocloud.io"" | sudo tee -a /etc/default/docker service docker restart
-
-docker image ls
+  docker image ls
 ```
 
 
