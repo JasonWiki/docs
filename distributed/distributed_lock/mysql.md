@@ -53,6 +53,13 @@ def lock:
 -- 释放锁
 def unlock:
   DELETE FROM distributed_lock WHERE application_id = 'exclusive-lock' AND resource_id = 'money-service';
+
+
+def lock(timeout):
+  while(true) {
+    -- 不断重试, 直到获取锁.
+    lock
+  }
 ```
 
 
