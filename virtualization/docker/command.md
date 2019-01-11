@@ -23,9 +23,9 @@ sudo docker run ubuntu:15.10 /bin/echo "Hello world"
 # 运行一个镜像，使用 bash
 sudo docker run -i -t ubuntu:15.10 /bin/bash
 
-  -t:在新容器内指定一个伪终端或终端。
+  -t: 在新容器内指定一个伪终端或终端。
 
-  -i:允许你对容器内的标准输入 (STDIN) 进行交互。
+  -i: 允许你对容器内的标准输入 (STDIN) 进行交互。
 
 
 # 启动容器（后台模式）
@@ -41,8 +41,8 @@ sudo docker logs <[CONTAINER ID] | [CONTAINER NAME]>
 
   sudo docker logs -f <[CONTAINER ID] | [CONTAINER NAME]>
 
-
 ```
+
 
 ## 镜像
 
@@ -65,10 +65,10 @@ sudo docker search httpd
 
 
 # 创建镜像
-## 1. 从已经创建的容器中更新镜像，并且提交这个镜像
-## 2. 使用 Dockerfile 指令来创建一个新的镜像
 
-# 更新镜像
+## 1. 从已经创建的容器中更新镜像，并且提交这个镜像
+
+### 更新镜像
 sudo docker commit -m="update" -a="runoob" 8dfcff08367f runoob/ubuntu:v2
 
   -m: 提交的描述信息
@@ -76,25 +76,52 @@ sudo docker commit -m="update" -a="runoob" 8dfcff08367f runoob/ubuntu:v2
   8dfcff08367f: 容器 ID
   runoob/ubuntu:v2    镜像名称:镜像 Tag
 
-
-# 进入新的镜像
+### 进入新的镜像
 sudo docker run -t -i runoob/ubuntu:v2 /bin/bash
 
 
-# 构建镜像
 
+## 2. 使用 Dockerfile 指令来创建一个新的镜像
 
+### 编辑 Dockerfile 文件
+vim Dockerfile
+FROM    centos:6.7
+MAINTAINER      Fisher "fisher@sudops.com"
 
+RUN     /bin/echo 'root:123456' |chpasswd
+RUN     useradd runoob
+RUN     /bin/echo 'runoob:123456' |chpasswd
+RUN     /bin/echo -e "LANG=\"en_US.UTF-8\"" >/etc/default/local
+EXPOSE  22
+EXPOSE  80
+CMD     /usr/sbin/sshd -D
 
-# 构建自己的镜像
+### 构建命令
 docker build -t <镜像名> <Dockerfile路径>
-  如 Dockerfile 在当前路径：
-  docker build -t xx/gitlab .
+  如 Dockerfile 在当前路径：docker build -t xx/gitlab .
+
+  -t ：指定要创建的目标镜像名
+  .  ：Dockerfile 文件所在目录，可以指定Dockerfile 的绝对路径
+
+### 构建
+docker build -t runoob/centos:6.7 .
+
+### 进入镜像
+docker run -t -i runoob/centos:6.7  /bin/bash
+
+
+# 设置镜像标签
+## docker tag 命令，为镜像添加一个新的标签, 为同一个 IMAGE ID 的镜像, 创建一个新的标签
+docker tag <IMAGE ID> <IMAGE NAME>:<TAG NAME>
+  <IMAGE ID>:  镜像 ID
+  <IMAGE NAME>:<TAG NAME>:  镜像名称:标签名称
+
+##
+docker tag 192ad0341c8b runoob/centos:dev
 ```
 
+
 ## 网络
-
-
 
 ``` sh
 
@@ -148,5 +175,4 @@ docker rm <容器名orID>
 # dockerfile 文件的编写
 dockerfile referencehttps://docs.docker.com/engine/reference/builder/
 bestpractice https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
-
 ```
