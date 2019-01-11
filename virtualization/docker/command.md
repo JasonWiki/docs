@@ -5,7 +5,6 @@
 ``` sh
 # 命令帮助
 docker [command] --help
-
 docker stats --help
 
 
@@ -35,12 +34,6 @@ sudo docker run -d ubuntu:15.10 /bin/sh -c "while true; do echo hello world; sle
     -d: 表示后台运行
 
 
-# 查看运行的所有 docker 容器
-sudo docker ps
-
-  -a 为查看所有的容器，包括已经停止的
-
-
 # 查看容器运行的日志
 sudo docker logs <[CONTAINER ID] | [CONTAINER NAME]>
 
@@ -49,40 +42,64 @@ sudo docker logs <[CONTAINER ID] | [CONTAINER NAME]>
   sudo docker logs -f <[CONTAINER ID] | [CONTAINER NAME]>
 
 
-# 停止容器
-sudo docker stop <[CONTAINER ID] | [CONTAINER NAME]>
+```
 
+## 镜像
 
-# kill 容器
-docker kill <容器名orID>
-
-
-# 删除单个容器
-docker rm <容器名orID>
-
-
+``` sh
 # 查看所有镜像
 docker images
 
 
-# 拉取镜像
-docker pull <镜像名:tag>
-  docker pull sameersbn/redmine:latest
+# 预先下载一个镜像
+sudo docker pull <镜像名:tag>
+  docker pull ubuntu:latest
+
+
+# 运行最新的 ubuntu:latest 镜像(如果镜像不存在会拉去)
+sudo docker run -t -i ubuntu:latest /bin/bash
+
+
+# 查找镜像
+sudo docker search httpd
+
+
+# 创建镜像
+## 1. 从已经创建的容器中更新镜像，并且提交这个镜像
+## 2. 使用 Dockerfile 指令来创建一个新的镜像
+
+# 更新镜像
+sudo docker commit -m="update" -a="runoob" 8dfcff08367f runoob/ubuntu:v2
+
+  -m: 提交的描述信息
+  -a: 镜像作者
+  8dfcff08367f: 容器 ID
+  runoob/ubuntu:v2    镜像名称:镜像 Tag
+
+
+# 进入新的镜像
+sudo docker run -t -i runoob/ubuntu:v2 /bin/bash
+
+
+# 构建镜像
+
+
 
 
 # 构建自己的镜像
 docker build -t <镜像名> <Dockerfile路径>
   如 Dockerfile 在当前路径：
   docker build -t xx/gitlab .
+```
 
+## 网络
+
+
+
+``` sh
 
 # 后台运行(-d)、并暴露端口(-p)
 docker run -d -p 127.0.0.1:33301:22 centos6-ssh
-
-
-# dockerfile 文件的编写
-dockerfile referencehttps://docs.docker.com/engine/reference/builder/
-bestpractice https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
 
 
 # 运行一个web应用
@@ -110,6 +127,26 @@ sudo docker top <[CONTAINER ID] | [CONTAINER NAME]>
 sudo docker inspect <[CONTAINER ID] | [CONTAINER NAME]>
 
 
+# 查看运行的所有 docker 容器
+sudo docker ps
 
+  -a 为查看所有的容器，包括已经停止的
+
+
+# 停止容器
+sudo docker stop <[CONTAINER ID] | [CONTAINER NAME]>
+
+
+# kill 容器
+docker kill <容器名orID>
+
+
+# 删除单个容器
+docker rm <容器名orID>
+
+
+# dockerfile 文件的编写
+dockerfile referencehttps://docs.docker.com/engine/reference/builder/
+bestpractice https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
 
 ```
