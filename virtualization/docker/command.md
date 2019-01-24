@@ -13,9 +13,9 @@ sudo docker run ubuntu:15.10 /bin/echo "Hello world"
 
   docker: Docker 的二进制执行文件。
 
-  run:与前面的 docker 组合来运行一个容器。
+  run:    与前面的 docker 组合来运行一个容器。
 
-  ubuntu:15.10指定要运行的镜像，Docker首先从本地主机上查找镜像是否存在，如果不存在，Docker 就会从镜像仓库 Docker Hub 下载公共镜像。
+  ubuntu:15.10  指定要运行的镜像，Docker首先从本地主机上查找镜像是否存在，如果不存在，Docker 就会从镜像仓库 Docker Hub 下载公共镜像。
 
   /bin/echo "Hello world": 在启动的容器里执行的命令
 
@@ -41,6 +41,23 @@ sudo docker logs <[CONTAINER ID] | [CONTAINER NAME]>
 
   sudo docker logs -f <[CONTAINER ID] | [CONTAINER NAME]>
 
+
+# 查看运行的所有 docker 容器
+sudo docker ps
+
+  -a 为查看所有的容器，包括已经停止的
+
+
+# 停止容器
+sudo docker stop <[CONTAINER ID] | [CONTAINER NAME]>
+
+
+# kill 容器
+docker kill <容器名orID>
+
+
+# 删除单个容器
+docker rm <容器名orID>
 ```
 
 
@@ -71,8 +88,8 @@ sudo docker search httpd
 ### 更新镜像
 sudo docker commit -m="update" -a="runoob" 8dfcff08367f runoob/ubuntu:v2
 
-  -m: 提交的描述信息
-  -a: 镜像作者
+  -m  提交的描述信息
+  -a  镜像作者
   8dfcff08367f: 容器 ID
   runoob/ubuntu:v2    镜像名称:镜像 Tag
 
@@ -84,7 +101,9 @@ sudo docker run -t -i runoob/ubuntu:v2 /bin/bash
 ## 2. 使用 Dockerfile 指令来创建一个新的镜像
 
 ### 编辑 Dockerfile 文件
-vim Dockerfile
+### dockerfile reference https://docs.docker.com/engine/reference/builder/  
+### bestpractice https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
+### vim Dockerfile 打开文件
 FROM    centos:6.7
 MAINTAINER      Fisher "fisher@sudops.com"
 
@@ -100,8 +119,8 @@ CMD     /usr/sbin/sshd -D
 docker build -t <镜像名> <Dockerfile路径>
   如 Dockerfile 在当前路径：docker build -t xx/gitlab .
 
-  -t ：指定要创建的目标镜像名
-  .  ：Dockerfile 文件所在目录，可以指定Dockerfile 的绝对路径
+  -t  指定要创建的目标镜像名
+  .   Dockerfile 文件所在目录，可以指定Dockerfile 的绝对路径
 
 ### 构建
 docker build -t runoob/centos:6.7 .
@@ -131,9 +150,12 @@ docker run -d -p 127.0.0.1:33301:22 centos6-ssh
 
 # 运行一个web应用
 docker run -d -P training/webapp python app.py
-  -d: 让容器在后台运行。
 
-  -P:  将容器内部使用的网络端口映射到我们使用的主机上。
+  -d : 让容器在后台运行
+
+  -P : 是容器内部端口, 随机映射到主机的端口
+
+  -p : 是容器内部端口, 绑定到指定的主机端口
 
 
 # 指定端口映射端口运行
@@ -142,8 +164,19 @@ sudo docker run -d -p 5001:5000 training/webapp python app.py
   -p 宿主机端口:内部端口
 
 
-# 查看容器网络端口
-sudo docker port <[CONTAINER ID] | [CONTAINER NAME]>
+# 指定容器绑定的网络地址，比如绑定 127.0.0.1
+sudo docker run -d -p 127.0.0.1:5001:5000 training/webapp python app.py
+
+
+# 默认使用 tcp, 这里可选 udp
+sudo docker run -d -p 5002:5000/udp training/webapp python app.py
+
+
+# 查看端口的绑定情况
+sudo docker port thirsty_dewdney 5000
+
+  <[CONTAINER ID] | [CONTAINER NAME]>  容器名或者容器ID
+  [port] 可选
 
 
 # 查看 WEB 应用程序容器的进程(我们还可以使用 docker top 来查看容器内部运行的进程)
@@ -154,25 +187,4 @@ sudo docker top <[CONTAINER ID] | [CONTAINER NAME]>
 sudo docker inspect <[CONTAINER ID] | [CONTAINER NAME]>
 
 
-# 查看运行的所有 docker 容器
-sudo docker ps
-
-  -a 为查看所有的容器，包括已经停止的
-
-
-# 停止容器
-sudo docker stop <[CONTAINER ID] | [CONTAINER NAME]>
-
-
-# kill 容器
-docker kill <容器名orID>
-
-
-# 删除单个容器
-docker rm <容器名orID>
-
-
-# dockerfile 文件的编写
-dockerfile referencehttps://docs.docker.com/engine/reference/builder/
-bestpractice https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
 ```
