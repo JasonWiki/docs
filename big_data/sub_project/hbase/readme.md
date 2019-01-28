@@ -18,7 +18,7 @@ version
   查看 hbase 版本
 ```
 
-### 1. `DDL 操作`
+### 2. `DDL 操作`
 
 ``` sh
 * 创建表 :
@@ -67,9 +67,9 @@ version
 
 ```
 
-### 2. `DML 操作`
+### 3. `DML 操作`
 
-### 2.1 普通操作
+#### 3.1 普通操作
 
 ``` sh
 * 插入记录 :
@@ -135,7 +135,7 @@ version
 
 ```
 
-### 2. filter 过滤器
+### 4. filter 过滤器
 
 - [过滤器合集](http://blog.csdn.net/liuxiaochen123/article/details/7737718)
 - [过滤器操作](http://www.cnblogs.com/luogankun/p/3939712.html)
