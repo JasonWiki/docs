@@ -79,23 +79,19 @@ sudo gpasswd -a ${USER} docker
 ```
 
 
-### 配置镜像加速器
+## 二. 配置镜像加速器
 
 ``` sh
 # 配置镜像加速器
 sudo mkdir -p /etc/docker
 
 # 可用的镜像资源有
-阿里云:      https://registry.docker-cn.com
-阿里云私人：  https://uy1w23te.mirror.aliyuncs.com  (需要去私人账号注册才可使用， 注册地址 https://cr.console.aliyun.com/cn-shanghai/mirrors)
-中科大：     https://docker.mirrors.ustc.edu.cn （参考手册 https://lug.ustc.edu.cn/wiki/mirrors/help/docker）
-网易：       http://hub-mirror.c.163.com
-官方：       https://registry.docker-cn.com
+Docker Hub 中国:   https://registry.docker-cn.com
 
 # 写入配置(使用私人阿里云)
 sudo tee /etc/docker/daemon.json <<-'EOF'
 {
-  "registry-mirrors": ["https://uy1w23te.mirror.aliyuncs.com"]
+  "registry-mirrors": ["https://registry.docker-cn.com"]
 }
 EOF
 
@@ -106,7 +102,7 @@ sudo systemctl restart docker
 ```
 
 
-## 二. 启动关闭
+## 三. 启动关闭
 
 ``` sh
 启动/重启 Docker

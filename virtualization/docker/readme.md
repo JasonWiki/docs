@@ -25,6 +25,11 @@ Docker 容器 - Docker containers
 ``` doc
 Namespaces(进程、网络、文件系统的隔离)
    1. Linux 为我们提供的用于分离（进程树、网络接口、挂载点以及进程间通信等—）资源的方法。
+      PID Namespaces  进程隔离
+      NET Namespaces  管理网络接口
+      IPC Namespaces  管理进程间通讯
+      MNT Namespaces  管理 Mount 点
+      UTS Namespaces  隔离内核和版本信息
 
    2. Docker 其实就通过 Linux 的 Namespaces 对不同的容器实现了隔离
 
@@ -62,11 +67,15 @@ Namespaces(进程、网络、文件系统的隔离)
           为了保证当前的容器进程没有办法访问宿主机器上其他目录，还需要通过 libcontainer 提供的 pivot_root 或者 chroot 函数改变进程能够访问个文件目录的根节点
 
     8. chroot （change root）
-      在 Linux 系统中，系统默认的目录就都是以 / 也就是根目录开头的，chroot 能够改变当前的系统根目录结构，通过改变当前系统的根目录，能够限制用户的权利，在新的根目录下并不能够访问旧系统根目录的结构个文件，也就建立了一个与原系统完全隔离的目录结构
+      在 Linux 系统中，系统默认的目录就都是以 / 也就是根目录开头的。
+      chroot 能够改变进程运行时的工作目录，并且能够限定在这个目录中，只能做简单的隔离，存在安全隐患。
+      所以 Docker 设计了 Layered FS, 把文件系统分为多个层, 使多个容器间可以使用, 层公共的部分。
+      镜像就是由 Layered FS 组成的, 并且它是只读的。当容器运行时，会在镜像上再加一层可读写层。
 
 
 CGroups(物理资源隔离)
   1. Control Groups（简称 CGroups）能够隔离宿主机器上的物理资源 <CPU、内存、磁盘 I/O 和网络带宽>
+    CGroups 可以限定容器使用的硬件资源，内存容量，CPU 数量等。
 
   2. Control Group 能够为一组进程分配资源(CPU、内存、网络带宽等), 通过对资源的分配，CGroup 能够提供以下的几种功能
     在 CGroup 中，所有的任务就是一个系统的一个进程，而 CGroup 就是一组按照某种标准划分的进程.
@@ -80,7 +89,7 @@ CGroups(物理资源隔离)
       ls /sys/fs/cgroup/cpu/docker
 
 
-UnionFS
+UnionFS (Union File System)
   1. Docker 镜像就是一个文件
     Docker 中的每一个镜像都是由一系列只读的层组成的，Dockerfile 中的每一个命令都会在已有的只读层上创建一个新的层
       FROM ubuntu:15.04
@@ -91,23 +100,21 @@ UnionFS
   2. 容器和镜像的区别
     所有的镜像都是只读的，而每一个容器其实等于镜像加上一个可读写的层，也就是同一个镜像可以对应多个容器
 
-  3. AUFS
+  3. UnionFS
     a) UnionFS 其实是一种为 Linux 操作系统设计的用于把多个文件系统『联合』到同一个挂载点的文件系统服务
+
     b) 联合挂载（Union Mount）
       AUFS 作为联合文件系统，它能够将不同文件夹中的层联合（Union）到了同一个文件夹中，这些文件夹在 AUFS 中称作分支，整个『联合』的过程被称为联合挂载（Union Mount）
+      AUFS 只是 Docker 使用的存储驱动的一种，除了 AUFS 之外，Docker 还支持了不同的存储驱动，包括 aufs、devicemapper、overlay2、zfs 和 vfs 等等
+      在最新的 Docker 中，overlay2 取代了 aufs 成为了推荐的存储驱动，但是在没有 overlay2 驱动的机器上仍然会使用 aufs 作为 Docker 的默认驱动
+
     c) 镜像层和容器层存储地址
       每一个镜像层或者容器层都是 /var/lib/docker/ 目录下的一个子文件夹；在 Docker 中，所有镜像层和容器层的内容都存储在 /var/lib/docker/aufs/diff/ 目录中
+
     d) 挂在结构
       只有每个容器最顶层的容器层才可以被用户直接读写，所有的容器都建立在一些底层服务（Kernel）上包括命名空间、控制组、rootfs 等等
       这种容器的组装方式提供了非常大的灵活性，只读的镜像层通过共享也能够减少磁盘的占用。
-
-  4. 其他存储驱动
-    a) AUFS 只是 Docker 使用的存储驱动的一种，除了 AUFS 之外，Docker 还支持了不同的存储驱动，包括 aufs、devicemapper、overlay2、zfs 和 vfs 等等
-    b) 在最新的 Docker 中，overlay2 取代了 aufs 成为了推荐的存储驱动，但是在没有 overlay2 驱动的机器上仍然会使用 aufs 作为 Docker 的默认驱动
 ```
-
-
-
 
 
 ### 1. Docker images

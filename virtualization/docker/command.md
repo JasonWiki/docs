@@ -48,58 +48,72 @@ sudo docker ps
   -a 为查看所有的容器，包括已经停止的
 
 
+# 进入一个运行的进项
+docker exec -it <[CONTAINER ID]> /bin/bash
+
+
 # 停止容器
 sudo docker stop <[CONTAINER ID] | [CONTAINER NAME]>
 
 
 # kill 容器
-docker kill <容器名orID>
+docker kill <[CONTAINER ID] | [CONTAINER NAME]>
 
 
 # 删除单个容器
-docker rm <容器名orID>
+docker rm <[CONTAINER ID] | [CONTAINER NAME]>
+
 ```
 
 
 ## 镜像
 
 ``` sh
-# 查看所有镜像
-docker images
-
-
-# 预先下载一个镜像
-sudo docker pull <镜像名:tag>
-  docker pull ubuntu:latest
-
-
-# 运行最新的 ubuntu:latest 镜像(如果镜像不存在会拉去)
-sudo docker run -t -i ubuntu:latest /bin/bash
-
+# 查看本地所有镜像
+docker images <镜像名称>
+  docker images nginx
 
 # 查找镜像
-sudo docker search httpd
+sudo docker search <[IMAGE NAME]>
 
 
-# 创建镜像
+# 删除镜像
+sudo docker rmi <[IMAGE NAME]:[TAG NAME]>
 
-## 1. 从已经创建的容器中更新镜像，并且提交这个镜像
 
+# 创建镜像的 3 大方式
+
+## 1. 拉取镜像
+### 拉去指定镜像
+sudo docker pull [域名/][用户名/]镜像名[:版本号]
+  [域名/]:     指定了域名会从该域名进行下载, 负责从 /etc/docker 配置中的镜像下载
+  [用户名/]:   用户名是隶属于该域名下的子目录, 使用私有仓库时有用
+  镜像名:      这是必填项
+  [:版本号]:   默认是 latest, 可以指定版本号(建议)
+
+### 拉取案例
+sudo docker pull ubuntu:latest
+
+
+## 2. 通过 commit 把一个运行的容器转换为镜像
 ### 更新镜像
-sudo docker commit -m="update" -a="runoob" 8dfcff08367f runoob/ubuntu:v2
+sudo docker commit -m="add test" -a="jason" <[CONTAINER ID]> centos:mytest-v1
+  -m                    提交的描述信息
+  -a                    镜像作者
+  <[CONTAINER ID]>      容器 ID
+  centos:mytest-v1      自定义镜像名称
 
-  -m  提交的描述信息
-  -a  镜像作者
-  8dfcff08367f: 容器 ID
-  runoob/ubuntu:v2    镜像名称:镜像 Tag
+### 通过 centos:mytest-v1 运行容器
+sudo docker run -t -i centos:mytest-v1 /bin/bash
 
-### 进入新的镜像
-sudo docker run -t -i runoob/ubuntu:v2 /bin/bash
+### 查找 centos:mytest-v1 镜像的容器 ID
+sudo docker ps
+
+### 进入 centos:mytest-v1 镜像运行的容器中
+sudo docker exec -it <[CONTAINER ID]> /bin/bash
 
 
-
-## 2. 使用 Dockerfile 指令来创建一个新的镜像
-
+## 3. 使用 Dockerfile 生成镜像
 ### 编辑 Dockerfile 文件
 ### dockerfile reference https://docs.docker.com/engine/reference/builder/  
 ### bestpractice https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/
@@ -129,14 +143,30 @@ docker build -t runoob/centos:6.7 .
 docker run -t -i runoob/centos:6.7  /bin/bash
 
 
-# 设置镜像标签
-## docker tag 命令，为镜像添加一个新的标签, 为同一个 IMAGE ID 的镜像, 创建一个新的标签
-docker tag <IMAGE ID> <IMAGE NAME>:<TAG NAME>
-  <IMAGE ID>:  镜像 ID
-  <IMAGE NAME>:<TAG NAME>:  镜像名称:标签名称
 
-##
-docker tag 192ad0341c8b runoob/centos:dev
+# push 镜像到 docker hub 个人的仓库
+
+## 1. 注册 Docker Hub 账号
+https://hub.docker.com
+
+## 2. 登录 Docker Hub
+sudo docker login
+
+## 3. 镜像打上 tag 标签
+#### docker tag 命令，为镜像添加一个新的标签, 为同一个 IMAGE ID 的镜像, 创建一个新的标签
+docker tag <[IMAGE ID]|[IMAGE NAME]>:<TAG NAME> <IMAGE NAME>:<TAG NAME>
+  <[IMAGE ID]|[IMAGE NAME]>:<TAG NAME>     <本地镜像 ID | 本地镜像名>:标签名
+  <IMAGE NAME>:<TAG NAME>                  <本地镜像 ID | 本地镜像名>:标签名
+
+#### 例如为 centos:mytest 打上 jasonviki/centos:mytest 标签
+sudo docker tag centos:mytest jasonviki/centos:mytest
+
+## 4. 上传到个人的 Docker 仓库(注意的是 jasonviki 是个人 Docker Hub 前缀)
+sudo docker push jasonviki/centos:mytest
+
+## 5. 查看镜像信息
+https://hub.docker.com
+
 ```
 
 
@@ -185,6 +215,13 @@ sudo docker top <[CONTAINER ID] | [CONTAINER NAME]>
 
 # 检查 WEB 应用程序(查看 Docker 的底层信息。它会返回一个 JSON 文件记录着 Docker 容器的配置和状态信息)
 sudo docker inspect <[CONTAINER ID] | [CONTAINER NAME]>
+
+```
+
+
+## 其他
+
+``` sh
 
 
 ```

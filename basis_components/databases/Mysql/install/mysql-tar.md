@@ -1,31 +1,41 @@
 #Mysql5.6配置
 
 ## 一、准备工作
+
 ### 1.为了防止调试的模式各种错误
-```
+
+``` sh
 重要关闭防火墙、关闭selinux，重启linxu
 ```
 
+
 ### 2.安装cmake编译器
-```
+
+``` sh
 从mysql5.5起，mysql源码安装开始使用cmake了，设置源码编译配置脚本。(安装详细看cmake)
 ```
 
+
 ### 3.安装相关依赖包
-```
+
+``` sh
 yum install gcc gcc-c++ ncurses-devel perl （依赖包）
 ```
+
 
 ## 二、开始安装
 
 ### 1.创建用户mysql执行用户
-```
+
+``` sh
 groupadd mysql
 useradd -r -g mysql mysql
 ```
 
-### 2.创建安装相关目录
-```
+
+### 2.创sh建安装相关目录
+
+``` sh
 #创建源码目录
 mkdir -p /usr/local/mysql-5.6.21
 chown -R mysql:mysql /usr/local/mysql-5.6.21
@@ -37,7 +47,8 @@ chown -R mysql:mysql /data/mysqldb
 
 
 ### 3.开始编译，时间比较久。。。
-```
+
+``` sh
 #编译文件说明
 -DCMAKE_INSTALL_PREFIX=/usr/local/mysql-5.6.21  安装目录
 -DMYSQL_UNIX_ADDR=/tmp/mysql.sock 	设置监听套接字路径，这必须是一个绝对路径名。默认为/tmp/mysql.sock
@@ -64,7 +75,8 @@ make install; 	安装
 
 
 ### 4.安装完成后，准备启动
-```
+
+``` sh
 1) 复制mysql启动配置文件
 cp /usr/local/mysql-5.6.21/support-files/my-default.cnf /usr/local/mysql-5.6.21/my.cnf
 
@@ -118,7 +130,7 @@ chkconfig --add mysqld
 chkconfig mysqld on
 ```
 
-#饮水思源---参考资料
+# 饮水思源---参考资料
 http://blog.csdn.net/xiagege3/article/details/41852895
 
 http://blog.csdn.net/stuartjing/article/details/8124491
