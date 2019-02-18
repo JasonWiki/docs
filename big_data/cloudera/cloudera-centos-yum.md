@@ -10,14 +10,14 @@
   - 2.3 启动 Cloudera Manager Server 服务(监控报错日志)
   - 2.4 打开 http://hostname:7180 端口, 跳过所有安装步骤, 直接添加 Cloudera Management Service 服务
 
-- 4 Cloudera Manager Agent -> `Cloudera Manager Server 注册节点`
+- 2 Cloudera Manager Agent -> `Cloudera Manager Server 注册节点`
   - 4.1 配置 yum 源, 执行安装流程
   - 4.2 修改配置 Cloudera Manager Agent 服务指向 Cloudera Manager Server 服务所在的 host, 配置文件 /etc/cloudera-scm-agent/config.ini 的 server_host -> Cloudera Manager Server
   - 4.3 手动启动 Cloudera Manager Agent 服务(监控报错日志)
   - 4.4 注意第一次 Agent 注册到 Server 节点是没有 CDH 版本的, 需要在 Server 管理界面添加已经注册的主机(分发 CDH 版本的)
   - 4.5 Cloudera Manager Server 7180 -> 主机管理界面, 点击添加主机到集群中(选中已注册的节点), 这个时候才会有 CDH 版本信息
 
-- 5 CDH 组件 -> Cloudera Manager Server 和 Cloudera Manager Agent 安装完成后再配置 Hadoop 组件
+- 4 CDH 组件 -> Cloudera Manager Server 和 Cloudera Manager Agent 安装完成后再配置 Hadoop 组件
 
 ## * 系统环境配置
 
@@ -32,7 +32,6 @@
 
   1) 方法 1
     userdel cloudera-scm
-
     # 创建cm部署用户
     groupadd -r cloudera-scm
     #  分配到 组
@@ -70,6 +69,7 @@
 
   crontab -e , 添加如下命令
     */5 * * * * /usr/sbin/ntpdate monitor.50bang.org && /sbin/hwclock -w
+
 
 3. 关闭防火墙
   // Centos 6
@@ -159,21 +159,24 @@
   sudo vim /etc/security/limits.conf
   *    hard    nofile          102400
   *    soft    nofile          102400
-
-
-d
 ```
 
 
 ## 一、安装 Cloudera Manager Server
 
-- Cloudera Management Service 可作为一组角色实施各种管理功能：
-- Activity Monitor - 收集有关 MapReduce 服务运行的活动的信息。默认情况下未添加此角色。
-- Host Monitor - 收集有关主机的运行状况和指标信息
-- Service Monitor - 收集有关服务的运行状况和指标信息以及 YARN 和 Impala 服务中的活动信息
-- Event Server - 聚合 relevant Hadoop 事件并将其用于警报和搜索
-- Alert Publisher - 为特定类型的事件生成和提供警报
-- Reports Manager - 生成报告，它提供用户、用户组和目录的磁盘使用率的历史视图，用户和 YARN 池的处理活动，以及 HBase 表和命名空间。此角色未在 Cloudera Express 中添加。
+- Cloudera Management Service 可作为一组角色实施各种管理功能
+- Activity Monitor
+  - 收集有关 MapReduce 服务运行的活动的信息。默认情况下未添加此角色。
+- Host Monitor
+  - 收集有关主机的运行状况和指标信息
+- Service Monitor
+  - 收集有关服务的运行状况和指标信息以及 YARN 和 Impala 服务中的活动信息
+- Event Server
+  - 聚合 relevant Hadoop 事件并将其用于警报和搜索
+- Alert Publisher
+  - 为特定类型的事件生成和提供警报
+- Reports Manager
+  - 生成报告，它提供用户、用户组和目录的磁盘使用率的历史视图，用户和 YARN 池的处理活动，以及 HBase 表和命名空间。此角色未在 Cloudera Express 中添加。
 - Cloudera Manager 将单独管理每个角色，而不是作为 Cloudera Manager Server 的一部分进行管理，可实现可扩展性（例如，在大型部署中，它可用于将监控器角色置于自身的主机上）和隔离。
 
 
@@ -288,7 +291,8 @@ d
 
   7182 : 监控通讯服务
 
-7. 启动完成后(最后步骤)
+
+6. 启动完成后(最后步骤)
 
   # 创建 /opt/cloudera/parcels 目录
   sudo mkdir -p /opt/cloudera
