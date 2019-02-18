@@ -8,7 +8,10 @@ docker [command] --help
 docker stats --help
 
 
-# 使用 docker 在 ubuntu:15.10 镜像中运行 /bin/echo 命令，的打印 "Hello world"
+# docker run 命令
+docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+
+## 使用 docker 在 ubuntu:15.10 镜像中运行 /bin/echo 命令，的打印 "Hello world"
 sudo docker run ubuntu:15.10 /bin/echo "Hello world"
 
   docker: Docker 的二进制执行文件。
@@ -20,7 +23,7 @@ sudo docker run ubuntu:15.10 /bin/echo "Hello world"
   /bin/echo "Hello world": 在启动的容器里执行的命令
 
 
-# 运行一个镜像，使用 bash
+## 运行一个镜像，使用 bash
 sudo docker run -i -t ubuntu:15.10 /bin/bash
 
   -t: 在新容器内指定一个伪终端或终端。
@@ -28,7 +31,7 @@ sudo docker run -i -t ubuntu:15.10 /bin/bash
   -i: 允许你对容器内的标准输入 (STDIN) 进行交互。
 
 
-# 启动容器（后台模式）
+## 启动容器（后台模式）
 sudo docker run -d ubuntu:15.10 /bin/sh -c "while true; do echo hello world; sleep 1; done"
 
     -d: 表示后台运行
@@ -79,6 +82,10 @@ sudo docker search <[IMAGE NAME]>
 
 # 删除镜像
 sudo docker rmi <[IMAGE NAME]:[TAG NAME]>
+
+
+# 镜像历史
+sudo docker history centos
 
 
 # 创建镜像的 3 大方式
@@ -173,6 +180,13 @@ https://hub.docker.com
 ## 网络
 
 ``` sh
+# 查看 docker 网络
+docker network ls
+
+
+# 查看网络详情
+docker network inspect [bridge|host]
+
 
 # 后台运行(-d)、并暴露端口(-p)
 docker run -d -p 127.0.0.1:33301:22 centos6-ssh
