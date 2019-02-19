@@ -395,6 +395,8 @@
   5. Error, CM server guid updated, expected  错误描述, CM 重新安装后 ID 错误
     rm /var/lib/cloudera-scm-agent/cm_guid  , 主要原因是因为 .parcel.sha1 没有重名为 .parcel.sha
 
+  6. ERROR Failed to connect to newly launched supervisor. Agent will exit
+    pgrep -f supervisord , 然后 Kill 掉 , 主要是更换版本的时候有服务没有杀干净
 
   *. 排查思路
     1) 检查 hostname、/etc/hosts、 主机 IP 是否正确
@@ -405,8 +407,6 @@
       /etc/cloudera-scm-agent/config.ini
 
     4) 检查各个节点的系统日期
-
-
 ```
 
 
@@ -486,13 +486,17 @@ sudo yum remove cloudera-manager-agent
 
 
 # server
+sudo service cloudera-scm-server stop
 sudo rm -rf /var/lib/cloudera-manager-server
 sudo rm -rf /var/run/cloudera-manager-server
 
+
 # agent
+sudo service cloudera-scm-agent stop
 sudo rm -rf /var/lib/cloudera-scm-agent
 sudo rm -rf /var/run/cloudera-scm-agent
 sudo rm -rf /run/cloudera-scm-agent
+
 ```
 
 ## * 常见问题
