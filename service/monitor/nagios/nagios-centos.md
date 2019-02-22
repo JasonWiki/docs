@@ -14,7 +14,10 @@
   setenforce 0
 
 2. 安装依赖包 C 编译器, wget, httpd(Apache/2.4.6), php(PHP 5.4.16), gd
-  yum install -y gcc glibc glibc-common wget unzip httpd php gd gd-devel
+  yum install -y gcc glibc glibc-common wget unzip php gd gd-devel
+
+  # 安装 httpd 服务器
+  yum install -y httpd
 
 3. 下载编译
   1) 下载
@@ -84,8 +87,8 @@
   2) CentOS 7.x | RHEL 7.x | Oracle Linux 7.x
     systemctl start nagios.service
 
-ps. 或者直接命令行启动
-  /usr/local/nagios/bin/nagios -d /usr/local/nagios/etc/nagios.cfg
+  ps: 或者直接命令行启动
+    /usr/local/nagios/bin/nagios -d /usr/local/nagios/etc/nagios.cfg
 
 12. 访问
   http://host-name/nagios
