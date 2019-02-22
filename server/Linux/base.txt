@@ -1684,5 +1684,13 @@ tock.stdtime.gov			//时间服务器
 		cat /etc/hostname
 
 
-	5. /etc/init.d
-		systemctl enable httpd.service 启动服务, 替代 chkconfig --add httpd
+	5. systemctl 取代: service 和 chkconfig
+
+	# 查看服务列表状态
+		systemctl list-units --type=service
+
+	# 列出所有已经安装的  服务  及  状态
+		systemctl list-unit-files
+
+	# 开机启动, 替代 chkconfig --add httpd
+		systemctl enable httpd.service

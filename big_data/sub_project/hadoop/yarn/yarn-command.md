@@ -175,7 +175,6 @@ MapReduce 命令:
     yarn.scheduler.minimum-allocation-mb=1024  :  最小可申请内存量，默认是1024
     yarn.scheduler.maximum-allocation-mb=25600  :  最大可申请内存量，默认是 8096
 
-
   (2) ApplicationMaster -> ResourceManager 申请 最小/最大 CPU 核数 (一个容器), 容器可以请求的虚拟 CPU 内核的最大数量
     yarn.scheduler.minimum-allocation-vcores=1   : 最小可申请CPU数，默认是1
     yarn.scheduler.maximum-allocation-vcores=8   : 最大可申请CPU数，默认是 4

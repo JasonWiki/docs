@@ -72,3 +72,18 @@ SPARK_CLASSPATH=$SPARK_CLASSPATH:$HADOOP_HOME/lib/hadoop-lzo.jar
 export SPARK_WORKER_MEMORY=4000M
 export SPARK_DRIVER_MEMORY=5000M
 ```
+
+
+## 二. topology.py 错误
+
+``` sh
+WARN ScriptBasedMapping: Exception running /etc/hadoop/conf.cloudera.yarn/topology.py 172.16.24.148
+java.io.IOException: Cannot run program "/etc/hadoop/conf.cloudera.yarn/topology.py" (in directory "/opt/case/app"): error=2, No such file or directory
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1048)
+	at org.apache.hadoop.util.Shell.runCommand(Shell.java:485)
+
+
+这种错误是因为所在执行的 NodeManager 节点没有安装 yarn 客户端导致的, 常见于 CDH 集群版本中。
+
+解决方法：通过 ClouderaManager 在 NodeManager 节点上部署 Yarn 客户端
+```

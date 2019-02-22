@@ -90,7 +90,7 @@ spark-sql \
     --executor-memory 2048M \
     --num-executors 3 \
     --jars file://path/xxx.jar,file://path/xxx.jar \
-    --hiveconf hive.server2.thrift.port=10002
+    --hiveconf hive.server2.thrift.port=10010
 
   (2) yarn-cluster模式, 集群模式目前不支持
     ./sbin/start-thriftserver.sh \
@@ -102,7 +102,7 @@ spark-sql \
     --executor-cores 1 \
     --executor-memory 2048M \
     --num-executors 3 \
-    --hiveconf hive.server2.thrift.port=10002
+    --hiveconf hive.server2.thrift.port=10010
 
 2. standalone 模式
   $SPARK_HOME/sbin/start-thriftserver.sh \
@@ -111,11 +111,11 @@ spark-sql \
   --name spark-sql \
   --driver-cores 2 \
   --driver-memory 500M \
-  --hiveconf hive.server2.thrift.port=10002
+  --hiveconf hive.server2.thrift.port=10010
 
 
 3. JDBC 操作 hive
-  $SPARK_HOME/bin/beeline !connect jdbc:hive2://hostname:10002
+  $SPARK_HOME/bin/beeline !connect jdbc:hive2://hostname:10010
 
 ```
 
@@ -251,7 +251,7 @@ $SPARK_HOME/sbin/start-thriftserver.sh \
 --conf spark.dynamicAllocation.enabled=true \
 --conf spark.dynamicAllocation.minExecutors=3 \
 --conf spark.dynamicAllocation.maxExecutors=6 \
---hiveconf hive.server2.thrift.port=10002 \
+--hiveconf hive.server2.thrift.port=10010 \
 --jars file:///etc/hive/auxlib/dw_hive_udf-1.0.jar,file:///etc/hive/auxlib/json-serde-1.3.7-jar-with-dependencies.jar
 ```
 

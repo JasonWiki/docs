@@ -106,7 +106,7 @@ beeline -u jdbc:hive2://hostname:10000/default -nhadoop -phadoop
 ```
 
 
-## 二、在客户端使用
+### 2、在客户端使用
 
 ``` sh
 # 命令行方式直接启动

@@ -28,6 +28,10 @@ sudo apt-get install openssh-server
   ssh -t -p 22 hadoop@192.168.160.45 touch /tmp/aaaaa.txt
 
 
+*. 注意事项
+  目标 ~/.ssh/authorized_keys 权限必须是 -rw-------
+  chmod 600 ~/.ssh/authorized_keys
+
 2.远程执行命令配置
 
 usage: ssh [-1246AaCfgKkMNnqsTtVvXxYy] [-b bind_address] [-c cipher_spec]  

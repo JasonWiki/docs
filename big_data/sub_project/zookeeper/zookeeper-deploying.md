@@ -1,4 +1,4 @@
-# Zookeeper 安装
+ # Zookeeper 安装
 
 ## * 构架
 
@@ -67,6 +67,10 @@ source ~/.bashrc
   server.2=uhadoop-ociicy-master2:2888:3888
   server.3=uhadoop-ociicy-core1:2888:3888
 
+
+修改完成 配置后
+  配置： /data/zookeeper/myid  文件的 id 为 1 - n
+  例如: echo 1 > /data/zookeeper/myid 
 
 PS:
   端口 2181 由 ZooKeeper 客户端使用，用于连接到 ZooKeeper 服务器

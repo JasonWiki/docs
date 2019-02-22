@@ -16,7 +16,7 @@ spark.yarn.executor.memoryOverhead                    1024   (2.3 被废弃)
 spark.executor.memoryOverhead                         1024        
 
 # 默认队列, submit --queue 可以指定队列, 默认 (default)
-# spark.yarn.queue                                      root.realtime
+spark.yarn.queue                                      realtime
 
 ##### Spark On Yarn 部署属性  End #####
 
