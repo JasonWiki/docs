@@ -35,6 +35,8 @@ spark.yarn.driver.memoryOverhead                      1024
 ## 要为每个执行器（executor）分配的堆外（off-heap）内存量（以兆字节为单位）, 配置为: memoryOverhead * 0.5
 spark.yarn.executor.memoryOverhead                    1024
 
+## 默认队列, submit --queue 可以指定队列, 默认 (default)
+spark.yarn.queue                                      realtime
 
 ##### Spark On Yarn 部署属性  End #####
 
@@ -219,3 +221,5 @@ spark.sql.inMemoryColumnarStorage.batchSize           10000
 
 ## spark 格式待测试
 spark.sql.default.fileformat                          orc
+
+##### Spark Sql 调优 End #####
