@@ -12,7 +12,7 @@ CREATE USER 'username'@'host' IDENTIFIED BY 'password';
 2) 创建本地连接账号
   CREATE USER 'user1'@'localhost' IDENTIFIED BY '123456';
 
-3) 创建指定host远程连接账号
+3) 创建指定host远程连接账号, 如果用于代理, 则只需要授权代理服务器即可. 代理服务能访问 mysql 服务器
   CREATE USER 'user1'@'180.166.126.94' IDENTIFIED BY '123456';
 
 ```
@@ -48,6 +48,24 @@ CREATE USER 'username'@'host' IDENTIFIED BY 'password';
 4) 授权指定权限给函数权限
   GRANT execute ON database.* to readonly@'%';
 
+
+5) 权限
+  INSERT,DELETE,UPDATE,SELECT,EXECUTE,CREATE,ALTER,DROP,INDEX
+
+  EVENT,CREATE VIEW,FILE,LOCK TABLES,PROCESS,REFERENCES,REPLICATION CLIENT
+
+  更多详见: https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html
+
+
+6) mysql 8.0
+  # 创建用户
+  create user 'user1'@'xxx.com' IDENTIFIED BY 'xxx.passwd.com' ;
+
+  # 授权账号, 创建和授权要分开
+  GRANT INSERT,DELETE,UPDATE,SELECT,CREATE,ALTER,DROP,INDEX ON `test.*` TO 'user1'@'xxx.com'  WITH GRANT OPTION;
+
+  # 修改加密方式， 加密方式有 caching_sha2_password, mysql_native_password
+  ALTER USER 'user1'@'xxx.com' IDENTIFIED WITH mysql_native_password BY 'xxx.passwd.com';
 ```
 
 # 三、用户操作

@@ -1694,3 +1694,15 @@ tock.stdtime.gov			//时间服务器
 
 	# 开机启动, 替代 chkconfig --add httpd
 		systemctl enable httpd.service
+
+	# 开机不启动
+		systemctl disabled httpd.service
+
+	# 启动服务
+		systemctl start httpd.service
+
+	# 服务重启
+		systemctl restart httpd.service
+
+	# 服务关闭
+		systemctl stop httpd.service

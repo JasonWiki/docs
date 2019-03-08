@@ -453,7 +453,7 @@ stream {
       # 组的配置和运行时被工作者进程之间共享状态中的共享存储器区. 语法: zone name [size];
         ## name  共享存储名
         ## [size] 共享粗存大小
-      zone upstream_server1_load_balance 64;
+      zone upstream_server1_load_balance 64k;
 
 
       # 服务器映射基于哈希key值的服务器组的负载平衡方法. 该key可以包含文本，变量，以及它们的组合（1.11.2）, 语法: hash key [consistent]

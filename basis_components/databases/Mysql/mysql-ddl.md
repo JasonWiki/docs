@@ -6,7 +6,7 @@
 
 * 创建数据库
   CREATE DATABASE `test_demo` /*!40100 DEFAULT CHARACTER SET utf8 */
-  CREATE DATABASE IF NOT EXISTS test_demo DEFAULT CHARACTER SET = utf8mb4;
+  CREATE DATABASE IF NOT EXISTS test_demo DEFAULT CHARACTER SET utf8mb4 collate utf8_general_ci;;
 
 * 创建表
   CREATE TABLE `demo_test` (
