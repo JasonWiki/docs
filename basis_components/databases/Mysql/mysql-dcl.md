@@ -68,7 +68,7 @@ CREATE USER 'username'@'host' IDENTIFIED BY 'password';
   ALTER USER 'user1'@'xxx.com' IDENTIFIED WITH mysql_native_password BY 'xxx.passwd.com';
 
   # 授权账号, 创建和授权要分开(命令行登录授权)
-  GRANT INSERT,DELETE,UPDATE,SELECT,CREATE,ALTER,DROP ON `test.*` TO 'user1'@'xxx.com';
+  GRANT INSERT,DELETE,UPDATE,SELECT,CREATE,ALTER,DROP ON test.* TO 'user1'@'xxx.com';
 ```
 
 # 三、用户操作
