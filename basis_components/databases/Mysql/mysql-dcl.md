@@ -15,6 +15,9 @@ CREATE USER 'username'@'host' IDENTIFIED BY 'password';
 3) 创建指定host远程连接账号, 如果用于代理, 则只需要授权代理服务器即可. 代理服务能访问 mysql 服务器
   CREATE USER 'user1'@'180.166.126.94' IDENTIFIED BY '123456';
 
+4) 删除用户
+  drop user 'user1'@'180.166.126.94';
+
 ```
 
 # 二、授权用户
@@ -61,11 +64,11 @@ CREATE USER 'username'@'host' IDENTIFIED BY 'password';
   # 创建用户
   create user 'user1'@'xxx.com' IDENTIFIED BY 'xxx.passwd.com' ;
 
-  # 授权账号, 创建和授权要分开
-  GRANT INSERT,DELETE,UPDATE,SELECT,CREATE,ALTER,DROP,INDEX ON `test.*` TO 'user1'@'xxx.com'  WITH GRANT OPTION;
-
   # 修改加密方式， 加密方式有 caching_sha2_password, mysql_native_password
   ALTER USER 'user1'@'xxx.com' IDENTIFIED WITH mysql_native_password BY 'xxx.passwd.com';
+
+  # 授权账号, 创建和授权要分开(命令行登录授权)
+  GRANT INSERT,DELETE,UPDATE,SELECT,CREATE,ALTER,DROP ON `test.*` TO 'user1'@'xxx.com';
 ```
 
 # 三、用户操作

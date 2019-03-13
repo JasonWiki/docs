@@ -10,7 +10,7 @@ apollo 主要由以下几个角色组成
   - 提供配置的读取、推送等功能，服务对象是 Apollo 客户端
 - Meta Server
   - Eureka 之上我们架了一层 Meta Server 用于封装 Eureka 的服务发现接口(这是为了支持 JAVA 意外的客户端, 支持服务发现)
-  - 为了简化部署，我们实际上会把 Config Service、Eureka 和 Meta Server 三个逻辑角色部署在同一个JVM进程中
+  - 为了简化部署，我们实际上会把 Config Service、Eureka 和 Meta Server 三个逻辑角色部署在同一个 JVM 进程中
 - Admin Service
   - 提供配置的修改、发布等功能
   - Portal 通过域名访问 Meta Server 获取 Admin Service 服务列表（IP+Port），而后直接通过 IP+Port 访问服务，同时在 Portal 侧会做 load balance、错误重试
@@ -49,7 +49,7 @@ git checkout feature-v1.2.0
 1. apollo-configservice 项目修改日志地址、端口、脚本
   conf/
     apollo-configservice.conf
-      LOG_FOLDER=/opt/logs/service/apollo/configservice/
+        LOG_FOLDER=/opt/logs/service/apollo/configservice/
 
   resources/
     application.yml
