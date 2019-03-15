@@ -21,11 +21,11 @@
 
 ``` xml
 
-<!-- seesion 超时时间, 单位分钟 --->
+seesion 超时时间, 单位分钟
+
 <session-config>
   <session-timeout>600</session-timeout>
 </session-config>
-
 
 ```
 
@@ -102,7 +102,6 @@
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
   </GlobalNamingResources>
-
 
 
 

@@ -40,7 +40,7 @@ ssh-keygen -t rsa
 sudo su tidb
 
 # 下载 2.1 版本
-git clone -b release-2.1 https://github.com/pingcap/tidb-ansible.git
+git clone -b release-2.1 https://gitee.com/JasonWiki/tidb-ansible
 
 # 在中控机器上安装 Ansible 及其依赖
 cd /home/tidb/tidb-ansible
