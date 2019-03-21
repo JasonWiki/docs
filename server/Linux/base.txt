@@ -513,8 +513,8 @@ tock.stdtime.gov			//时间服务器
 
 					 // 方法三、永久生效
 					 sudo vim /etc/security/limits.conf
-					 [用户账号]   hard    nofile          65535
-					 [用户账号]   soft    nofile          65535
+					 [用户账号]   hard    nofile          65536
+					 [用户账号]   soft    nofile          65536
 					 * 表示所有账号
 
 					 修改了配置文件, 重新登录就生效
