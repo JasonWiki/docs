@@ -312,10 +312,8 @@ Sentinel mode:
 
 
 3. 启动
-# 与启动普通 redis 的方法一致。
-./codis-server config/redis.conf &
-
-启动完成后，可以通过 codis-fe 提供的界面或者 codis-admin 命令行工具添加到集群中。
+# 与启动普通 redis 的方法一致。 启动完成后，可以通过 codis-fe 提供的界面或者 codis-admin 命令行工具添加到集群中。
+./codis-server config/redis.conf --port 6379 &
 
 # 查看端口
 netstat -tunlp | grep 6379
