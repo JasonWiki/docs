@@ -2,14 +2,7 @@
 
 - 基于 Lucene 的搜索服务器。它提供了一个分布式多用户能力的全文搜索引擎
 
-## 一、安装部署
-
-``` sh
-elasticsearch --cluster.name angejia-dw-es --node.name angejia-dw-es-node1 --network.host dwtest
-
-```
-
-## 二、api 使用
+## api 使用
 
 - REST 访问模式是很普遍在所有的API命令
   - curl -X<REST Verb> <Node>:<Port>/<Index>/<Type>/<ID>
@@ -284,15 +277,4 @@ elasticsearch --cluster.name angejia-dw-es --node.name angejia-dw-es-node1 --net
     }
   }'
 
-```
-
-
-## 二、优化参数
-
-```
-script.inline: on
-script.indexed: on
-index.mapper.dynamic: false
-index.max_result_window: 500000
-threadpool.index.queue_size: -1
 ```
