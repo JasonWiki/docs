@@ -2,14 +2,14 @@
 
 - 版本 3.x
 
+- 需要安装 nagios
+
 - 调用流程
   - nagios -> check_nrpe -> ssl -> NRPE daemon
 
 - 组成结构
   - check_nrpe : 插件, 安装在 nagios 监控服务器和被监控主机上
   - NRPE daemon : agent 守护进程, NRPE daemon 运行在被监控主机上
-
-- 需要安装 nagios
 
 - 用来执行远程命令
 

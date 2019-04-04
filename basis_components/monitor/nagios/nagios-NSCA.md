@@ -2,14 +2,14 @@
 
 - 版本 2.9.x
 
+- 需要安装 nagios
+
 - 调用流程
   - 远程主机 send_nsca 插件 -> nagios 主机上的 NSCA daemon 服务
 
 - 组成结构
   - send_nsca : 客户端插件, 安装在远程主机上, 用法发送指定格式的数据到 NSCA daemon 服务上
   - NSCA daemon : 运行在 Nagios 主机上的守护服务
-
-- 需要安装 nagios
 
 
 ## 一、部署 NSCA daemon 服务
@@ -78,7 +78,7 @@ alternate_dump_file=/usr/local/nagios/var/rw/nsca.dump
 aggregate_writes=1
 
 # password: 通讯密码, 与 send_nsca 客户端定义相同的密码, send_nsca 的配置文件在 etc/nsca/send_nsca.cfg
-password=2345.com
+password=xxxx.com
 
 
 5. NSCA daemon 启动服务
