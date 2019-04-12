@@ -223,3 +223,10 @@ spark.sql.inMemoryColumnarStorage.batchSize           10000
 spark.sql.default.fileformat                          orc
 
 ##### Spark Sql 调优 End #####
+
+
+## 防止上传大量 yarn 的 jar 包
+spark.yarn.archive                                    hdfs://nameservice1/jars/spark-yarn/spark_2.3.2.archive.zip
+
+## 解决 driver host 解析不到 hostname, 直接写 Ip
+spark.driver.host				                              xxx.xxx.xxx

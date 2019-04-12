@@ -18,6 +18,12 @@ spark.executor.memoryOverhead                         1024
 # 默认队列, submit --queue 可以指定队列, 默认 (default)
 spark.yarn.queue                                      realtime
 
+## 防止上传大量 yarn 的 jar 包
+spark.yarn.archive                                    hdfs://nameservice1/jars/spark-yarn/spark_2.3.2.archive.zip
+
+## 解决 driver host 解析不到 hostname, 直接写 Ip
+spark.driver.host				                              xxx.xxxx.xxx.xxx 替换成你的 driver ip
+
 ##### Spark On Yarn 部署属性  End #####
 
 
