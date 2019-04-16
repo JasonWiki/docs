@@ -350,8 +350,7 @@ netstat -tunlp | grep 21050
 
 
 # 查看 Codis Dashboard 信息
-./codis-admin --dashboard-list --zookeeper=zookeeper-datagroup1:2181,zookeeper-datagroup2:2181,zookeeper-datagroup3:2181 | tee codis.json
-
+./codis-admin --dashboard-list --zookeeper=zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181 | tee codis.json
 
 3. 打开 Codis FE 服务
 http://host-name:21050
