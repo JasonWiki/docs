@@ -2,7 +2,7 @@
 
 ## 一、 Yarn 上的 MarReduce 实体
 
-```
+``` doc
 1. 客户端: 提交 MapReduce 作业
 
 2. Yarn ResourceManager: 资源管理器，负责协调集群上计算资源的分配
@@ -38,7 +38,7 @@
 
 - [shuffle 过程说明](http://www.cnblogs.com/hanganglin/articles/4064284.html)
 
-```
+``` doc
 Map 端 :
 1) 环形内存缓冲区 buffer
   每个 Map 任务都有一个环形内存缓冲区 buffer, 用于存储任务输出 (一个 Map 任务一般会拉去一个 HDFS 块的数据)
