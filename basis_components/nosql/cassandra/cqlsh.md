@@ -28,8 +28,11 @@ Copy
 CREATE KEYSPACE test
 WITH replication = {'class':'NetworkTopologyStrategy', 'replication_factor' : 3};
 
-  SimpleStrategy: 只用于单数据中心和单机架。SimpleStrategy 把第一份备份放在由分区器决定的节点上。余下的备份被放在环的顺时针方向的下面的节点上，而不考虑拓扑结构(机架或数据中心的位置)。
-  NetworkTopologyStrategy: 当你已经(或者计划)将你的集群部署成多数据中心的时候，使用 NetworkTopologyStrategy 策略。这个策略需要指定在每个数据中心有多少个副本数量。
+  SimpleStrategy
+    只用于单数据中心和单机架。SimpleStrategy 把第一份备份放在由分区器决定的节点上。余下的备份被放在环的顺时针方向的下面的节点上，而不考虑拓扑结构(机架或数据中心的位置)。
+
+  NetworkTopologyStrategy
+    当你已经(或者计划)将你的集群部署成多数据中心的时候，使用 NetworkTopologyStrategy 策略。这个策略需要指定在每个数据中心有多少个副本数量。
 
 
 # 修改 Keyspace 空间
@@ -83,6 +86,10 @@ ALTER TABLE emp ADD emp_email text;
 
 # 删除列
 ALTER TABLE emp DROP emp_email;
+
+# Cassandra 只可以重命名主键字段, 若重命名其他字段名操作方法如下, 需要谨慎操作
+ALTER TABLE <表名> DROP <字段名>;  
+ALTER TABLE <表名> ADNN <新字段名> <字段类型>;  
 
 
 # ------------------------------ Cassandra 删除表 ------------------------------
@@ -265,7 +272,102 @@ SELECT * FROM teacher_sort
   # 建表时 teacher(address ASC, name ASC) 或者 teacher_sort(address DESC, name ASC) 是有序的.
   # 查询时 teacher 表使用 (address DESC, name ASC), 或者(address ASC, name DESC).
   # 查询时 teacher_sort 表使用 (address DESC, name DESC) 排序, 或者 (address ASC, name ASC) 排序.
-  # 所以 (ASC, ASC) 或者 (DESC, DESC) 对 Cassandra 是没有意义的.
 
-  PS: 因为 Cassandra 的存储, key 本质就是有序的.
+PS: 所以 (ASC, ASC) 或者 (DESC, DESC) 对 Cassandra 是没有意义的, 因为 Cassandra 的存储, key 本质就是有序的.
+
+
+# ------------------------------ Cassandra 分页 ------------------------------
+# Cassandra 的分页查询，主要是通过查询结果的默认的排列顺序来实现的
+
+CREATE table teacher_page(
+    id int,
+    address text,
+    name text,
+    age int,
+    height int,
+    primary key(id, address, name)
+);
+
+
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(1,'guangdong','lixiao',32,172);
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(1,'guangxi','linzexu',68,178);
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(1,'guangxi','lihao',25,178);
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','lixiaolong',32,172);
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangdong','lixiao',32,172);
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','linzexu',68,178);
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','lihao',25,178);
+INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','nnd',32,172);
+
+
+#
+SELECT * FROM teacher_page;
+  id | address  | name       | age | height
+  ----+-----------+------------+-----+--------
+  1 | guangdong |     lixiao |  32 |    172
+  1 |   guangxi |      lihao |  25 |    178
+  1 |   guangxi |    linzexu |  68 |    178
+  2 | guangdong |     lixiao |  32 |    172
+  2 |   guangxi |      lihao |  25 |    178
+  2 |   guangxi |    linzexu |  68 |    178
+  2 |   guangxi | lixiaolong |  32 |    172
+  2 |   guangxi |        nnd |  32 |    172
+
+
+# 一共 8 条数据, 按一页 2 条记录(pageSize=2)来查出全部数据
+SELECT * FROM teacher_page LIMIT 2;
+  id | address  | name   | age | height
+  ----+-----------+--------+-----+--------
+  1 | guangdong | lixiao |  32 |    172
+  1 |   guangxi |  lihao |  25 |    178
+
+
+# 将以上查询得到的结果的最后一条记录的主键 id,address,name 的值记录 1,guagnxi,lihao 记录下来，本次查询需要用到
+SELECT * FROM teacher_page
+WHERE token(id)=token(1)
+  AND (address,name)>('guangxi','lihao')
+LIMIT 2 ALLOW FILTERING;
+  id | address | name   | age | height
+  ----+---------+---------+-----+--------
+  1 | guangxi | linzexu |  68 |    178
+
+
+# 如果只查询出了 1 条记录, 不够 2 条(同 key 数据不够, 需要跨 key). 这时语句应该这么写:
+SELECT * FROM teacher_page
+WHERE token(id)>token(1)
+LIMIT 1;
+  id | address   | name   | age | height
+  ----+-----------+--------+-----+--------
+   2 | guangdong | lixiao |  32 |    172
+
+
+# 将 2,guangdong,lixiao 记录下来，供本次查询用
+SELECT * FROM teacher_page
+WHERE token(id)=token(2)
+  AND (address,name)>('guangdong','lixiao')
+LIMIT 2 ALLOW FILTERING;
+ id | address | name    | age | height
+  ----+---------+---------+-----+--------
+  2 | guangxi |   lihao |  25 |    178
+  2 | guangxi | linzexu |  68 |    178
+
+
+# 总结
+1. 第一次查询, 得到的记录数若小于 pageSize, 那么就说明后面没数据, 若等于 pageSize, 那就不知道是否还有数据, 则需要进行第二次查询。
+  SELECT * FROM teacher_page LIMIT 2;
+
+2. 第二次查询
+  1. 先从 token(id)=x 开始查
+    SELECT * FROM teacher_page
+    WHERE token(id)=token(1)
+      AND (address,name)>('guangxi','lihao')
+    LIMIT 2 ALLOW FILTERING;
+
+  2. 若 token(id)=x 的查询记录数(searchedCounts) < pageSize, 则转向 token(id)>x 的开始查.
+
+  3. 若 token(id)>x 的查询记录数(searchedCounts) < (pageSize – searchedCounts), 那么就说明没有数据.
+    SELECT * FROM teacher_page
+    WHERE token(id)>token(1)
+    LIMIT 1;
+
+  4. 若 token(id)>x 的查询记录数(searchedCounts) = (pageSize – searchedCounts), 那么重复第二次查询.
 ```
