@@ -249,15 +249,15 @@ INSERT INTO teacher_sort(id,address,name,age,height) VALUES(2,'guangxi','linzexu
 INSERT INTO teacher_sort(id,address,name,age,height) VALUES(2,'guangxi','lihao',25,170);
 INSERT INTO teacher_sort(id,address,name,age,height) VALUES(2,'guangxi','nnd',32,172);
 
-# 查询数据
+# 必须有第一主键的 = 号查询, cassandra 的第一主键是决定记录分布在哪台机器上，也就是说 cassandra 只支持单台机器上的记录排序
 SELECT * FROM teacher_sort WHERE id=1 ORDER BY address ASC;
 
-# 按照索引顺序排序
+# 必须有第一主键的 = 号查询, 只能根据第二、三、四… 主键进行有序的
 SELECT * FROM teacher_sort
   WHERE id=1
   ORDER BY address ASC, name DESC;
 
-# 查询
+# 必须有第一主键的 = 号查询, 从 address 开始排序
 SELECT * FROM teacher_sort
   WHERE id=1 AND address='guangxi'
   ORDER BY address ASC;
@@ -299,7 +299,7 @@ INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','lihao',
 INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','nnd',32,172);
 
 
-#
+# 
 SELECT * FROM teacher_page;
   id | address  | name       | age | height
   ----+-----------+------------+-----+--------

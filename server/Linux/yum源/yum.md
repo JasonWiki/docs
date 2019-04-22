@@ -61,5 +61,4 @@ yum makecache
 
 # 例如 cloudera 的 rpm 包目录在中
 /var/cache/yum/x86_64/7/cloudera-manager/packages
-
 ```

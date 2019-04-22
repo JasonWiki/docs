@@ -216,7 +216,8 @@ Elasticsearch 为不同类型的操作使用许多线程池。重要的是它能
 -E cluster.name=es-datacenter \
 -E node.name=es-datacenter-node1 \
 -E network.host=es-datacenter-node1 \
--E discovery.zen.ping.unicast.hosts=es-datacenter-node1,es-datacenter-node2,es-datacenter-node3
+-E discovery.zen.ping.unicast.hosts=es-datacenter-node1,es-datacenter-node2,es-datacenter-node3 \
+-d
 
 
 # 守护启动
@@ -231,6 +232,7 @@ Elasticsearch 为不同类型的操作使用许多线程池。重要的是它能
 cat /tmp/elasticsearch-pid && echo
 kill -SIGTERM PID
 
+netstat -tunlp | grep 9200
 
 # --------------------------------- 停止 ----------------------------------
 jps | grep Elasticsearch
