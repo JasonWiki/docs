@@ -69,17 +69,17 @@ nodetool compactionstats
 - cassandra-stress 压力测试
 
 ``` sh
-# 用于压力测试 模拟写入和读取   
-cassandra-stress
+# 用于压力测试 模拟写入和读取  
+cassandra-stress command [options]
 
-# 插入一万条数据
-./tool/bin/cassandra-stress write n=10000  
+# 插入十万条数据
+./tools/bin/cassandra-stress write n=100000 -rate threads=5 -node node4,node5,node6
 
-# 读取一万条数据
-./tool/bin/cassandra-stress read n=10000   
+# 读取十万条数据
+./tools/bin/cassandra-stress read n=100000 -rate threads=5 -node node4,node5,node6
 
 # 持续三分钟一直读取
-./tool/bin/cassandra-stress read duration=3m
+./tools/bin/cassandra-stress read duration=3m -node node4,node5,node6
 ```
 
 
