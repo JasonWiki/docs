@@ -6,7 +6,7 @@
 
 - REST 访问模式是很普遍在所有的API命令
   - curl -X<REST Verb> <Node>:<Port>/<Index>/<Type>/<ID>
-  - 例如:   curl -XPUT 'dwtest:9200/customer/external/1?pretty'
+  - 例如:   curl -XPUT 'es-node:9200/customer/external/1?pretty'
 
 ### 1. Document APIs
 
@@ -15,18 +15,18 @@
 ``` sh
 
 * 集群健康
-  curl 'dwtest:9200/_cat/health?v'
+  curl 'es-node:9200/_cat/health?v'
 
 * 节点健康
-  curl 'dwtest:9200/_cat/nodes?v'
+  curl 'es-node:9200/_cat/nodes?v'
 
 * 列出所有索引
-  curl 'dwtest:9200/_cat/indices?v'
+  curl 'es-node:9200/_cat/indices?v'
 
 
 
 * 创建一个名为“customer”使用PUT动词的索引。 我们只是添加pretty的通话结束，告诉它漂亮打印
-  curl -XPUT 'dwtest:9200/customer?pretty'
+  curl -XPUT 'es-node:9200/customer?pretty'
 
   response:
   {
@@ -35,7 +35,7 @@
 
 
 * 查看所有 indices 指标
-  curl 'dwtest:9200/_cat/indices?v'
+  curl 'es-node:9200/_cat/indices?v'
 
   PS : Elasticsearch 默认创建一个副本此索引。 因为我们只有一个节点的时间，此刻正在运行，这一个副本还不能分配（高可用性），直到稍后当其他节点加入集群。 一旦该副本被分配到第二个节点，这个索引的健康状况会变成绿色。
 
@@ -45,7 +45,7 @@
 
 
 * 创建一个文档 customer(索引)->external(类型)->1(文档)
-  curl -XPUT 'dwtest:9200/customer/external/1?pretty' -d '
+  curl -XPUT 'es-node:9200/customer/external/1?pretty' -d '
   {
     "name": "John Doe"
   }'
@@ -66,7 +66,7 @@
 
 
 * 查询文档
-  curl -XGET 'dwtest:9200/customer/external/1?pretty'
+  curl -XGET 'es-node:9200/customer/external/1?pretty'
 
   response:
   {
@@ -82,7 +82,7 @@
 
 
 * 删除索引
-  curl -XDELETE 'dwtest:9200/customer?pretty'
+  curl -XDELETE 'es-node:9200/customer?pretty'
 
   response:
   {
@@ -90,44 +90,44 @@
   }
 
   查看所有 indices
-  curl 'dwtest:9200/_cat/indices?v'
+  curl 'es-node:9200/_cat/indices?v'
 
   response:
   空
 
 
 * 自动生成文档 id
-  curl -XPOST 'dwtest:9200/customer/external?pretty' -d '
+  curl -XPOST 'es-node:9200/customer/external?pretty' -d '
   {
   "name": "Jane Doe"
   }'
 
 
 * 更新文档 (增加 age 字段)
-  curl -XPOST 'dwtest:9200/customer/external/1/_update?pretty' -d '
+  curl -XPOST 'es-node:9200/customer/external/1/_update?pretty' -d '
   {
     "doc": { "name": "Jane Doe", "age": 20 }
   }'
 
 
 * 更新文档 (累加字段数据)
-  curl -XPOST 'dwtest:9200/customer/external/1/_update?pretty' -d '
+  curl -XPOST 'es-node:9200/customer/external/1/_update?pretty' -d '
   {
   "script" : "ctx._source.age += 5"
   }'
 
 
 * 删除文档
-  curl -XDELETE 'dwtest:9200/customer/external/1?pretty'
+  curl -XDELETE 'es-node:9200/customer/external/1?pretty'
 
 
 * 加载文件数据到 bank->account 中
-  curl -XPOST 'dwtest:9200/bank/account/_bulk?pretty' --data-binary "@accounts.json"
-  curl 'dwtest:9200/_cat/indices?v'
+  curl -XPOST 'es-node:9200/bank/account/_bulk?pretty' --data-binary "@accounts.json"
+  curl 'es-node:9200/_cat/indices?v'
 
 
 * 查看 bank 索引结构
-  curl -XGET 'http://dwtest:9200/bank/_mapping'
+  curl -XGET 'http://es-node:9200/bank/_mapping'
 
 ```
 
@@ -147,7 +147,7 @@
 
 ``` sh
 * 查询 bank 索引下所有数据
-  curl 'dwtest:9200/bank/_search?q=*&pretty'
+  curl 'es-node:9200/bank/_search?q=*&pretty'
 
   response:
     took - 时间以毫秒为单位 Elasticsearch 来执行搜索
@@ -159,7 +159,7 @@
 
 
 * 匹配所有, 获取 1 条记录
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
     "query": { "match_all": {} },
     "size": 1
@@ -167,7 +167,7 @@
 
 
 * 匹配所有, 从 10 条开始, 取 10 条 记录
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
   "query": { "match_all": {} },
   "from": 10,
@@ -176,7 +176,7 @@
 
 
 * 匹配所有, 排序 balance 字段
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
   "query": { "match_all": {} },
   "sort": { "balance": { "order": "desc" } }
@@ -184,7 +184,7 @@
 
 
 * 匹配所有, 限制返回字段
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
     "query": { "match_all": {} },
     "_source": ["account_number", "balance"]
@@ -194,19 +194,19 @@
 * Macth 匹配查询
 
   数字匹配
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
   "query": { "match": { "account_number": 20 } }
   }'
 
   包含匹配 (mill)
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
     "query": { "match": { "address": "mill" } }
   }'
 
   包含匹配 (mill 或 lane)
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
     "query": { "match": { "address": "mill lane" } }
   }'
@@ -214,7 +214,7 @@
 
 * bool(ean) query 必须满足条件查询
   必须满足 mill 和 lane
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
     "query": {
       "bool": {
@@ -227,7 +227,7 @@
   }'
 
   必须满足 40 and 不满足 ID
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
     "query": {
       "bool": {
@@ -244,7 +244,7 @@
 
 * Filters 过滤器
   范围查询
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
     {
      "query": {
        "bool": {
@@ -265,7 +265,7 @@
 * aggs 聚合操作
 
   等同于: SELECT state, COUNT(*) FROM bank GROUP BY state ORDER BY COUNT(*) DESC  
-  curl -XPOST 'dwtest:9200/bank/_search?pretty' -d '
+  curl -XPOST 'es-node:9200/bank/_search?pretty' -d '
   {
     "size": 0,
     "aggs": {

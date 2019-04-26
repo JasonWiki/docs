@@ -1,19 +1,27 @@
 # elasticsearch 部署手册
 
-- Java1.8.0_131 或更高版本, 仅支持Oracle的Java和OpenJDK
+
+## 下载
 
 ``` sh
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.6.2.tar.gz
 
 tar -zxvf elasticsearch-6.6.2.tar.gz
 
-Elasticsearch有三个配置文件：
+```
+
+## 安装
+
+- Java1.8.0_131 或更高版本, 仅支持Oracle的Java和OpenJDK
+
+``` sh
 
 ```
 
+
 ## 配置
 
-### ES 重要配置
+### 1. ES 重要配置
 
 - conf/elasticsearch.yml ES 集群配置
 
@@ -53,20 +61,19 @@ bootstrap.memory_lock: true
 # ---------------------------------- Network -----------------------------------
 # 网络设置, 绑定到哪个网络接口以便侦听传入请求,
 ## 默认情况下，Elasticsearch 仅绑定到环回地址 - 例如 127.0.0.1 和[::1]。这是在服务器上运行单个开发节点。
-network.host ${HOSTNAME}
+#network.host ${HOSTNAME}
 ## 将绑定地址设置为特定的IP (IPv4或IPv6)， 如果自定义设置了 network.host 的 Ip, Elasticsearch 就会假定从开发模式转移到生产模式
-network.host  192.168.1.10
+  network.host  192.168.1.10
 
-["127.0.0.1", "[::1]"].
+  ["127.0.0.1", "[::1]"].
 
-_[networkInterface]_ 例如，网络接口的地址 _en0_ 。
+  _[networkInterface]_ 例如，网络接口的地址 _en0_ 。
 
-_local_ 例如，系统上的任何环回地址127.0.0.1。
+  _local_ 例如，系统上的任何环回地址127.0.0.1。
 
-_site_  例如，系统上的任何站点本地地址192.168.0.1。
+  _site_  例如，系统上的任何站点本地地址192.168.0.1。
 
-_global_ 例如，系统上的任何全局范围的地址8.8.8.8。
-
+  _global_ 例如，系统上的任何全局范围的地址8.8.8.8。
 
 # network.host 同时设置 bind_host 和 publish_host 两个参数
 ## network.bind_host
@@ -130,10 +137,9 @@ discovery.zen.ping.unicast.hosts: ["host1", "host2"]
 ```
 
 
-### 系统重要配置
+### 2. 系统重要配置
 
 - Disable swapping 禁止使用交换区(https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html)
-
 
 ``` sh
 大多数操作系统尝试使用尽可能多的内存来存储文件系统缓存，并急切地交换掉未使用的应用程序内存。这可能导致部分JVM堆甚至其可执行页面被换出到磁盘。
@@ -155,7 +161,6 @@ discovery.zen.ping.unicast.hosts: ["host1", "host2"]
 
 
 - [File Descriptors 文件描述符](https://www.elastic.co/guide/en/elasticsearch/reference/current/file-descriptors.html)
-
 ``` sh
 1. ulimit 方式
   ulimit -n 65536 (这个只要比 /etc/security/limits.conf 设置的小, 否则无效)
@@ -202,7 +207,7 @@ Elasticsearch 为不同类型的操作使用许多线程池。重要的是它能
 ```
 
 
-## 集群控制
+## 集群部署
 
 ``` sh
 # --------------------------------- 启动 ----------------------------------

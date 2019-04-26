@@ -44,27 +44,10 @@
 ## 安装
 
 ``` sh
-mqbroker -c ../conf/2m-2s-sync/broker-a.properties -n 192.168.0.2:9876,192.168.0.3:9876
-mqbroker -c ../conf/2m-2s-sync/broker-a-s.properties -n 192.168.0.2:9876,192.168.0.3:9876
 
-mqbroker -c ../conf/2m-2s-sync/broker-b.properties -n 192.168.0.2:9876,192.168.0.3:9876
-mqbroker -c ../conf/2m-2s-sync/broker-b-s.properties -n 192.168.0.2:9876,192.168.0.3:9876
-
-mqadmin clusterlist
 ```
 
 ## 配置
-
-``` sh
-broker 角色有
-  ASYNC_MASTER（异步主） + SLAVE（从）: 允许异常情况下的消息丢失
-  SYNC_MASTER（同步主）+ SLAVE（从）: 保证异常情况下不丢数据
-
-123
-
-```
-
-
 
 ``` sh
 ### ---------- 2 master, 2 slave, 同步模式 -----------
@@ -159,7 +142,8 @@ flushDiskType=ASYNC_FLUSH
 
 
 
-### ---------- GC 优化参数 ----------
+### ---------- Broker GC 优化参数 ----------
+bin/runbroker.sh
 
 -server -Xms8g -Xmx8g -Xmn4g
 -XX:+UseG1GC -XX:G1HeapRegionSize=16m -XX:G1ReservePercent=25
@@ -171,4 +155,145 @@ flushDiskType=ASYNC_FLUSH
 -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=5 -XX:GCLogFileSize=30m
 ```
 
-## 启动
+
+## 部署
+
+``` sh
+# -------------------- 启动 nameserver --------------------
+
+# 创建日志目录
+sudo mkdir -p /opt/logs/rocketmqlogs
+sudo chown $USER:$USER /opt/logs/rocketmqlogs
+
+# rocketmq nameserver
+172.17.19.2     rocketmq-nameserver1
+172.17.19.51    rocketmq-nameserver2
+172.17.19.52    rocketmq-nameserver3
+
+# 启动 nameserver
+nohup ./bin/mqnamesrv &
+  jps | grep NamesrvStartup
+  netstat -tunlp | grep 9876
+
+# 关闭 nameserver
+./bin/mqshutdown namesrv
+
+
+# -------------------- 第 a 组, 1 主 2 从 --------------------
+
+# 主节点 broker-a.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=0
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SYNC_MASTER
+flushDiskType=ASYNC_FLUSH
+
+# 从节点 broker-a-s1.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=1
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SLAVE
+flushDiskType=ASYNC_FLUSH
+
+# 从节点 broker-a-s2.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=2
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SLAVE
+flushDiskType=ASYNC_FLUSH
+
+# 启动 broker master
+nohup sh ./bin/mqbroker -c ./conf/custom/broker-a.properties -n "rocketmq-nameserver1:9876;rocketmq-nameserver2:9876;rocketmq-nameserver3:9876" &
+
+  jps | grep BrokerStartup
+  netstat -tunlp | grep 10911
+
+# 启动 broker slave1
+nohup sh ./bin/mqbroker -c ./conf/custom/broker-a-s1.properties -n "rocketmq-nameserver1:9876;rocketmq-nameserver2:9876;rocketmq-nameserver3:9876" &
+
+  jps | grep BrokerStartup
+  netstat -tunlp | grep 10911
+
+# 启动 broker slave2
+nohup sh ./bin/mqbroker -c ./conf/custom/broker-a-s2.properties -n "rocketmq-nameserver1:9876;rocketmq-nameserver2:9876;rocketmq-nameserver3:9876" &
+
+  jps | grep BrokerStartup
+  netstat -tunlp | grep 10911
+
+# 关闭 broker
+./bin/mqshutdown broker
+
+
+# -------------------- 第 b 组, 1 主 2 从 --------------------
+
+# 主节点 broker-b.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-b
+brokerId=0
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SYNC_MASTER
+flushDiskType=ASYNC_FLUSH
+
+# 从节点 broker-b-s1.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-b
+brokerId=1
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SLAVE
+flushDiskType=ASYNC_FLUSH
+
+# 从节点 broker-b-s2.properties
+brokerClusterName=DefaultCluster
+brokerName=broker-b
+brokerId=2
+deleteWhen=04
+fileReservedTime=48
+brokerRole=SLAVE
+flushDiskType=ASYNC_FLUSH
+
+# 启动 broker master
+nohup sh ./bin/mqbroker -c ./conf/custom/broker-b.properties -n "rocketmq-nameserver1:9876;rocketmq-nameserver2:9876;rocketmq-nameserver3:9876" &
+
+  jps | grep BrokerStartup
+  netstat -tunlp | grep 10911
+
+# 启动 broker slave1
+nohup sh ./bin/mqbroker -c ./conf/custom/broker-b-s1.properties -n "rocketmq-nameserver1:9876;rocketmq-nameserver2:9876;rocketmq-nameserver3:9876" &
+
+  jps | grep BrokerStartup
+  netstat -tunlp | grep 10911
+
+# 启动 broker slave2
+nohup sh ./bin/mqbroker -c ./conf/custom/broker-b-s2.properties -n "rocketmq-nameserver1:9876;rocketmq-nameserver2:9876;rocketmq-nameserver3:9876" &
+
+  jps | grep BrokerStartup
+  netstat -tunlp | grep 10911
+
+mqadmin clusterlist
+```
+
+
+## 工具
+
+- tools.sh
+
+``` sh
+# 测试集群
+export NAMESRV_ADDR=rocketmq-nameserver1:9876
+
+# 生产测试
+./bin/tools.sh org.apache.rocketmq.example.quickstart.Producer
+
+# 消费测试
+./bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer
+```
+
+-
