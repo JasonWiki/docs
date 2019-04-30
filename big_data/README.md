@@ -26,7 +26,7 @@
 
 ### 1、Haoop 的 Cloudera 发行版本
 
-```
+``` doc
 1.1) Cloudera 是 Hadoop 整合后的一个稳定的版本，相对于 Apache Hadoop 来说更加稳定，更新更快，支持 Yum/apt-get tar rpm 包管理，官方建议使用 Yum/apt-get 管理，这样就无需寻找对应版本的 Hbase 等。
 
 1.2) Hadoop的发行版除了社区的Apache hadoop外，cloudera，hortonworks，mapR，EMC，IBM，INTEL，华为等等都提供了自己的商业版本。商业版主要是提供了专业的技术支持，这对一些大型企业尤其重要。每个发行版都有自己的一些特点，本文就Cloudera发行版做介绍。
@@ -48,7 +48,7 @@ Hadoop 有三种运行模式：
 
 ### 3、分支
 
-```
+``` doc
 3.1) 其中从0.20.x 分支发展出来的是：hadoop1.0，CDH3
 
 3.2) 从0.23.x 分支发展出来的是：hadoop-alpha，CDH4
@@ -76,35 +76,3 @@ Hadoop 有三种运行模式：
 | Flume | 高可靠、可配置的数据流集合 |
 | Chukwa | 定期抓去数据源到 Hadoop 中 |
 | Oozie | Oozie是一个工作流引擎服务器,用于运行Hadoop Map/Reduce和Pig 任务工作流.同时Oozie还是一个Java Web程序,运行在Java Servlet容器中,如Tomcat. |
-
-
-
-## 三、构建Hadoop集群
-
-### 1、硬件标准
-
-| 组件 | 参数 |
-| ------ | ------------ |
-| 处理器 | 2个四核 2 ~ 2.5 GHz CPU |
-| 内存 | 16 ~ 32 GB ECC RAM |
-| 存储 | 4 x 1T SATA 硬盘 |
-| 网络 | 千兆以太网 |
-
-### 2、不要使用RAID
-
-HDFS 已经有了一套分布式文件的管理策略，使用 RAID 反而会降低速度。
-
-
-### 3、需要在unix环境下执行
-
-这无需说什么
-
-
-### 4、数据增长
-
-假如数据每周增长 1TB，如果采用三路 HDFS 复制技术，曾每周需要增加 3TB 存数能力。再加上一些中间件和日志文件(约 30%)，基本相当于每周增加一台机器。以这种速度，保存2年的数据大约需要100太机器。
-
-
-### 其他
-
-使用ECC内存，根据部分一些资料和反馈，使用了非ECC内存时，会产生检验和错误。
