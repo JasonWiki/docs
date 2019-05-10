@@ -20,18 +20,26 @@ error_log  logs/error.log  info;
 #pid        nginx.pid;
 
 # 一个进程能打开的文件描述符最大值，理论上该值因该是最多能打开的文件数除以进程数. 但是由于nginx负载并不是完全均衡的，
-# 所以这个值最好等于最多能打开的文件数. 执行 sysctl -a | grep fs.file 可以看到linux文件描述符.
+# 所以这个值最好等于最多能打开的文件数. 执行 sysctl -a | grep fs.file 可以看到 linux 文件描述符.
 worker_rlimit_nofile 65535;
 
 # 工作模式与连接数上限
 events {
     # uname -a 工作模式，linux2.6版本以上用 epoll
+    # 比如 select、poll、epoll 只能设置在 events 模块中设置
     use epoll;
+
+
     # 单个进程允许的最大连接数
     worker_connections  65535;
+
+    # multi_accept 告诉 nginx 收到一个新连接通知后接受尽可能多的连接，默认是 on
+    # 设置为 on 后，多个 worker 按串行方式来处理连接，也就是一个连接只有一个 worker 被唤醒，其他的处于休眠状态，
+    # 设置为 off 后，多个 worker 按并行方式来处理连接，也就是一个连接会唤醒所有的 worker，直到连接分配完毕，没有取得连接的继续休眠。
+    # 结论: 当你的服务器连接数不多时，开启这个参数会让负载有一定的降低，但是当服务器的吞吐量很大时，为了效率，可以关闭这个参数。
+    multi_accept  off;
 }
 ```
-
 
 
 ## 变量表

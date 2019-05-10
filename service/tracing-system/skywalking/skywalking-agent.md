@@ -33,7 +33,7 @@ agent.application_code=Your_ApplicationName
 # skywalking团队可能在调试，需要此文件
 # agent.is_open_debugging_class = true
 
-# 对应Collector的config/application.yml配置文件中 agent_server/jetty/port 配置内容
+# 对应 Collector的config/application.yml 配置文件中 agent_server/jetty/port 配置内容
 # 例如：
 # 单节点配置：SERVERS="127.0.0.1:8080"
 # 集群配置：SERVERS="10.2.45.126:8080,10.2.45.127:7600"
@@ -199,6 +199,7 @@ Config the [%traceId] pattern in your log4j2.xml
 #### 2.4 手动跨线程解决方案 API
 
 - [跨线程解决方案API](https://github.com/apache/incubator-skywalking/blob/master/docs/en/setup/service-agent/java-agent/Application-toolkit-trace-cross-thread.md)
+
 
 
 ## 二. 接入第三方调用链监控

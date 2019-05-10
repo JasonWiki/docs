@@ -14,6 +14,14 @@ stream {
 
   # 读取 PROXY 协议头来完成. 如果在这段时间内没有发送完整的报头，则连接关闭
   proxy_protocol_timeout              30s;
+  # 定义与代理服务器建立连接的超时时间
+  #proxy_connect_timeout               15;
+  #proxy_send_timeout                  20;
+  #proxy_read_timeout                  20;
+  #proxy_buffer_size                   256k;
+  #proxy_buffers                       4 256k;
+  #proxy_busy_buffers_size             512k;
+  #proxy_temp_file_write_size          512k;
 
   # 将用于解析上游服务器名称的名称服务器配置为地址，例如
   # resolver                            resolver 127.0.0.1 [::1]:5353 valid=30s;
@@ -28,7 +36,7 @@ stream {
     listen address:port;
   }
 
-
+  # 通过 引入配置加载 server 模块
   include /etc/nginx/conf.d/stream-*.conf;
 }
 ```

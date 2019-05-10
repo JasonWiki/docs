@@ -60,7 +60,7 @@ http {
     tcp_nodelay    on;
 
     # 长连接超时时间，单位是秒
-    keepalive_timeout  30;
+    keepalive_timeout  3;
 
     # gzip模块设置，使用 gzip 压缩可以降低网站带宽消耗，同时提升访问速度.
     gzip  on;                      # 开启gzip
@@ -68,12 +68,20 @@ http {
     gzip_buffers     4 16k;        # 压缩缓冲区
     gzip_http_version 1.0;         # 压缩版本
     gzip_comp_level 2;             # 压缩等级
-    gzip_types       text/plain application/x-javascript text/css application/xml;           #压缩类型
+    gzip_types       text/plain application/x-javascript application/javascript text/css text/javascript application/x-httpd-php image/jpeg image/gif image/png;           #压缩类型
+
+
+    proxy_connect_timeout 15;
+    proxy_send_timeout 20;
+    proxy_read_timeout 20;
+    proxy_buffer_size  256k;
+    proxy_buffers      4 256k;
+    proxy_busy_buffers_size 512k;
+    proxy_temp_file_write_size 512k;
 
 	  # 导入配置
 	  include /etc/nginx/conf.d/http-*.conf;
 }
-
 ```
 
 
