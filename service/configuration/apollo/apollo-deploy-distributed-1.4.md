@@ -135,7 +135,7 @@ apollo/scripts/build.sh
 
 ## 三. 分布式部署
 
-- [分布式部署图纸](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/apollo-deployment.png)
+- ![分布式部署图纸](https://raw.githubusercontent.com/ctripcorp/apollo/master/doc/images/apollo-deployment.png)
 - 支持环境有 (DEV/FAT/UAT/PRO), 支持多机房
 - 部署的顺序为 configservice > adminservice > portal
 
