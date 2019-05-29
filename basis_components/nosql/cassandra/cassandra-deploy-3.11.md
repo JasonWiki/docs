@@ -47,7 +47,8 @@ native_transport_port:  9042
 
 # ----------------- 更改目录的位置 -----------------
 # 数据文件所在的一个或多个目录
-data_file_directories:  /opt/data/cassandra/data
+data_file_directories:
+  - /opt/data/cassandra/data
 
 # commitlog文件所在的目录, 出于性能原因，如果您有多个磁盘，请考虑将 commitlog 和数据文件放在不同的磁盘上。
 commitlog_directory:    /opt/data/cassandra/commitlog
