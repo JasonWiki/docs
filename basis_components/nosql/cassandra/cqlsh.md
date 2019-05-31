@@ -25,8 +25,7 @@ Copy
 
 # ------------------------------ Cassandra 创建键空间 ------------------------------
 # 创建 Keyspace 空间
-CREATE KEYSPACE test
-WITH replication = {'class':'NetworkTopologyStrategy', 'replication_factor' : 3};
+CREATE KEYSPACE test WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};
 
   SimpleStrategy
     只用于单数据中心和单机架。SimpleStrategy 把第一份备份放在由分区器决定的节点上。余下的备份被放在环的顺时针方向的下面的节点上，而不考虑拓扑结构(机架或数据中心的位置)。
@@ -37,7 +36,7 @@ WITH replication = {'class':'NetworkTopologyStrategy', 'replication_factor' : 3}
 
 # 修改 Keyspace 空间
 ALTER KEYSPACE test
-WITH REPLICATION = {'class' : 'NetworkTopologyStrategy', 'replication_factor' : 3}
+WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 3}
 
 # 删除 Keyspace 空间
 DROP KEYSPACE test;
@@ -299,7 +298,7 @@ INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','lihao',
 INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','nnd',32,172);
 
 
-# 
+#
 SELECT * FROM teacher_page;
   id | address  | name       | age | height
   ----+-----------+------------+-----+--------

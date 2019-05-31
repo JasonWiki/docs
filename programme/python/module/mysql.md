@@ -26,4 +26,9 @@
 2. yum 等其他系统参照
   http://blog.csdn.net/a657941877/article/details/8944683
 
+  sudo yum install python-setuptools
+
+  sudo yum install mysql-devel
+
+  sudo easy_install mysql-python
 ```
