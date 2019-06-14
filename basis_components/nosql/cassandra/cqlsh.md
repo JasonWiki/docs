@@ -136,6 +136,12 @@ INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2,'robin
 INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(3,'rahman', 'Chennai', 9848022330, 45000);
 
 
+# ------------------------------ Cassandra 创建数据 ------------------------------
+BEGIN BATCH
+INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2,'robin', 'Hyderabad', 9848022339, 40000);
+APPLY BATCH;
+
+
 # ------------------------------ Cassandra 更新数据 ------------------------------
 # 语法.
 UPDATE <tablename>
@@ -195,6 +201,7 @@ CREATE table teacher(
 INSERT INTO teacher(id,address,name,age,height) VALUES(1,'guangdong','lixiao',32,172);
 INSERT INTO teacher(id,address,name,age,height) VALUES(1,'guangxi','linzexu',68,178);
 INSERT INTO teacher(id,address,name,age,height) VALUES(1,'guangxi','lihao',25,178);
+INSERT INTO teacher(id,address,name,age,height) VALUES(1,'guangxi','lihao',25,179);
 INSERT INTO teacher(id,address,name,age,height) VALUES(2,'guangxi','lixiaolong',32,172);
 INSERT INTO teacher(id,address,name,age,height) VALUES(2,'guangdong','lixiao',32,172);
 INSERT INTO teacher(id,address,name,age,height) VALUES(2,'guangxi','linzexu',68,178);
@@ -205,7 +212,7 @@ INSERT INTO teacher(id,address,name,age,height) VALUES(2,'guangxi','nnd',32,172)
 SELECT * FROM teacher WHERE id = 1;
 
 # 第二主键 支持 = ( >、 < 、 >= 、 <= ), 必须带主键
-SELECT * FROM teacher WHERE id = 1 AND height>10 AND age > 10;
+SELECT * FROM teacher WHERE id = 1 AND height>10;
 
 # 创建 二级索引列
 CREATE INDEX idx_teacher_age on teacher(age);

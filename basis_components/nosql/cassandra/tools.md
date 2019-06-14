@@ -73,13 +73,13 @@ nodetool compactionstats
 cassandra-stress command [options]
 
 # 插入十万条数据
-./tools/bin/cassandra-stress write n=100000 -rate threads=5 -node node4,node5,node6
+./tools/bin/cassandra-stress write n=100000 -rate threads=5 -node cassandra-node1,cassandra-node2,cassandra-node3
 
 # 读取十万条数据
-./tools/bin/cassandra-stress read n=100000 -rate threads=5 -node node4,node5,node6
+./tools/bin/cassandra-stress read n=100000 -rate threads=5 -node cassandra-node1,cassandra-node2,cassandra-node3
 
 # 持续三分钟一直读取
-./tools/bin/cassandra-stress read duration=3m -node node4,node5,node6
+./tools/bin/cassandra-stress read duration=3m -node cassandra-node1,cassandra-node2,cassandra-node3
 ```
 
 
