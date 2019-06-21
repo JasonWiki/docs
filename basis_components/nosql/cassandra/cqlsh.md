@@ -37,13 +37,14 @@ CREATE KEYSPACE test WITH replication = {'class':'SimpleStrategy', 'replication_
   SimpleStrategy
     只用于单数据中心和单机架。SimpleStrategy 把第一份备份放在由分区器决定的节点上。余下的备份被放在环的顺时针方向的下面的节点上，而不考虑拓扑结构(机架或数据中心的位置)。
 
+CREATE KEYSPACE test_network WITH  REPLICATION = {'class': 'NetworkTopologyStrategy', 'datacenter1':3 };
+
   NetworkTopologyStrategy
     当你已经(或者计划)将你的集群部署成多数据中心的时候，使用 NetworkTopologyStrategy 策略。这个策略需要指定在每个数据中心有多少个副本数量。
 
 
 # 修改 Keyspace 空间
-ALTER KEYSPACE test
-WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 3}
+ALTER KEYSPACE test WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor' : 3}
 
 # 删除 Keyspace 空间
 DROP KEYSPACE test;
@@ -61,11 +62,11 @@ USE test;
 # ------------------------------ Cassandra 创建表 ------------------------------
 # 语法.
 CREATE (TABLE | COLUMNFAMILY) <tablename>
-('<column-definition>' , '<column-definition>')
+('<column-definition>', '<column-definition>')
 (WITH <option> AND <option>)
 
 # 使用表空间
-use test;
+USE test;
 
 # 创建表
 CREATE TABLE emp(
@@ -74,13 +75,13 @@ CREATE TABLE emp(
    emp_city text,
    emp_sal varint,
    emp_phone varint
-   );
+);
 
 # 查看已有表
 DESC tables;
 
 # 查看表详情
-DESCRIBE  emp;
+DESCRIBE emp;
 
 
 # ------------------------------ Cassandra 修改表 ------------------------------
@@ -136,16 +137,16 @@ INSERT INTO <tablename>
 VALUES (<value1>, <value2>....)
 USING <option>
 
-INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(1,'ram', 'Hyderabad', 9848022338, 50000);
+INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(1, 'ram', 'Hyderabad', 9848022338, 50000);
 
-INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2,'robin', 'Hyderabad', 9848022339, 40000);
+INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2, 'robin', 'Hyderabad', 9848022339, 40000);
 
-INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(3,'rahman', 'Chennai', 9848022330, 45000);
+INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(3, 'rahman', 'Chennai', 9848022330, 45000);
 
 
 # ------------------------------ Cassandra 创建数据 ------------------------------
 BEGIN BATCH
-INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2,'robin', 'Hyderabad', 9848022339, 40000);
+INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2, 'robin', 'Hyderabad', 9848022339, 40000);
 APPLY BATCH;
 
 
