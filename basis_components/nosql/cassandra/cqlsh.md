@@ -144,7 +144,7 @@ INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2, 'robi
 INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(3, 'rahman', 'Chennai', 9848022330, 45000);
 
 
-# ------------------------------ Cassandra 创建数据 ------------------------------
+# ------------------------------ Cassandra 批量执行 ------------------------------
 BEGIN BATCH
 INSERT INTO emp (emp_id, emp_name, emp_city, emp_phone, emp_sal) VALUES(2, 'robin', 'Hyderabad', 9848022339, 40000);
 APPLY BATCH;
