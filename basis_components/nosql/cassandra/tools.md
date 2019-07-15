@@ -9,6 +9,9 @@ nodetool version
 # 用于显示当前机器节点信息，数据中心机架信息
 nodetool status
 
+# 删除集群节点
+nodetool removenode <node_id>
+
 # 停止Cassandra服务
 nodetool stopdaemon
 
