@@ -58,6 +58,12 @@ saved_caches_directory: /opt/data/cassandra/saved_caches
 
 # 提示所在的目录
 hints_directory:        /opt/data/cassandra/hints
+
+
+# 在超过此值的任何多分区批处理大小上记录WARN。 默认情况下为每批5kb。 应该注意增加此阈值的大小，因为它可能导致节点不稳定。
+batch_size_warn_threshold_in_kb: 50
+
+batch_size_fail_threshold_in_kb:
 ```
 
 
