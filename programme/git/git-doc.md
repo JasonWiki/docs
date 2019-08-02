@@ -273,7 +273,7 @@ git tag -l 'v0.1.*'
 git fetch origin tag <tagname>
 
 
-# 打标签, tag 有两种类型, 轻量标签、附注标签,
+# 创建本地 tag, tag 有两种类型, 轻量标签、附注标签,
 
 ## 轻量标签是指向提交对象的引用
 git tag v0.1.2-light

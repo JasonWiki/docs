@@ -313,7 +313,7 @@ INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','lihao',
 INSERT INTO teacher_page(id,address,name,age,height) VALUES(2,'guangxi','nnd',32,172);
 
 
-#
+# 查询所有数据
 SELECT * FROM teacher_page;
   id | address  | name       | age | height
   ----+-----------+------------+-----+--------
@@ -329,6 +329,7 @@ SELECT * FROM teacher_page;
 
 # 一共 8 条数据, 按一页 2 条记录(pageSize=2)来查出全部数据
 SELECT * FROM teacher_page LIMIT 2;
+
   id | address  | name   | age | height
   ----+-----------+--------+-----+--------
   1 | guangdong | lixiao |  32 |    172
@@ -340,6 +341,7 @@ SELECT * FROM teacher_page
 WHERE token(id)=token(1)
   AND (address,name)>('guangxi','lihao')
 LIMIT 2 ALLOW FILTERING;
+
   id | address | name   | age | height
   ----+---------+---------+-----+--------
   1 | guangxi | linzexu |  68 |    178
@@ -349,6 +351,7 @@ LIMIT 2 ALLOW FILTERING;
 SELECT * FROM teacher_page
 WHERE token(id)>token(1)
 LIMIT 1;
+
   id | address   | name   | age | height
   ----+-----------+--------+-----+--------
    2 | guangdong | lixiao |  32 |    172
@@ -359,6 +362,7 @@ SELECT * FROM teacher_page
 WHERE token(id)=token(2)
   AND (address,name)>('guangdong','lixiao')
 LIMIT 2 ALLOW FILTERING;
+
  id | address | name    | age | height
   ----+---------+---------+-----+--------
   2 | guangxi |   lihao |  25 |    178
