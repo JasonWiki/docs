@@ -48,7 +48,7 @@ sudo pip install -r ./requirements.txt
 
 # 验证
 ansible --version
-    ansible 2.5.0
+    ansible 2.7.11
 ```
 
 
@@ -58,9 +58,12 @@ ansible --version
 # 在中控机上配置部署机器, 写入需要部署的 主机
 vi hosts.ini
 [servers]
-[tidb-node1-ip]
-[tidb-node2-ip]
-[tidb-node3-ip]
+tidb-node1
+tidb-node2
+tidb-node3
+tidb-node4
+tidb-node5
+tidb-node6
 
 [all:vars]
 username = tidb
@@ -70,17 +73,21 @@ ntp_server = pool.ntp.org
 # ssh 免密配置
 
 ## 方法 1. 手动方式, 见系统环境
-ssh-copy-id -i ~/.ssh/id_rsa.pub [tidb-node1-ip]
-ssh-copy-id -i ~/.ssh/id_rsa.pub [tidb-node2-ip]
-ssh-copy-id -i ~/.ssh/id_rsa.pub [tidb-node3-ip]
+ssh-copy-id -i ~/.ssh/id_rsa.pub tidb-node1
+ssh-copy-id -i ~/.ssh/id_rsa.pub tidb-node2
+ssh-copy-id -i ~/.ssh/id_rsa.pub tidb-node3
+......
+ssh-copy-id -i ~/.ssh/id_rsa.pub tidb-nodeN
 
 ## 方法 2. 登录 tidb 服务器手动创建
 vim ~/.ssh/authorized_keys
-写入 ~/.ssh/id_rsa.pub
-修改权限 chmod 600 ~/.ssh/authorized_keys
+# 写入
+~/.ssh/id_rsa.pub
+# 修改权限
+chmod 600 ~/.ssh/authorized_keys
 
 ## 验证是否免密
-ssh tidb@[tidb-node1-ip]
+ssh tidb@[tidb-node1]
 ```
 
 
@@ -163,7 +170,48 @@ ansible -i hosts.ini all -m shell -a "cpupower frequency-set --governor performa
 ### 8. 中控机 - 分配机器资源，编辑 inventory.ini 文件
 
 ``` sh
-cd ~/tidb-ansible
+cd ~/app/tidb-ansible
+vim inventory.ini
+
+## TiDB Cluster Part
+# tidb_servers
+[tidb_servers]
+tidb-node1
+tidb-node2
+tidb-node3
+
+# tikv_servers
+[tikv_servers]
+tidb-node1
+tidb-node2
+tidb-node3
+
+# pd_servers
+[pd_servers]
+tidb-node1
+tidb-node2
+tidb-node3
+
+
+## Monitoring Part (prometheus)
+# node_exporter and blackbox_exporter servers( 抽取日志服务器 )
+[monitoring_servers]
+tidb-node4
+tidb-node5
+tidb-node6
+
+[grafana_servers]
+tidb-node4
+tidb-node5
+tidb-node6
+
+# prometheus and pushgateway servers
+[monitoring_servers]
+tidb-node5
+
+[alertmanager_servers]
+tidb-node5
+
 
 # 1. 编辑部署配置文件
 vim inventory.ini
@@ -176,10 +224,10 @@ vim inventory.ini
   ansible_user = tidb
 
   ## 集群名称
-  cluster_name = infrastructure-tidb-cluster
+  cluster_name = tidb-cluster-1
 
   ## 集群版本
-  tidb_version = v2.1.5
+  tidb_version = v3.0.1
 
 
 # 2. 检测
@@ -207,23 +255,25 @@ ansible-playbook start.yml
 ```
 
 
-## 配置
+## tidb 运维
 
 ``` sh
-1. TiDB conf/tidb.yml
+# 启动集群
+ansible-playbook start.yml
 
-# 最大可用 cpu 个数
-max-procs: 16
+# 关闭集群
+ansible-playbook stop.yml
 
+# 清除集群数据
+ansible-playbook unsafe_cleanup_data.yml
 
-2. TiKV conf/tikv.yml
+# 销毁集群
+ansible-playbook unsafe_cleanup.yml
 
-
-3. PD conf/pd.yml
 ```
 
 
-## 错误处理
+## tidb 错误处理
 
 ``` doc
 
