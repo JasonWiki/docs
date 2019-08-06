@@ -40,7 +40,7 @@ ssh-keygen -t rsa
 sudo su tidb
 
 # 下载 2.1 版本
-git clone -b v3.0.1-v1 https://gitee.com/techonline/tidb-ansible.git
+git clone -b tag-v3.0.1-v1 https://gitee.com/techonline/tidb-ansible.git
 
 # 在中控机器上安装 Ansible 及其依赖
 cd ~/app/tidb-ansible
@@ -173,44 +173,107 @@ ansible -i hosts.ini all -m shell -a "cpupower frequency-set --governor performa
 cd ~/app/tidb-ansible
 vim inventory.ini
 
-## TiDB Cluster Part
+## TiDB Cluster Part （这里必须写 ip 地址）
 # tidb_servers
 [tidb_servers]
-tidb-node1
-tidb-node2
-tidb-node3
+tidb-node1 ansible_host=172.16.20.81
+tidb-node2 ansible_host=172.16.20.82
+tidb-node3 ansible_host=172.16.20.83
+tidb-node4 ansible_host=172.16.20.97
+tidb-node5 ansible_host=172.16.20.98
+tidb-node6 ansible_host=172.16.20.99
+
+
 
 # tikv_servers
 [tikv_servers]
-tidb-node1
-tidb-node2
-tidb-node3
+## 配置方法一： 单机单 TiKV 实例集群拓扑, 配置方法
+tidb-node1 ansible_host=172.16.20.81
+tidb-node2 ansible_host=172.16.20.82
+tidb-node3 ansible_host=172.16.20.83
+
+### 配置方法二: 单机多 TiKV 实例集群拓扑
+# 详见(https://pingcap.com/docs-cn/v3.0/how-to/deploy/orchestrated/ansible/#%E5%8D%95%E6%9C%BA%E5%A4%9A-tikv-%E5%AE%9E%E4%BE%8B%E9%9B%86%E7%BE%A4%E6%8B%93%E6%89%91)
+# 调优(https://pingcap.com/docs-cn/v3.0/reference/performance/tune-tikv/)
+
+## 第一步: 单节点 tikv 进程数量
+# 详见: raftstore 参数, 根据磁盘容量计算出, 一共需要多少个 tikv 数量
+# 根据配置, 定义单台服务器, tikv 的数量为 5 个.
+tidb-node1-1 ansible_host=172.16.20.81 deploy_dir=/opt/app/tidb/deploy1 tikv_port=20171 tikv_status_port=20181 labels="host=tikv1"
+tidb-node1-2 ansible_host=172.16.20.81 deploy_dir=/opt/app/tidb/deploy2 tikv_port=20172 tikv_status_port=20182 labels="host=tikv1"
+tidb-node1-3 ansible_host=172.16.20.81 deploy_dir=/opt/app/tidb/deploy3 tikv_port=20173 tikv_status_port=20183 labels="host=tikv1"
+
+tidb-node2-1 ansible_host=172.16.20.82 deploy_dir=/opt/app/tidb/deploy1 tikv_port=20171 tikv_status_port=20181 labels="host=tikv2"
+tidb-node2-2 ansible_host=172.16.20.82 deploy_dir=/opt/app/tidb/deploy2 tikv_port=20172 tikv_status_port=20182 labels="host=tikv2"
+tidb-node2-3 ansible_host=172.16.20.82 deploy_dir=/opt/app/tidb/deploy3 tikv_port=20173 tikv_status_port=20183 labels="host=tikv2"
+
+tidb-node3-1 ansible_host=172.16.20.83 deploy_dir=/opt/app/tidb/deploy1 tikv_port=20171 tikv_status_port=20181 labels="host=tikv3"
+tidb-node3-2 ansible_host=172.16.20.83 deploy_dir=/opt/app/tidb/deploy2 tikv_port=20172 tikv_status_port=20182 labels="host=tikv3"
+tidb-node3-3 ansible_host=172.16.20.83 deploy_dir=/opt/app/tidb/deploy3 tikv_port=20173 tikv_status_port=20183 labels="host=tikv3"
+
+
+## 第二步: 配置内存和磁盘(修改 conf/tikv.yml 参数)
+# titan 存储引擎
+titan:
+  enabled: true
+  max-background-gc: 4
+
+storage:
+  ## RocksDB 使用 block cache 来缓存未压缩的数据块。较大的 block cache 可以加快读取速度。
+  # 推荐开启 `shared block cache` 参数。这样只需要设置全部缓存大小，使配置过程更加方便。
+  # 要在单个物理机上部署多个 TiKV 节点，需要显式配置该参数。否则，TiKV 中可能会出现 OOM 错误。
+  # 推荐设置：常情况下应设置为系统全部内存的 30%-50%。
+  block-cache:
+    shared: true
+    capacity: "50GB"
+
+readpool:
+  # 多实例情况下，需要修改 tidb-ansible/conf/tikv.yml 中 high-concurrency、normal-concurrency 和 low-concurrency 三个参数：
+  # 推荐设置：TiKV 实例数量 * 参数值 = CPU 核心数量 * 0.8
+  coprocessor:
+    # Notice: if CPU_NUM > 8, default thread pool size for coprocessors
+    # will be set to CPU_NUM * 0.8.
+    # high-concurrency: 8
+    # normal-concurrency: 8
+    # low-concurrency: 8
+
+raftstore:
+  # 每个 TiKV 实例, 占用磁盘大小。 当如果多个 TiKV 实例部署在同一块物理磁盘上，需要修改 capacity 参数
+  # 推荐配置：capacity = 磁盘总容量 / TiKV 实例数量, 如果没有设置，则使用磁盘容量。
+  # capacity: "2048GB"
+
 
 # pd_servers
 [pd_servers]
-tidb-node1
-tidb-node2
-tidb-node3
-
+tidb-node4 ansible_host=172.16.20.97
+tidb-node5 ansible_host=172.16.20.98
+tidb-node6 ansible_host=172.16.20.99
 
 ## Monitoring Part (prometheus)
 # node_exporter and blackbox_exporter servers( 抽取日志服务器 )
 [monitoring_servers]
-tidb-node4
-tidb-node5
-tidb-node6
+tidb-node1 ansible_host=172.16.20.81
+tidb-node2 ansible_host=172.16.20.82
+tidb-node3 ansible_host=172.16.20.83
+tidb-node4 ansible_host=172.16.20.97
+tidb-node5 ansible_host=172.16.20.98
+tidb-node6 ansible_host=172.16.20.99
 
 [grafana_servers]
-tidb-node4
-tidb-node5
-tidb-node6
+tidb-node5 ansible_host=172.16.20.98
 
 # prometheus and pushgateway servers
 [monitoring_servers]
-tidb-node5
+tidb-node5 ansible_host=172.16.20.98
 
 [alertmanager_servers]
-tidb-node5
+tidb-node5 ansible_host=172.16.20.98
+# 如果已经了则使用 alertmanager_host:alertmanager_port
+
+## Group variables
+[pd_servers:vars]
+# location_labels = ["zone","rack","host"]
+location_labels = ["host"]
 
 
 # 1. 编辑部署配置文件
@@ -252,24 +315,6 @@ ansible-playbook deploy.yml
 
 # 6. 启动 TiDB 集群
 ansible-playbook start.yml
-```
-
-
-## tidb 运维
-
-``` sh
-# 启动集群
-ansible-playbook start.yml
-
-# 关闭集群
-ansible-playbook stop.yml
-
-# 清除集群数据
-ansible-playbook unsafe_cleanup_data.yml
-
-# 销毁集群
-ansible-playbook unsafe_cleanup.yml
-
 ```
 
 

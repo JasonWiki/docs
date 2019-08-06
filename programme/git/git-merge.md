@@ -33,8 +33,6 @@ git push origin master
 
 # 获取 开源仓库 指定 tag
 git fetch source tag [tagname]
-git checkout -b [tagname]
-
 
 # 通过 开源仓库 tag 打出 branch 用于修改。 例如基于 tag v3.0.1 创建分支  tag-v3.0.1-v1
 git checkout -b [branchName] [tagName]
@@ -46,25 +44,12 @@ git push origin [tagname-v1]:[tagname-v1]
 # 例如
 git push origin tag-v3.0.1-v1:tag-v3.0.1-v1
 
-
 # 编辑 本地仓库 内容后提交 tag 到 私有仓库
 git tag -a [tagname-v1] -m "tagname 修改"
 
-
-
-
-
-
-
-
-
-# 直接获取 私有仓库 指定 tag
-git clone -b [tagname-v1] https://gitee.com/techonline/tidb-ansible.git
-
-
-git checkout -b <branchName> <tagName>
-
-git checkout -b aaaa v3.0.1
+# 获取指定 私有 tag
+git fetch origin tag [tagname]
+git clone -b tag-v3.0.1-v1 https://gitee.com/techonline/tidb-ansible.git
 
 
 
@@ -92,8 +77,4 @@ git chekcout branchname-v1
 git clone https://gitee.com/techonline/tidb-ansible.git
 git checkout master
 git pull --rebase origin master
-
-
-#  直接获取指定 tag
-git clone -b v3.0.1-v1 https://gitee.com/techonline/tidb-ansible.git
 ```

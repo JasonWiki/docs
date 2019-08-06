@@ -1,8 +1,5 @@
 # tidb 集群配置
 
-- (TiKV 性能参数调优)[https://pingcap.com/docs-cn/v3.0/reference/performance/tune-tikv/]
-
-
 ## TiDB 配置
 
 - [TiDB conf/tidb.yml](https://pingcap.com/docs-cn/v3.0/reference/configuration/tidb-server/configuration-file/)
@@ -83,6 +80,7 @@ replication:
 ## TiKV 配置
 
 - [TiKV conf/tikv.yml](https://pingcap.com/docs-cn/v3.0/reference/configuration/tikv-server/configuration-file/)
+- [TiVK 调优](https://pingcap.com/docs-cn/v3.0/reference/performance/tune-tikv/)
 
 ``` sh
 # Http API 服务的工作线程数量。
@@ -150,7 +148,14 @@ readpool.coprocessor:
 
 
 # 存储相关的配置项。
+
 storage:
+
+  # 是否为 RocksDB 的所有 CF 都创建一个 `shared block cache`。
+  # 推荐设置：capacity = MEM_TOTAL * 0.5 / TiKV 实例数量
+  block-cache:
+    capacity: "1GB"
+
   # scheduler 一次获取最大消息个数
   scheduler-notify-capacity: 10240
 
